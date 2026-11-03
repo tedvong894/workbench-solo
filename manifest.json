@@ -1,0 +1,17 @@
+{
+  "id": "workbench-solo-20261103",
+  "name": "工作台",
+  "short_name": "工作台",
+  "description": "一人公司运营中枢 · 工作台（单机离线版）",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f7f8fc",
+  "theme_color": "#4f46e5",
+  "icons": [
+    { "src": "apple-touch-icon.png?v=solo1", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-flat.png?v=solo1", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-flat.png?v=solo1", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
