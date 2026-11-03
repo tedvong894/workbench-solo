@@ -2006,6 +2006,47 @@ const _fileImp = document.getElementById("file-import"); if(_fileImp) _fileImp.a
 document.addEventListener("click", e=>{ const box=document.getElementById("kd-dropdown"); const chip=document.getElementById("keydays-chip"); if(box && box.classList.contains("open") && chip && !chip.contains(e.target) && !box.contains(e.target)){ box.classList.remove("open"); } });
 const _kdChip=document.getElementById("keydays-chip"); if(_kdChip) _kdChip.addEventListener("click", e=>{ e.stopPropagation(); toggleKdDropdown(); });
 
+/* ---- 单机版持久化加固（2026-11-03）：localStorage 主存 + IndexedDB 镜像 + 自动快照/恢复 ---- */
+function soloIDBOpen(){
+  if(typeof indexedDB==='undefined') return null;
+  try{ return indexedDB.open('workbench_solo_idb_v1', 1); }catch(e){ return null; }
+}
+function soloIDBSet(obj){
+  try{
+    const r = soloIDBOpen(); if(!r) return;
+    r.onupgradeneeded = function(){ try{ r.result.createObjectStore('kv'); }catch(e){} };
+    r.onsuccess = function(){
+      try{ const tx = r.result.transaction('kv','readwrite'); tx.objectStore('kv').put(obj, 'state'); }catch(e){}
+    };
+  }catch(e){}
+}
+function soloIDBGet(cb){
+  try{
+    const r = soloIDBOpen(); if(!r){ if(cb) cb(null); return; }
+    r.onupgradeneeded = function(){ try{ r.result.createObjectStore('kv'); }catch(e){} };
+    r.onsuccess = function(){
+      try{
+        const tx = r.result.transaction('kv','readonly');
+        const g = tx.objectStore('kv').get('state');
+        g.onsuccess = function(){ if(cb) cb(g.result||null); };
+        g.onerror = function(){ if(cb) cb(null); };
+      }catch(e){ if(cb) cb(null); }
+    };
+    r.onerror = function(){ if(cb) cb(null); };
+  }catch(e){ if(cb) cb(null); }
+}
+function soloTryRecoverFromIDB(){
+  soloIDBGet(function(rec){
+    if(rec && rec.backlog && rec.today){
+      state = rec;
+      if(!("trashKeep" in state)) state.trashKeep=30;
+      if(!("activeId" in state)) state.activeId=null;
+      if(state.activeId && !state.exec[state.activeId]) state.exec[state.activeId]={steps:[],tracking:""};
+      persist(); renderAll();
+      if(typeof toast==='function') toast("已从备用存储(IndexedDB)恢复数据","ok");
+    }
+  });
+}
 function load(){
   try{
     const s = JSON.parse(localStorage.getItem(KEY));
@@ -2033,9 +2074,18 @@ function load(){
       return s;
     }
   }catch(e){}
+  // 本地为空：异步尝试从 IndexedDB 镜像恢复（防 localStorage 被清/被隔离导致“重开即空”）
+  soloTryRecoverFromIDB();
   return { backlog:[], today:[], done:[], activeId:null, exec:{}, notes:{}, trash:[], trashKeep:30, routines:[], goals:[], habits:[], strat:{vision:[],strategy:[],idea:[]}, assets:[], keydays:[], keydaysPinned:null };
 }
-function persist(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function persist(){
+  const json = JSON.stringify(state);
+  let ok = true;
+  try { localStorage.setItem(KEY, json); } catch(e){ ok = false; }
+  soloIDBSet(state);   // IndexedDB 镜像：比 localStorage 更耐用，作为备用存储
+  try { localStorage.setItem('workbench_solo_backup_v1', json); } catch(e){}  // 滚动快照：最近一份成功状态
+  if(!ok && typeof toast==='function') toast("⚠️ 本机主存储写入失败，已写入备用存储；清缓存/换浏览器可能丢失，建议用「导出备份」", "warn");
+}
 function save(){ persist(); _dirty=true; pushState(); }
 const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const esc = s => (s??"").toString().replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -5080,34 +5130,11 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     // 一次性「清缓存自愈」：把本机残留的旧 SW 与旧 cache storage 全部注销/删除后重载一次，
     // 彻底排除「设备上的旧 SW 一直拦截并用旧 HTML 兜底」的情况。
     // 用 localStorage 标记保证只做一次，不会循环；之后正常注册新 SW（离线能力不受影响）。
-    var PURGE_KEY = 'sw_purge_wb39';
-    window.addEventListener('load', function () {
-      var need = true;
-      try { need = localStorage.getItem(PURGE_KEY) !== '1'; } catch (e) {}
-      if (need) {
-        var finish = function () {
-          try { localStorage.setItem(PURGE_KEY, '1'); } catch (e) {}
-          setTimeout(function () { try { window.location.reload(); } catch (e) {} }, 60);
-        };
-        var jobs = [];
-        try {
-          if (navigator.serviceWorker.getRegistrations) {
-            jobs.push(navigator.serviceWorker.getRegistrations().then(function (rs) {
-              return Promise.all(rs.map(function (r) { return r.unregister(); }));
-            }));
-          }
-          if (window.caches && caches.keys) {
-            jobs.push(caches.keys().then(function (ks) {
-              return Promise.all(ks.map(function (k) { return caches.delete(k); }));
-            }));
-          }
-        } catch (e) {}
-        Promise.all(jobs).then(finish, finish);
-        return;
-      }
+      // 单机版：不再执行「注销全部 SW / 删除全部缓存」的清缓存逻辑
+      // （继承自联网版，会在同 origin 下误伤军机处等其它 App 的 SW/缓存；单机版缓存名已独立隔离，无需此操作）
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261103-1100').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261103-1400').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
