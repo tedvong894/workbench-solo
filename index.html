@@ -2418,8 +2418,11 @@ function renderAssets(){
     return `<div class="strat-item" data-id="${it.id}">
       <div class="asset-view">
         <div class="asset-title-row"><b class="asset-name">${esc(it.name||"(未命名)")}</b><span class="asset-badge">${esc(assetTypeLabel(it.type))}</span><button class="icon-btn" data-act="assetEdit" data-id="${it.id}">编辑</button></div>
-        ${incHtml}
-        ${(it.platform||it.works)?`<div class="asset-income"><span class="asset-income-l">平台</span><span class="asset-income-v">${esc(it.platform||"-")}</span> <span class="asset-income-l" style="margin-left:10px">累计作品</span><span class="asset-income-v">${esc(it.works||"-")}</span></div>`:""}
+        ${(it.income||it.platform||it.works)?`<div class="asset-income">
+          ${it.income?`<span class="asset-income-l">${esc(assetIncomeLabel(it.type))}</span><span class="asset-income-v">${esc(it.income)}</span>`:""}
+          ${it.platform?`<span class="asset-income-l" style="margin-left:6px">平台</span><span class="asset-income-v">${esc(it.platform)}</span>`:""}
+          ${it.works?`<span class="asset-income-l" style="margin-left:6px">累计作品</span><span class="asset-income-v">${esc(it.works)}</span>`:""}
+        </div>`:""}
         ${descHtml}
       </div>
       <div class="asset-edit" style="display:none">
@@ -5141,7 +5144,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // （继承自联网版，会在同 origin 下误伤军机处等其它 App 的 SW/缓存；单机版缓存名已独立隔离，无需此操作）
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261104-1450').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261104-1530').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
