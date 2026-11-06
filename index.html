@@ -1221,6 +1221,20 @@
     .stat.stat-live .stat-n{font-size:11px}
     .stat.stat-live .stat-l{font-size:9px}
   }
+  /* 2026-11-06 第三轮：两格收入放大显眼（只显示整数），其余格适当收小 */
+  .stat.stat-income{min-width:104px;padding:7px 12px;border-radius:12px;background:var(--brand-soft);border-color:#dfe2fb}
+  .stat.stat-income .stat-n{font-size:20px;font-weight:800;color:var(--brand);letter-spacing:-.6px;line-height:1.05;white-space:nowrap}
+  .stat.stat-income .stat-l{font-size:10px;color:var(--ink2);font-weight:600}
+  .stat.stat-income.active{background:#e6e8ff;border-color:var(--brand);box-shadow:0 6px 16px rgba(79,70,229,.14)}
+  .topbar-stats .stat:not(.stat-income){min-width:46px;padding:3px 5px;border-radius:10px}
+  .topbar-stats .stat:not(.stat-income) .stat-n{font-size:12px}
+  .topbar-stats .stat:not(.stat-income) .stat-l{font-size:9.5px}
+  @media (max-width:820px){
+    .stat.stat-income{min-width:78px;padding:4px 7px}
+    .stat.stat-income .stat-n{font-size:15px}
+    .topbar-stats .stat:not(.stat-income){min-width:40px;padding:3px 3px}
+    .topbar-stats .stat:not(.stat-income) .stat-n{font-size:11px}
+  }
 </style>
 <style id="inc-style">
   .inc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:10px}
@@ -1259,6 +1273,17 @@
   .inc-a{font-weight:600;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
   .inc-del{border:0;background:none;color:var(--ink3);font:inherit;font-size:11px;cursor:pointer;padding:2px 4px}
   .inc-empty{font-size:11.5px;color:var(--ink3);padding:8px 0}
+  /* 2026-11-06 第四轮：常规 / 零星两大类 + 月度房租参数 */
+  .inc-groups{display:flex;flex-wrap:wrap;gap:3px 14px;margin-top:6px}
+  .inc-grp{font-size:11.5px;color:var(--ink2);white-space:nowrap}
+  .inc-grp b{font-weight:700;color:var(--ink)}
+  .inc-set{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+  .inc-set-t,.inc-add-t{font-size:11px;color:var(--ink2);font-weight:600;background:var(--line2);border-radius:5px;padding:3px 7px;white-space:nowrap}
+  .inc-f{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);white-space:nowrap}
+  .inc-f input{border:1px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;width:120px;appearance:none;-webkit-appearance:none}
+  .inc-note2{font-size:10.5px;color:var(--ink3);line-height:1.4}
+  .inc-lg-t{font-size:10px;color:var(--ink3);margin-right:2px}
+  .inc-lg-sep{display:inline-block;width:1px;height:12px;background:var(--line);margin:0 4px}
 </style>
 </head>
 <body data-page-node-id="AV2oOpzl66jAbdXl4FAQ1J">
@@ -1322,14 +1347,14 @@
       <!-- 进阶区 -->
       <button class="stat" data-mod="backlog" data-page-node-id="4lzU4DlglJR7rHCxKaDvTR" style="display:none"><span class="stat-n" id="st-back" data-page-node-id="lEZ7oJwZSRigs0ChW3y0X7">0</span><span class="stat-l" data-page-node-id="lltvcAjcuDYcwh7nBBXx2g">可选</span></button>
       <button class="stat" data-mod="today" data-page-node-id="bRDDQcsBYLQLMIMK8Ik3LH"><span class="stat-n" id="st-today" data-page-node-id="Pxxch1z7qsdyLvrwhD1XoE">0</span><span class="stat-l" data-page-node-id="kWn7HkgXL81bH0WFSkUn3r">今日</span></button>
+      <button class="stat" data-mod="note-life" title="生活备忘录"><span class="stat-n" id="st-life">0</span><span class="stat-l">备忘录</span></button>
       <button class="stat stat-new" data-mod="routine" data-page-node-id="routine-stat-1" style="display:none"><span class="stat-n" id="st-routine">0</span><span class="stat-l">每日</span></button>
       <button class="stat stat-new" data-mod="done" data-page-node-id="done-stat-1" style="display:none"><span class="stat-n" id="st-done">0</span><span class="stat-l">已击败</span></button>
       <!-- 生活区 -->
-      <button class="stat stat-live" data-mod="income" id="inc-day-chip" title="今日收入：点击查看明细"><span class="stat-n" id="inc-chip-day">¥0.00</span><span class="stat-l">今日收入</span></button>
-      <button class="stat stat-live" data-mod="income" id="inc-month-chip" title="本月收入：点击查看明细"><span class="stat-n" id="inc-chip-month">¥0.00</span><span class="stat-l">本月收入</span></button>
+      <button class="stat stat-income" data-mod="income" id="inc-day-chip" title="今日收入：点击查看明细"><span class="stat-n" id="inc-chip-day">¥0</span><span class="stat-l">今日收入</span></button>
+      <button class="stat stat-income" data-mod="income" id="inc-month-chip" title="本月收入：点击查看明细"><span class="stat-n" id="inc-chip-month">¥0</span><span class="stat-l">本月收入</span></button>
       <button class="stat stat-live" data-mod="lifedash" id="ld-time-chip" title="时间流逝：点击查看/设置"><span class="stat-n" id="ld-time-n">0.0%</span><span class="stat-l">时间流逝</span></button>
       <button class="stat stat-new" data-mod="note-biz" data-page-node-id="biz-stat-1" style="display:none"><span class="stat-n" id="st-biz">0</span><span class="stat-l">商务</span></button>
-      <button class="stat" data-mod="note-life" title="生活备忘录"><span class="stat-n" id="st-life">0</span><span class="stat-l">备忘录</span></button>
       <button class="stat" data-mod="calendar" id="cal-block" title="实时日历"><span class="stat-n" id="cal-time">--:--:--</span><span class="stat-l" id="cal-date">--/--</span></button>
     </div>
   </header>
@@ -1381,7 +1406,7 @@
           <span class="gh-arrow" aria-hidden="true" data-page-node-id="moasPcQsuAnR8GT4XOoEAC"><svg viewBox="0 0 16 16" data-page-node-id="waQFFNbsTjrwzzhheuAFpi"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="w5yZjLiQs7SSnFXRQWOWWT"/></svg></span>
         </button>
         <div class="mod-group-body" data-page-node-id="KDc2UAatJRa4EHzlANBZgm">
-          <button class="mod-tab" data-mod="income" data-sort-key="life"><span class="t-ico">💰</span><span class="t-name">收入<span class="t-hint">工资 · 资产 · 兼职</span></span><span class="t-cnt" id="cnt-income">0</span></button>
+          <button class="mod-tab" data-mod="income" data-sort-key="life"><span class="t-ico">💰</span><span class="t-name">收入<span class="t-hint">常规 · 零星</span></span><span class="t-cnt" id="cnt-income">0</span></button>
           <button class="mod-tab" data-mod="keyday" data-sort-key="life" data-page-node-id="kd-nav-1"><span class="t-ico" data-page-node-id="kd-nav-2">📅</span><span class="t-name" data-page-node-id="kd-nav-3">key day<span class="t-hint" data-page-node-id="kd-nav-4">倒计日</span></span><span class="t-cnt" id="cnt-keyday" data-page-node-id="kd-nav-5">0</span></button>
           <button class="mod-tab" data-mod="note-biz" data-sort-key="life" data-page-node-id="E8h5VI4UGIlARNThRLmHSW"><span class="t-ico" data-page-node-id="oknFOBg1jZMUSXpoHkpAqG">💼</span><span class="t-name" data-page-node-id="20vCCWevyxIlrkAtouGt5q">商务<span class="t-hint" data-page-node-id="EQbuN0u8llthtFAPvy1ajD">客户·会议·跟进</span></span><span class="t-cnt" id="cnt-note-biz" data-page-node-id="wzkW24TUAKNGTVoDUnE9L8">0</span></button>
           <button class="mod-tab" data-mod="note-life" data-sort-key="life" data-page-node-id="i1svWFqURQPyTdYFifxQIO"><span class="t-ico" data-page-node-id="DBCBaA1xVYfHtEfAlSFMsA">📝</span><span class="t-name" data-page-node-id="zEUxg2hD6dYHDsHdMFEAF5">生活备忘录<span class="t-hint" data-page-node-id="x6BiBTvjJaDbTSnmHSYvHl">随手记</span></span><span class="t-cnt" id="cnt-note-life" data-page-node-id="v62pF11iTZNdGwm5pEsqbq">0</span></button>
@@ -1617,27 +1642,34 @@
           </div>
         </div>
       </section>
-      <!-- 收入模块：工资线性 + 资产/兼职按次录入 + 每日柱状图 -->
+      <!-- 收入模块：常规收入(工资/房租 均匀) + 零星收入(兼职/资产处置 按次) + 每日柱状图 -->
       <section class="panel" id="p-income">
-        <div class="p-head"><span class="pmod">💰</span><h2>收入</h2><span class="hint">工资 · 资产 · 兼职</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="p-head"><span class="pmod">💰</span><h2>收入</h2><span class="hint">常规 · 零星</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
         <div class="p-body">
           <div class="inc-cards">
             <div class="inc-card">
               <div class="inc-k">今日收入</div>
               <div class="inc-total" id="inc-day-total">¥0.00</div>
+              <div class="inc-groups" id="inc-day-groups"></div>
               <div class="inc-parts" id="inc-day-parts"></div>
             </div>
             <div class="inc-card">
               <div class="inc-k">本月累计</div>
               <div class="inc-total" id="inc-month-total">¥0.00</div>
+              <div class="inc-groups" id="inc-month-groups"></div>
               <div class="inc-parts" id="inc-month-parts"></div>
             </div>
           </div>
-          <div class="inc-note">工资按「生活仪表」里的月到手工资随时间线性计入，不用录入。<button class="inc-link" id="inc-go-salary">去设置工资</button></div>
+          <div class="inc-set">
+            <span class="inc-set-t">常规收入</span>
+            <label class="inc-f"><span>月度房租收入</span><input type="number" id="inc-rent" min="0" step="100" placeholder="如 3000" inputmode="decimal"></label>
+            <span class="inc-note2">工资 + 房租按当月自然日 ÷ 86400 秒均匀计入、今天实时增长；工资在 <button class="inc-link" id="inc-go-salary">生活仪表</button> 设置</span>
+          </div>
           <div class="inc-add">
+            <span class="inc-add-t">零星收入</span>
             <input type="date" id="inc-date">
-            <select id="inc-kind"><option value="sale">资产处置</option><option value="rent">房租收入</option><option value="part">兼职收入</option></select>
-            <input id="inc-name" placeholder="名称（如：设备转让 / 11月房租 / XX 咨询）">
+            <select id="inc-kind"><option value="part">兼职收入</option><option value="sale">资产处置</option></select>
+            <input id="inc-name" placeholder="名称（如：XX 咨询 / 设备转让）">
             <input type="number" id="inc-amount" min="0" step="0.01" placeholder="金额" inputmode="decimal">
             <button class="inc-btn" id="inc-add-btn">记一笔</button>
           </div>
@@ -5265,7 +5297,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261106-1629').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261106-1648').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5279,7 +5311,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261106-1629 (单机)';
+    var V = '20261106-1648 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5354,21 +5386,40 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 })();
 </script>
 <script id="inc-script">
-/* ===== 收入模块：工资线性 + 资产/兼职按次录入 + 每日堆叠柱状图（单机版 2026-11-06） ===== */
+/* ===== 收入模块：常规收入(工资/房租 均匀) + 零星收入(兼职/资产处置 按次) + 每日堆叠柱状图（单机版 2026-11-06） ===== */
 (function(){
   var $=function(id){ return document.getElementById(id); };
-  var KINDS={ wage:'工资', sale:'资产处置', rent:'房租收入', part:'兼职收入' };
-  var COLOR={ wage:'#c3cfe6', sale:'#e6cba4', rent:'#a9cdc1', part:'#c9b8df' };
-  var ORDER=['wage','sale','rent','part'];
+  var KINDS={ wage:'工资', rent:'房租', part:'兼职', sale:'资产处置' };
+  var GROUP={ wage:'regular', rent:'regular', part:'occasional', sale:'occasional' };
+  var GNAME={ regular:'常规收入', occasional:'零星收入' };
+  var COLOR={ wage:'#c3cfe6', rent:'#a9cdc1', part:'#c9b8df', sale:'#e6cba4' };
+  var ORDER=['wage','rent','part','sale'];
   var H=128, range='30';
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function money(n){ return '¥'+(Number(n)||0).toFixed(2); }
+  function moneyInt(n){ return '¥'+Math.round(Number(n)||0).toLocaleString('zh-CN'); }  /* 顶栏两格只显示整数 */
   function say(t,k){ if(typeof toast==='function') toast(t,k||'ok'); }
   /* 每次现取，兼容导入备份 / IndexedDB 异步恢复把 state 整体替换 */
   function st(){
     if(!state.income || typeof state.income!=='object') state.income={records:[]};
-    if(!Array.isArray(state.income.records)) state.income.records=[];
-    return state.income;
+    var o=state.income;
+    if(!Array.isArray(o.records)) o.records=[];
+    if(typeof o.rentMonthly!=='number' || !isFinite(o.rentMonthly) || o.rentMonthly<0) o.rentMonthly=0;
+    /* 一次性迁移：旧版「房租按次录入」的记录改成月度房租参数（取最近有记录月份的合计），
+       从列表移除，避免房租既按笔又均匀计入造成双算；用户数据不丢，语义等价。 */
+    if(o._rentMigrated!==true){
+      var legacy=o.records.filter(function(r){ return r && r.kind==='rent'; });
+      if(legacy.length){
+        var byM={};
+        legacy.forEach(function(r){ var k=String(r.date||'').slice(0,7); byM[k]=(byM[k]||0)+(Number(r.amount)||0); });
+        var ks=Object.keys(byM).filter(function(k){ return /^\d{4}-\d{2}$/.test(k); }).sort();
+        if(!o.rentMonthly && ks.length) o.rentMonthly=byM[ks[ks.length-1]];
+        o.records=o.records.filter(function(r){ return !r || r.kind!=='rent'; });
+        if(typeof save==='function') save();
+      }
+      o._rentMigrated=true;
+    }
+    return o;
   }
   function salary(){ var v=state.lifeDash && Number(state.lifeDash.salary); return (isFinite(v)&&v>0)?v:0; }
   function ymd(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
@@ -5382,20 +5433,33 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var perDay=s/daysIn(d.getFullYear(),d.getMonth());
     return isToday?perDay*dayFrac():perDay;
   }
-  function blank(){ return {wage:0,sale:0,rent:0,part:0}; }
-  function total(p){ return p.wage+p.sale+p.rent+p.part; }
+  function rentMonthly(){ var v=st().rentMonthly; return (isFinite(v)&&v>0)?v:0; }
+  /* 房租与工资同口径：月度房租 ÷ 当月自然日 ÷ 86400 秒；今天按已过秒数实时累计 */
+  function rentOf(key,isToday){
+    var d=parseYmd(key); if(!d) return 0;
+    var r=rentMonthly(); if(!r) return 0;
+    var perDay=r/daysIn(d.getFullYear(),d.getMonth());
+    return isToday?perDay*dayFrac():perDay;
+  }
+  function subTotal(p,g){ var s=0; ORDER.forEach(function(k){ if(GROUP[k]===g) s+=p[k]; }); return s; }
+  function blank(){ return {wage:0,rent:0,part:0,sale:0}; }
+  function total(p){ return subTotal(p,'regular')+subTotal(p,'occasional'); }
   function dayParts(key,isToday){
-    var p=blank(); p.wage=wageOf(key,isToday);
-    st().records.forEach(function(r){ if(r && r.date===key && p[r.kind]!==undefined) p[r.kind]+=Number(r.amount)||0; });
+    var p=blank(); p.wage=wageOf(key,isToday); p.rent=rentOf(key,isToday);
+    st().records.forEach(function(r){ if(r && r.date===key && r.kind!=='rent' && p[r.kind]!==undefined) p[r.kind]+=Number(r.amount)||0; });
     return p;
   }
   function partsHtml(p){
     return ORDER.map(function(k){ return '<span class="inc-part"><i style="background:'+COLOR[k]+'"></i>'+KINDS[k]+' '+money(p[k])+'</span>'; }).join('');
   }
+  function groupsHtml(p){
+    return '<span class="inc-grp">'+GNAME.regular+' <b>'+money(subTotal(p,'regular'))+'</b></span>'+
+           '<span class="inc-grp">'+GNAME.occasional+' <b>'+money(subTotal(p,'occasional'))+'</b></span>';
+  }
   function renderList(){
     var box=$('inc-list'); if(!box) return;
-    var rs=st().records.slice().sort(function(a,b){ return String(b.date||'').localeCompare(String(a.date||'')) || String(b.id||'').localeCompare(String(a.id||'')); });
-    if(!rs.length){ box.innerHTML='<div class="inc-empty">还没有录入收入。工资会自动计入，其它收入用上面「记一笔」。</div>'; return; }
+    var rs=st().records.filter(function(r){ return r && r.kind!=='rent'; }).slice().sort(function(a,b){ return String(b.date||'').localeCompare(String(a.date||'')) || String(b.id||'').localeCompare(String(a.id||'')); });
+    if(!rs.length){ box.innerHTML='<div class="inc-empty">还没有零星收入。常规收入（工资 / 房租）自动计入，兼职 / 资产处置用上面「记一笔」。</div>'; return; }
     box.innerHTML=rs.slice(0,80).map(function(r){
       return '<div class="inc-row"><span class="inc-d">'+esc(r.date)+'</span><span class="inc-tag">'+esc(KINDS[r.kind]||'其它')+'</span><span class="inc-n">'+esc(r.name||'—')+'</span><span class="inc-a">'+money(r.amount)+'</span><button class="inc-del" data-del="'+esc(r.id)+'">删除</button></div>';
     }).join('');
@@ -5410,16 +5474,19 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     }
     return {now:now,y:y,m:m,todayKey:todayKey,dayP:dayP,monthP:monthP};
   }
-  /* 顶部「今日收入 / 本月收入」只更新文字，不重建 30 根柱，工资才能每秒线性涨 */
+  /* 顶部「今日收入 / 本月收入」只更新文字，不重建 30 根柱，常规收入才能每秒线性涨 */
   function chipTick(){
     var S=stats(), a=$('inc-chip-day'), b=$('inc-chip-month');
     var td=total(S.dayP), tm=total(S.monthP);
-    if(a){ a.textContent=money(td); a.title='今日收入 '+money(td)+'（含工资 '+money(S.dayP.wage)+'）· 点击查看明细'; }
-    if(b){ b.textContent=money(tm); b.title='本月收入 '+money(tm)+'（含工资 '+money(S.monthP.wage)+'）· 点击查看明细'; }
-    /* 面板里的总数 / 分项同一次刷新，保证顶部与面板任何时刻都对得上 */
+    if(a){ a.textContent=moneyInt(td); a.title='今日收入 '+money(td)+'（'+GNAME.regular+' '+money(subTotal(S.dayP,'regular'))+' / '+GNAME.occasional+' '+money(subTotal(S.dayP,'occasional'))+'）· 点击查看明细'; }
+    if(b){ b.textContent=moneyInt(tm); b.title='本月收入 '+money(tm)+'（'+GNAME.regular+' '+money(subTotal(S.monthP,'regular'))+' / '+GNAME.occasional+' '+money(subTotal(S.monthP,'occasional'))+'）· 点击查看明细'; }
+    /* 面板里的总数 / 两大类 / 四个分项同一次刷新，保证顶部与面板任何时刻都对得上 */
     var d=$('inc-day-total'), mt=$('inc-month-total'), dp=$('inc-day-parts'), mp=$('inc-month-parts');
+    var dg=$('inc-day-groups'), mg=$('inc-month-groups');
     if(d) d.textContent=money(td);
     if(mt) mt.textContent=money(tm);
+    if(dg) dg.innerHTML=groupsHtml(S.dayP);
+    if(mg) mg.innerHTML=groupsHtml(S.monthP);
     if(dp) dp.innerHTML=partsHtml(S.dayP);
     if(mp) mp.innerHTML=partsHtml(S.monthP);
   }
@@ -5445,7 +5512,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       var lab='';
       if(idx===rows.length-1) lab='今';
       else if(r.d.getDate()===1 || idx===0 || (range==='month' && r.d.getDate()%5===0)) lab=(r.d.getMonth()+1)+'/'+r.d.getDate();
-      var tip=(r.d.getMonth()+1)+'/'+r.d.getDate()+' 合计 '+money(t)+' · '+ORDER.map(function(kk){ return KINDS[kk]+' '+money(r.p[kk]); }).join(' / ');
+      var tip=(r.d.getMonth()+1)+'/'+r.d.getDate()+' 合计 '+money(t)+'（'+GNAME.regular+' '+money(subTotal(r.p,'regular'))+' / '+GNAME.occasional+' '+money(subTotal(r.p,'occasional'))+'）· '+ORDER.map(function(kk){ return KINDS[kk]+' '+money(r.p[kk]); }).join(' / ');
       html+='<div class="inc-col" title="'+tip+'"><div class="inc-stack">'+segs+'</div><span class="inc-x">'+lab+'</span></div>';
     });
     var chart=$('inc-chart');
@@ -5453,7 +5520,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     /* 统计卡与顶部两格统一由 chipTick() 每秒刷新（工资线性增长），这里只管画柱 / 列表 */
     chipTick();
     var cnt=$('cnt-income');
-    if(cnt) cnt.textContent=st().records.filter(function(r){ return String(r.date||'').slice(0,7)===todayKey.slice(0,7); }).length;
+    if(cnt) cnt.textContent=st().records.filter(function(r){ return r && r.kind!=='rent' && String(r.date||'').slice(0,7)===todayKey.slice(0,7); }).length;
     renderList();
   }
   function add(){
@@ -5463,7 +5530,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var amt=Number(($('inc-amount')&&$('inc-amount').value)||0);
     if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){ say('请选择日期','warn'); return; }
     if(!isFinite(amt)||amt<=0){ say('请填写大于 0 的金额','warn'); return; }
-    if(kind!=='sale'&&kind!=='rent'&&kind!=='part'){ say('请选择收入类型','warn'); return; }
+    if(kind!=='sale'&&kind!=='part'){ say('请选择收入类型','warn'); return; }
     st().records.push({ id:'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), date:date, kind:kind, name:name||KINDS[kind], amount:amt });
     save();
     if($('inc-name')) $('inc-name').value='';
@@ -5490,9 +5557,22 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   var go=$('inc-go-salary');
   if(go) go.addEventListener('click',function(){ if(typeof setActiveMod==='function') setActiveMod('lifedash',true); });
   var ls=$('ld-salary'); if(ls) ls.addEventListener('input',render);   /* 改工资 → 收入统计立刻跟着变 */
+  var rentIn=$('inc-rent');
+  if(rentIn){
+    rentIn.value = st().rentMonthly ? String(st().rentMonthly) : '';
+    rentIn.addEventListener('input',function(){
+      var v=Number(rentIn.value); st().rentMonthly=(isFinite(v)&&v>0)?v:0;
+      save(); render();
+    });
+  }
   if($('inc-date')) $('inc-date').value=ymd(new Date());
   var lg=$('inc-legend');
-  if(lg) lg.innerHTML=ORDER.map(function(k){ return '<span class="inc-part"><i style="background:'+COLOR[k]+'"></i>'+KINDS[k]+'</span>'; }).join('');
+  if(lg) lg.innerHTML=
+    '<span class="inc-lg-t">'+GNAME.regular+'</span>'+
+    ['wage','rent'].map(function(k){ return '<span class="inc-part"><i style="background:'+COLOR[k]+'"></i>'+KINDS[k]+'</span>'; }).join('')+
+    '<i class="inc-lg-sep"></i>'+
+    '<span class="inc-lg-t">'+GNAME.occasional+'</span>'+
+    ['part','sale'].map(function(k){ return '<span class="inc-part"><i style="background:'+COLOR[k]+'"></i>'+KINDS[k]+'</span>'; }).join('');
   render();
   setInterval(render,30000);   /* 图表 / 统计卡 / 记录列表：30 秒重建一次 */
   setInterval(chipTick,1000);  /* 顶部两格：跟工资一样每秒线性涨 */
