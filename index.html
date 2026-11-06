@@ -1338,7 +1338,8 @@
       <!-- 生活区 -->
       <button class="stat" data-mod="income" id="inc-day-chip" title="今日收入：点击查看明细"><span class="stat-n" id="inc-chip-day">¥0</span><span class="stat-l">今日收入</span></button>
       <button class="stat" data-mod="income" id="inc-month-chip" title="本月收入：点击查看明细"><span class="stat-n" id="inc-chip-month">¥0</span><span class="stat-l">本月收入</span></button>
-      <button class="stat" data-mod="lifedash" id="ld-time-chip" title="时间流逝：点击查看/设置"><span class="stat-n" id="ld-time-n">0.0%</span><span class="stat-l">时间流逝</span></button>
+      <button class="stat" data-mod="lifedash" id="ld-time-chip" title="今日流逝：点击查看/设置"><span class="stat-n" id="ld-time-n">0.0%</span><span class="stat-l">今日流逝</span></button>
+      <button class="stat" data-mod="lifedash" id="ld-month-chip" title="本月流逝：点击查看/设置"><span class="stat-n" id="ld-month-n">0.0%</span><span class="stat-l">本月流逝</span></button>
       <button class="stat stat-new" data-mod="note-biz" data-page-node-id="biz-stat-1" style="display:none"><span class="stat-n" id="st-biz">0</span><span class="stat-l">商务</span></button>
       <button class="stat" data-mod="calendar" id="cal-block" title="实时日历"><span class="stat-n" id="cal-time">--:--:--</span><span class="stat-l" id="cal-date">--/--</span></button>
     </div>
@@ -1601,9 +1602,9 @@
         <span class="rh-arrow" aria-hidden="true" data-page-node-id="dtUbzGy8PRVIHwuXqxflWR"><svg viewBox="0 0 16 16" data-page-node-id="H8CW0vvqdW31a04OT5sGrd"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="uSr23nhA5NxOWHXjETgOAr"/></svg></span>
       </div>
       <div class="region region-life" data-region="life" data-page-node-id="xnn4uloLsE9BOClHQUqNDw">
-      <!-- 生活仪表：实时工资 + 时间流逝（参数只填「月到手工资」；作息可改） -->
+      <!-- 生活仪表：实时工资 + 今日流逝 / 本月流逝（参数只填「月到手工资」；作息可改） -->
       <section class="panel" id="p-lifedash">
-        <div class="p-head"><span class="pmod">⏱️</span><h2>生活仪表</h2><span class="hint">实时工资 · 时间流逝</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="p-head"><span class="pmod">⏱️</span><h2>生活仪表</h2><span class="hint">实时工资 · 今日流逝 · 本月流逝</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
         <div class="p-body">
           <div class="ld-set">
             <label class="ld-f"><span>月到手工资</span><input type="number" id="ld-salary" min="0" step="100" placeholder="如 12000" inputmode="decimal"></label>
@@ -1623,6 +1624,7 @@
               <div class="ld-v" id="ld-pct">0.0%</div>
               <div class="ld-bar"><i id="ld-bar-fill"></i></div>
               <div class="ld-sub" id="ld-window">07:00 → 23:00</div>
+              <div class="ld-sub" id="ld-month-sub">本月日历已过 0.0%</div>
             </div>
           </div>
         </div>
@@ -5282,7 +5284,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261106-1754').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261106-1807').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5296,7 +5298,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261106-1754 (单机)';
+    var V = '20261106-1807 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5310,7 +5312,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   })();
 </script>
 <script id="ld-script">
-/* ===== 生活仪表：实时工资 + 时间流逝（单机版 2026-11-06） ===== */
+/* ===== 生活仪表：实时工资 + 今日流逝 / 本月流逝（单机版 2026-11-06） ===== */
 (function(){
   var $ = function(id){ return document.getElementById(id); };
   function cfg(){
@@ -5349,7 +5351,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     setT("ld-day", "每天 "+money(c.salary/days));
     setT("ld-formula", "当月 "+days+" 个自然日 · 每天 "+money(c.salary/days)+" · 全天按 24 小时（86400 秒）计");
 
-    /* 时间流逝：起床 → 睡觉 这段清醒时间已过去的比例 */
+    /* 今日流逝：起床 → 睡觉 这段清醒时间已过去的比例（原「时间流逝」口径不变，仅改名） */
     var w=hhmm2min(c.wake), s=hhmm2min(c.sleep);
     var end = s>w ? s : s+1440;                            /* 跨零点作息（如 23:00→07:00）顺延到次日 */
     var span = end-w;
@@ -5363,8 +5365,14 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var bar=$("ld-bar-fill"); if(bar) bar.style.width=pct.toFixed(1)+"%";
     /* 顶部收入两格的数值与说明由 inc-script 维护（含工资以外的录入收入） */
     var chip2=$("ld-time-chip"); if(chip2) chip2.title=c.wake+" → "+c.sleep+" 已流逝 "+pct.toFixed(1)+"% · 点击设置";
+
+    /* 本月流逝：自然月日历进度，含当天已过的实时秒数（与「本月收入」的时间口径一致） */
+    var monthPct = days>0 ? Math.max(0, Math.min(100, ((now.getDate()-1) + secOfDay/86400)/days*100)) : 0;
+    setT("ld-month-n", monthPct.toFixed(1)+"%");
+    setT("ld-month-sub", "本月日历已过 "+monthPct.toFixed(1)+"% · 共 "+days+" 天");
+    var chip3=$("ld-month-chip"); if(chip3) chip3.title="本月共 "+days+" 天，已过 "+monthPct.toFixed(1)+"%（按自然月日历进度，含今天实时）· 点击设置";
   }
-  /* 顶部格点击由全局委托 setActiveMod(data-mod) 统一处理：收入两格 → 收入面板，时间流逝 → 生活仪表 */
+  /* 顶部格点击由全局委托 setActiveMod(data-mod) 统一处理：收入两格 → 收入面板，今日流逝/本月流逝 → 生活仪表 */
   tick();
   setInterval(tick, 1000);
   document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible") tick(); });
