@@ -1198,6 +1198,30 @@
 .pact-pop .pact-btn+.pact-btn{margin-top:2px}
 .icon-btn.pact{min-width:30px;padding:3px 9px;font-size:14px;line-height:1.2}
 </style>
+<style id="ld-style">
+  .stat.stat-live{min-width:66px}
+  .stat.stat-live .stat-n{font-size:14px;letter-spacing:-.2px;white-space:nowrap}
+  .stat.stat-live .stat-l{font-size:10px}
+  .ld-set{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .ld-f{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);white-space:nowrap}
+  .ld-f input{border:1px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;min-width:0}
+  .ld-f input[type=number]{width:110px}
+  .ld-f input[type=time]{width:96px}
+  .ld-note{font-size:11px;color:var(--ink3);margin-bottom:12px}
+  .ld-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+  .ld-card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+  .ld-k{font-size:11px;color:var(--ink3)}
+  .ld-v{font-family:"Sora",sans-serif;font-size:22px;font-weight:700;color:var(--ink);line-height:1.35;margin-top:2px;letter-spacing:-.4px}
+  .ld-sub{font-size:11px;color:var(--ink3);margin-top:2px}
+  .ld-bar{height:6px;border-radius:99px;background:var(--line2);overflow:hidden;margin-top:9px}
+  .ld-bar i{display:block;height:100%;width:0;background:var(--brand);opacity:.55;transition:width .5s linear}
+  /* 手机顶栏格子密：两格数值压小一点，避免金额被截断 / 顶栏撑成多排 */
+  @media (max-width:820px){
+    .stat.stat-live{min-width:44px;padding-left:2px;padding-right:2px}
+    .stat.stat-live .stat-n{font-size:11px}
+    .stat.stat-live .stat-l{font-size:9px}
+  }
+</style>
 </head>
 <body data-page-node-id="AV2oOpzl66jAbdXl4FAQ1J">
   <header class="topbar" data-page-node-id="p5SBCm7PrsVRtvdwvT4Gkr">
@@ -1251,8 +1275,8 @@
       <!-- 战略区 -->
       <button class="stat" data-mod="note-daily" data-page-node-id="Ez4F1DHpSXgSFnuIPHmXh8"><span class="stat-n" id="st-daily" data-page-node-id="4kHJeNvMd3mXlaNQ2POMLR">0</span><span class="stat-l" data-page-node-id="uDRyI7anU3GBXBxgCBvIGz">今日成长</span></button>
       <button class="stat stat-new" data-mod="asset" data-page-node-id="asset-stat-1"><span class="stat-n" id="st-asset">0</span><span class="stat-l">数字资产</span></button>
-      <button class="stat" data-mod="vision" data-page-node-id="vision-stat-1"><span class="stat-n" id="st-vision" data-page-node-id="vision-stat-2">0</span><span class="stat-l" data-page-node-id="vision-stat-3">愿景</span></button>
-      <button class="stat stat-new" data-mod="strategy" data-page-node-id="strategy-stat-1"><span class="stat-n" id="st-strategy">0</span><span class="stat-l">战略</span></button>
+      <button class="stat" data-mod="vision" data-page-node-id="vision-stat-1" style="display:none"><span class="stat-n" id="st-vision" data-page-node-id="vision-stat-2">0</span><span class="stat-l" data-page-node-id="vision-stat-3">愿景</span></button>
+      <button class="stat stat-new" data-mod="strategy" data-page-node-id="strategy-stat-1" style="display:none"><span class="stat-n" id="st-strategy">0</span><span class="stat-l">战略</span></button>
       <button class="stat" data-mod="idea" data-page-node-id="idea-stat-1"><span class="stat-n" id="st-idea">0</span><span class="stat-l">灵感</span></button>
       <button class="stat" data-mod="goal" data-page-node-id="HSbr8JKm3FYDYIBVowOFiY"><span class="stat-n" id="st-goal" data-page-node-id="0JN9DzjEkzoojpeCLvRGfw">0</span><span class="stat-l" data-page-node-id="f9WRvudBuixUkBMGlcCnU2">目标</span></button>
       <button class="stat stat-new" data-mod="decomp" data-page-node-id="decomp-stat-1"><span class="stat-n" id="st-decomp">0</span><span class="stat-l">目标分解</span></button>
@@ -1263,7 +1287,9 @@
       <button class="stat stat-new" data-mod="routine" data-page-node-id="routine-stat-1"><span class="stat-n" id="st-routine">0</span><span class="stat-l">每日</span></button>
       <button class="stat stat-new" data-mod="done" data-page-node-id="done-stat-1"><span class="stat-n" id="st-done">0</span><span class="stat-l">已击败</span></button>
       <!-- 生活区 -->
-      <button class="stat stat-new" data-mod="note-biz" data-page-node-id="biz-stat-1"><span class="stat-n" id="st-biz">0</span><span class="stat-l">商务</span></button>
+      <button class="stat stat-live" data-mod="lifedash" id="ld-wage-chip" title="实时工资：点击查看/设置"><span class="stat-n" id="ld-wage-n">¥0.00</span><span class="stat-l">实时工资</span></button>
+      <button class="stat stat-live" data-mod="lifedash" id="ld-time-chip" title="时间流逝：点击查看/设置"><span class="stat-n" id="ld-time-n">0.0%</span><span class="stat-l">时间流逝</span></button>
+      <button class="stat stat-new" data-mod="note-biz" data-page-node-id="biz-stat-1" style="display:none"><span class="stat-n" id="st-biz">0</span><span class="stat-l">商务</span></button>
       <button class="stat" data-mod="note-life" title="生活备忘录"><span class="stat-n" id="st-life">0</span><span class="stat-l">备忘录</span></button>
       <button class="stat" data-mod="calendar" id="cal-block" title="实时日历"><span class="stat-n" id="cal-time">--:--:--</span><span class="stat-l" id="cal-date">--/--</span></button>
     </div>
@@ -1525,6 +1551,32 @@
         <span class="rh-arrow" aria-hidden="true" data-page-node-id="dtUbzGy8PRVIHwuXqxflWR"><svg viewBox="0 0 16 16" data-page-node-id="H8CW0vvqdW31a04OT5sGrd"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="uSr23nhA5NxOWHXjETgOAr"/></svg></span>
       </div>
       <div class="region region-life" data-region="life" data-page-node-id="xnn4uloLsE9BOClHQUqNDw">
+      <!-- 生活仪表：实时工资 + 时间流逝（参数只填「月到手工资」；作息可改） -->
+      <section class="panel" id="p-lifedash">
+        <div class="p-head"><span class="pmod">⏱️</span><h2>生活仪表</h2><span class="hint">实时工资 · 时间流逝</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="p-body">
+          <div class="ld-set">
+            <label class="ld-f"><span>月到手工资</span><input type="number" id="ld-salary" min="0" step="100" placeholder="如 12000" inputmode="decimal"></label>
+            <label class="ld-f"><span>起床</span><input type="time" id="ld-wake" value="07:00"></label>
+            <label class="ld-f"><span>睡觉</span><input type="time" id="ld-sleep" value="23:00"></label>
+          </div>
+          <div class="ld-note" id="ld-formula">当月自然日天数跟随系统，全天按 24 小时计。</div>
+          <div class="ld-cards">
+            <div class="ld-card">
+              <div class="ld-k">今日已入账</div>
+              <div class="ld-v" id="ld-today">¥0.00</div>
+              <div class="ld-sub" id="ld-rate">每秒 ¥0.000000</div>
+              <div class="ld-sub" id="ld-day">每天 ¥0.00</div>
+            </div>
+            <div class="ld-card">
+              <div class="ld-k">清醒时间已流逝</div>
+              <div class="ld-v" id="ld-pct">0.0%</div>
+              <div class="ld-bar"><i id="ld-bar-fill"></i></div>
+              <div class="ld-sub" id="ld-window">07:00 → 23:00</div>
+            </div>
+          </div>
+        </div>
+      </section>
       <!-- 生活类笔记模块（商务 + 生活备忘录） -->
       <!-- key day：生活大区倒计日模块（置于商务之前） -->
       <section class="panel" id="p-keyday" data-page-node-id="kd-pan-1">
@@ -5137,14 +5189,13 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       try { window.location.reload(); } catch (e) {}
     });
 
-    // 一次性「清缓存自愈」：把本机残留的旧 SW 与旧 cache storage 全部注销/删除后重载一次，
-    // 彻底排除「设备上的旧 SW 一直拦截并用旧 HTML 兜底」的情况。
-    // 用 localStorage 标记保证只做一次，不会循环；之后正常注册新 SW（离线能力不受影响）。
-      // 单机版：不再执行「注销全部 SW / 删除全部缓存」的清缓存逻辑
-      // （继承自联网版，会在同 origin 下误伤军机处等其它 App 的 SW/缓存；单机版缓存名已独立隔离，无需此操作）
+    // 单机版：不执行联网版「注销全部 SW / 删除全部缓存」的清缓存逻辑
+    // （同 origin 下会误伤其它 App 的 SW/缓存；本版缓存名已独立隔离，无需此操作）
+    window.addEventListener('load', function () {
+      // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261104-1530').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261106-1530').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5158,7 +5209,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261014-1604';
+    var V = '20261106-1530 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5170,6 +5221,67 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     window.addEventListener('resize', paint);
     window.addEventListener('orientationchange', function () { setTimeout(paint, 400); });
   })();
+</script>
+<script id="ld-script">
+/* ===== 生活仪表：实时工资 + 时间流逝（单机版 2026-11-06） ===== */
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  function cfg(){
+    if(!state.lifeDash || typeof state.lifeDash!=="object") state.lifeDash={salary:0,wake:"07:00",sleep:"23:00"};
+    var c=state.lifeDash;
+    if(typeof c.salary!=="number" || !isFinite(c.salary) || c.salary<0) c.salary=0;
+    if(!/^\d{1,2}:\d{2}$/.test(c.wake||"")) c.wake="07:00";
+    if(!/^\d{1,2}:\d{2}$/.test(c.sleep||"")) c.sleep="23:00";
+    return c;
+  }
+  var c0=cfg();   /* 只用于输入框初值；之后一律 cfg() 现取，防止 IDB 异步恢复把 state 整个换掉后引用失效 */
+  var sIn=$("ld-salary"), wIn=$("ld-wake"), pIn=$("ld-sleep");
+  if(sIn) sIn.value = c0.salary ? String(c0.salary) : "";
+  if(wIn) wIn.value = c0.wake;
+  if(pIn) pIn.value = c0.sleep;
+  function saveCfg(){ if(typeof save==="function") save(); }
+  if(sIn) sIn.addEventListener("input", function(){ var c=cfg(); c.salary=Math.max(0,Number(sIn.value)||0); saveCfg(); tick(); });
+  if(wIn) wIn.addEventListener("change", function(){ var c=cfg(); c.wake=/^\d{1,2}:\d{2}$/.test(wIn.value)?wIn.value:"07:00"; saveCfg(); tick(); });
+  if(pIn) pIn.addEventListener("change", function(){ var c=cfg(); c.sleep=/^\d{1,2}:\d{2}$/.test(pIn.value)?pIn.value:"23:00"; saveCfg(); tick(); });
+
+  function hhmm2min(s){ var m=/^(\d{1,2}):(\d{2})$/.exec(s||""); return m ? (+m[1])*60+(+m[2]) : 0; }
+  function money(n){ return "¥"+n.toFixed(2); }
+  function setT(id,v){ var e=$(id); if(e && e.textContent!==v) e.textContent=v; }
+
+  function tick(){
+    var c=cfg();   /* 每次现取，兼容异步恢复 / 导入备份后 state 被整体替换 */
+    var now=new Date();
+    /* 当月自然日天数：下个月第 0 天 = 本月最后一天 */
+    var days=new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+    var perSec = days>0 ? c.salary/days/86400 : 0;       /* 全天按 24 小时 = 86400 秒 */
+    var secOfDay = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds() + now.getMilliseconds()/1000;
+    var earned = perSec*secOfDay;                          /* 当日 0 点起累计，实时增长 */
+    setT("ld-wage-n", money(earned));
+    setT("ld-today", money(earned));
+    setT("ld-rate", "每秒 ¥"+perSec.toFixed(6));
+    setT("ld-day", "每天 "+money(c.salary/days));
+    setT("ld-formula", "当月 "+days+" 个自然日 · 每天 "+money(c.salary/days)+" · 全天按 24 小时（86400 秒）计");
+
+    /* 时间流逝：起床 → 睡觉 这段清醒时间已过去的比例 */
+    var w=hhmm2min(c.wake), s=hhmm2min(c.sleep);
+    var end = s>w ? s : s+1440;                            /* 跨零点作息（如 23:00→07:00）顺延到次日 */
+    var span = end-w;
+    var cur = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
+    var cur2 = (s<=w && cur<s) ? cur+1440 : cur;           /* 跨零点且当前在凌晨 → 归到同一起点 */
+    var passed = cur2-w;
+    var pct = span>0 ? Math.max(0, Math.min(100, passed/span*100)) : 0;
+    setT("ld-time-n", pct.toFixed(1)+"%");
+    setT("ld-pct", pct.toFixed(1)+"%");
+    setT("ld-window", c.wake+" → "+c.sleep);
+    var bar=$("ld-bar-fill"); if(bar) bar.style.width=pct.toFixed(1)+"%";
+    var chip=$("ld-wage-chip"); if(chip) chip.title="月到手 "+money(c.salary)+" / 当月 "+days+" 天 / 每秒 ¥"+perSec.toFixed(6)+" · 点击设置";
+    var chip2=$("ld-time-chip"); if(chip2) chip2.title=c.wake+" → "+c.sleep+" 已流逝 "+pct.toFixed(1)+"% · 点击设置";
+  }
+  /* 顶部两格点击由全局委托 setActiveMod(data-mod="lifedash") 统一处理 → 打开「生活仪表」面板 */
+  tick();
+  setInterval(tick, 1000);
+  document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible") tick(); });
+})();
 </script>
 </body>
 </html>
