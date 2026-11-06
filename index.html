@@ -1199,9 +1199,6 @@
 .icon-btn.pact{min-width:30px;padding:3px 9px;font-size:14px;line-height:1.2}
 </style>
 <style id="ld-style">
-  .stat.stat-live{min-width:66px}
-  .stat.stat-live .stat-n{font-size:14px;letter-spacing:-.2px;white-space:nowrap}
-  .stat.stat-live .stat-l{font-size:10px}
   .ld-set{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
   .ld-f{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);white-space:nowrap}
   .ld-f input{border:1px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;min-width:0}
@@ -1215,25 +1212,13 @@
   .ld-sub{font-size:11px;color:var(--ink3);margin-top:2px}
   .ld-bar{height:6px;border-radius:99px;background:var(--line2);overflow:hidden;margin-top:9px}
   .ld-bar i{display:block;height:100%;width:0;background:var(--brand);opacity:.55;transition:width .5s linear}
-  /* 手机顶栏格子密：两格数值压小一点，避免金额被截断 / 顶栏撑成多排 */
+  /* 2026-11-06 第五轮：取消收入格的放大/淡底/品牌色，顶栏所有格子统一常规显示 */
+  .topbar-stats .stat{min-width:46px;padding:3px 5px;border-radius:10px}
+  .topbar-stats .stat .stat-n{font-size:12px}
+  .topbar-stats .stat .stat-l{font-size:9.5px}
   @media (max-width:820px){
-    .stat.stat-live{min-width:44px;padding-left:2px;padding-right:2px}
-    .stat.stat-live .stat-n{font-size:11px}
-    .stat.stat-live .stat-l{font-size:9px}
-  }
-  /* 2026-11-06 第三轮：两格收入放大显眼（只显示整数），其余格适当收小 */
-  .stat.stat-income{min-width:84px;padding:5px 9px;border-radius:11px;background:var(--brand-soft);border-color:#dfe2fb}
-  .stat.stat-income .stat-n{font-size:16px;font-weight:700;color:var(--brand);letter-spacing:-.4px;line-height:1.05;white-space:nowrap}
-  .stat.stat-income .stat-l{font-size:10px;color:var(--ink2);font-weight:600}
-  .stat.stat-income.active{background:#e6e8ff;border-color:var(--brand);box-shadow:0 6px 16px rgba(79,70,229,.14)}
-  .topbar-stats .stat:not(.stat-income){min-width:46px;padding:3px 5px;border-radius:10px}
-  .topbar-stats .stat:not(.stat-income) .stat-n{font-size:12px}
-  .topbar-stats .stat:not(.stat-income) .stat-l{font-size:9.5px}
-  @media (max-width:820px){
-    .stat.stat-income{min-width:68px;padding:4px 6px}
-    .stat.stat-income .stat-n{font-size:13px}
-    .topbar-stats .stat:not(.stat-income){min-width:40px;padding:3px 3px}
-    .topbar-stats .stat:not(.stat-income) .stat-n{font-size:11px}
+    .topbar-stats .stat{min-width:40px;padding:3px 3px}
+    .topbar-stats .stat .stat-n{font-size:11px}
   }
 </style>
 <style id="inc-style">
@@ -1351,9 +1336,9 @@
       <button class="stat stat-new" data-mod="routine" data-page-node-id="routine-stat-1" style="display:none"><span class="stat-n" id="st-routine">0</span><span class="stat-l">每日</span></button>
       <button class="stat stat-new" data-mod="done" data-page-node-id="done-stat-1" style="display:none"><span class="stat-n" id="st-done">0</span><span class="stat-l">已击败</span></button>
       <!-- 生活区 -->
-      <button class="stat stat-income" data-mod="income" id="inc-day-chip" title="今日收入：点击查看明细"><span class="stat-n" id="inc-chip-day">¥0</span><span class="stat-l">今日收入</span></button>
-      <button class="stat stat-income" data-mod="income" id="inc-month-chip" title="本月收入：点击查看明细"><span class="stat-n" id="inc-chip-month">¥0</span><span class="stat-l">本月收入</span></button>
-      <button class="stat stat-live" data-mod="lifedash" id="ld-time-chip" title="时间流逝：点击查看/设置"><span class="stat-n" id="ld-time-n">0.0%</span><span class="stat-l">时间流逝</span></button>
+      <button class="stat" data-mod="income" id="inc-day-chip" title="今日收入：点击查看明细"><span class="stat-n" id="inc-chip-day">¥0</span><span class="stat-l">今日收入</span></button>
+      <button class="stat" data-mod="income" id="inc-month-chip" title="本月收入：点击查看明细"><span class="stat-n" id="inc-chip-month">¥0</span><span class="stat-l">本月收入</span></button>
+      <button class="stat" data-mod="lifedash" id="ld-time-chip" title="时间流逝：点击查看/设置"><span class="stat-n" id="ld-time-n">0.0%</span><span class="stat-l">时间流逝</span></button>
       <button class="stat stat-new" data-mod="note-biz" data-page-node-id="biz-stat-1" style="display:none"><span class="stat-n" id="st-biz">0</span><span class="stat-l">商务</span></button>
       <button class="stat" data-mod="calendar" id="cal-block" title="实时日历"><span class="stat-n" id="cal-time">--:--:--</span><span class="stat-l" id="cal-date">--/--</span></button>
     </div>
@@ -5297,7 +5282,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261106-1748').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261106-1754').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5311,7 +5296,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261106-1748 (单机)';
+    var V = '20261106-1754 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
