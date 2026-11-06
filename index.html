@@ -1222,6 +1222,44 @@
     .stat.stat-live .stat-l{font-size:9px}
   }
 </style>
+<style id="inc-style">
+  .inc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:10px}
+  .inc-card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+  .inc-k{font-size:11px;color:var(--ink3)}
+  .inc-total{font-family:"Sora",sans-serif;font-size:22px;font-weight:700;color:var(--ink);line-height:1.35;margin-top:2px;letter-spacing:-.4px}
+  .inc-parts{display:flex;flex-wrap:wrap;gap:3px 10px;margin-top:6px}
+  .inc-part{font-size:10.5px;color:var(--ink2);white-space:nowrap}
+  .inc-part i{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:4px;vertical-align:middle}
+  .inc-note{font-size:11px;color:var(--ink3);margin-bottom:10px}
+  .inc-link{border:0;background:none;color:var(--brand);font:inherit;font-size:11px;cursor:pointer;padding:0 2px}
+  .inc-add{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .inc-add input,.inc-add select{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;appearance:none;-webkit-appearance:none;min-width:0}
+  .inc-add input[type=date]{width:132px}
+  .inc-add select{width:100px}
+  .inc-add #inc-name{flex:1 1 150px;min-width:120px}
+  .inc-add #inc-amount{width:110px}
+  .inc-btn{border:1px solid var(--line);background:var(--brand-soft);color:var(--brand);border-radius:8px;padding:6px 12px;font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap}
+  .inc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+  .inc-title{font-size:12px;color:var(--ink2)}
+  .inc-r{border:0;background:none;color:var(--ink3);font:inherit;font-size:11px;cursor:pointer;padding:2px 7px;border-radius:6px}
+  .inc-r.on{background:var(--brand-soft);color:var(--brand)}
+  .inc-chart{overflow-x:auto;padding:2px 0}
+  .inc-plot{display:flex;align-items:flex-end;gap:3px;min-width:min-content}
+  .inc-col{flex:1 1 0;min-width:14px;height:150px;display:flex;flex-direction:column;justify-content:flex-end}
+  .inc-stack{display:flex;flex-direction:column-reverse;justify-content:flex-start;flex:1;align-items:stretch}
+  .inc-seg{display:block;flex:none;width:100%}
+  .inc-x{height:15px;line-height:15px;text-align:center;font-size:9px;color:var(--ink3);white-space:nowrap}
+  .inc-max{font-size:10px;color:var(--ink3);margin-top:2px}
+  .inc-legend{display:flex;flex-wrap:wrap;gap:3px 12px;margin-top:8px}
+  .inc-list{margin-top:12px;border-top:1px solid var(--line2);padding-top:6px}
+  .inc-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line2);font-size:12px;color:var(--ink2)}
+  .inc-d{color:var(--ink3);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .inc-tag{font-size:10px;color:var(--ink2);background:var(--line2);border-radius:4px;padding:1px 5px;white-space:nowrap}
+  .inc-n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .inc-a{font-weight:600;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .inc-del{border:0;background:none;color:var(--ink3);font:inherit;font-size:11px;cursor:pointer;padding:2px 4px}
+  .inc-empty{font-size:11.5px;color:var(--ink3);padding:8px 0}
+</style>
 </head>
 <body data-page-node-id="AV2oOpzl66jAbdXl4FAQ1J">
   <header class="topbar" data-page-node-id="p5SBCm7PrsVRtvdwvT4Gkr">
@@ -1342,6 +1380,7 @@
           <span class="gh-arrow" aria-hidden="true" data-page-node-id="moasPcQsuAnR8GT4XOoEAC"><svg viewBox="0 0 16 16" data-page-node-id="waQFFNbsTjrwzzhheuAFpi"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="w5yZjLiQs7SSnFXRQWOWWT"/></svg></span>
         </button>
         <div class="mod-group-body" data-page-node-id="KDc2UAatJRa4EHzlANBZgm">
+          <button class="mod-tab" data-mod="income" data-sort-key="life"><span class="t-ico">💰</span><span class="t-name">收入<span class="t-hint">工资 · 资产 · 兼职</span></span><span class="t-cnt" id="cnt-income">0</span></button>
           <button class="mod-tab" data-mod="keyday" data-sort-key="life" data-page-node-id="kd-nav-1"><span class="t-ico" data-page-node-id="kd-nav-2">📅</span><span class="t-name" data-page-node-id="kd-nav-3">key day<span class="t-hint" data-page-node-id="kd-nav-4">倒计日</span></span><span class="t-cnt" id="cnt-keyday" data-page-node-id="kd-nav-5">0</span></button>
           <button class="mod-tab" data-mod="note-biz" data-sort-key="life" data-page-node-id="E8h5VI4UGIlARNThRLmHSW"><span class="t-ico" data-page-node-id="oknFOBg1jZMUSXpoHkpAqG">💼</span><span class="t-name" data-page-node-id="20vCCWevyxIlrkAtouGt5q">商务<span class="t-hint" data-page-node-id="EQbuN0u8llthtFAPvy1ajD">客户·会议·跟进</span></span><span class="t-cnt" id="cnt-note-biz" data-page-node-id="wzkW24TUAKNGTVoDUnE9L8">0</span></button>
           <button class="mod-tab" data-mod="note-life" data-sort-key="life" data-page-node-id="i1svWFqURQPyTdYFifxQIO"><span class="t-ico" data-page-node-id="DBCBaA1xVYfHtEfAlSFMsA">📝</span><span class="t-name" data-page-node-id="zEUxg2hD6dYHDsHdMFEAF5">生活备忘录<span class="t-hint" data-page-node-id="x6BiBTvjJaDbTSnmHSYvHl">随手记</span></span><span class="t-cnt" id="cnt-note-life" data-page-node-id="v62pF11iTZNdGwm5pEsqbq">0</span></button>
@@ -1575,6 +1614,36 @@
               <div class="ld-sub" id="ld-window">07:00 → 23:00</div>
             </div>
           </div>
+        </div>
+      </section>
+      <!-- 收入模块：工资线性 + 资产/兼职按次录入 + 每日柱状图 -->
+      <section class="panel" id="p-income">
+        <div class="p-head"><span class="pmod">💰</span><h2>收入</h2><span class="hint">工资 · 资产 · 兼职</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="p-body">
+          <div class="inc-cards">
+            <div class="inc-card">
+              <div class="inc-k">今日收入</div>
+              <div class="inc-total" id="inc-day-total">¥0.00</div>
+              <div class="inc-parts" id="inc-day-parts"></div>
+            </div>
+            <div class="inc-card">
+              <div class="inc-k">本月累计</div>
+              <div class="inc-total" id="inc-month-total">¥0.00</div>
+              <div class="inc-parts" id="inc-month-parts"></div>
+            </div>
+          </div>
+          <div class="inc-note">工资按「生活仪表」里的月到手工资随时间线性计入，不用录入。<button class="inc-link" id="inc-go-salary">去设置工资</button></div>
+          <div class="inc-add">
+            <input type="date" id="inc-date">
+            <select id="inc-kind"><option value="sale">资产处置</option><option value="rent">房租收入</option><option value="part">兼职收入</option></select>
+            <input id="inc-name" placeholder="名称（如：设备转让 / 11月房租 / XX 咨询）">
+            <input type="number" id="inc-amount" min="0" step="0.01" placeholder="金额" inputmode="decimal">
+            <button class="inc-btn" id="inc-add-btn">记一笔</button>
+          </div>
+          <div class="inc-head"><span class="inc-title">每日收入</span><span id="inc-range"><button class="inc-r on" data-r="30">近 30 天</button><button class="inc-r" data-r="month">本月</button></span></div>
+          <div class="inc-chart" id="inc-chart"></div>
+          <div class="inc-legend" id="inc-legend"></div>
+          <div class="inc-list" id="inc-list"></div>
         </div>
       </section>
       <!-- 生活类笔记模块（商务 + 生活备忘录） -->
@@ -5195,7 +5264,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261106-1530').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261106-1615').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5209,7 +5278,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261106-1530 (单机)';
+    var V = '20261106-1615 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5281,6 +5350,137 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   tick();
   setInterval(tick, 1000);
   document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible") tick(); });
+})();
+</script>
+<script id="inc-script">
+/* ===== 收入模块：工资线性 + 资产/兼职按次录入 + 每日堆叠柱状图（单机版 2026-11-06） ===== */
+(function(){
+  var $=function(id){ return document.getElementById(id); };
+  var KINDS={ wage:'工资', sale:'资产处置', rent:'房租收入', part:'兼职收入' };
+  var COLOR={ wage:'#c3cfe6', sale:'#e6cba4', rent:'#a9cdc1', part:'#c9b8df' };
+  var ORDER=['wage','sale','rent','part'];
+  var H=128, range='30';
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function money(n){ return '¥'+(Number(n)||0).toFixed(2); }
+  function say(t,k){ if(typeof toast==='function') toast(t,k||'ok'); }
+  /* 每次现取，兼容导入备份 / IndexedDB 异步恢复把 state 整体替换 */
+  function st(){
+    if(!state.income || typeof state.income!=='object') state.income={records:[]};
+    if(!Array.isArray(state.income.records)) state.income.records=[];
+    return state.income;
+  }
+  function salary(){ var v=state.lifeDash && Number(state.lifeDash.salary); return (isFinite(v)&&v>0)?v:0; }
+  function ymd(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function parseYmd(s){ var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||''); return m?new Date(+m[1],+m[2]-1,+m[3]):null; }
+  function daysIn(y,m){ return new Date(y,m+1,0).getDate(); }
+  function dayFrac(){ var n=new Date(); return (n.getHours()*3600+n.getMinutes()*60+n.getSeconds()+n.getMilliseconds()/1000)/86400; }
+  /* 某天工资：月薪 ÷ 该月自然日；今天按已过秒数线性累计（与顶部「实时工资」同源） */
+  function wageOf(key,isToday){
+    var d=parseYmd(key); if(!d) return 0;
+    var s=salary(); if(!s) return 0;
+    var perDay=s/daysIn(d.getFullYear(),d.getMonth());
+    return isToday?perDay*dayFrac():perDay;
+  }
+  function blank(){ return {wage:0,sale:0,rent:0,part:0}; }
+  function total(p){ return p.wage+p.sale+p.rent+p.part; }
+  function dayParts(key,isToday){
+    var p=blank(); p.wage=wageOf(key,isToday);
+    st().records.forEach(function(r){ if(r && r.date===key && p[r.kind]!==undefined) p[r.kind]+=Number(r.amount)||0; });
+    return p;
+  }
+  function partsHtml(p){
+    return ORDER.map(function(k){ return '<span class="inc-part"><i style="background:'+COLOR[k]+'"></i>'+KINDS[k]+' '+money(p[k])+'</span>'; }).join('');
+  }
+  function renderList(){
+    var box=$('inc-list'); if(!box) return;
+    var rs=st().records.slice().sort(function(a,b){ return String(b.date||'').localeCompare(String(a.date||'')) || String(b.id||'').localeCompare(String(a.id||'')); });
+    if(!rs.length){ box.innerHTML='<div class="inc-empty">还没有录入收入。工资会自动计入，其它收入用上面「记一笔」。</div>'; return; }
+    box.innerHTML=rs.slice(0,80).map(function(r){
+      return '<div class="inc-row"><span class="inc-d">'+esc(r.date)+'</span><span class="inc-tag">'+esc(KINDS[r.kind]||'其它')+'</span><span class="inc-n">'+esc(r.name||'—')+'</span><span class="inc-a">'+money(r.amount)+'</span><button class="inc-del" data-del="'+esc(r.id)+'">删除</button></div>';
+    }).join('');
+  }
+  function render(){
+    var now=new Date(), y=now.getFullYear(), m=now.getMonth(), todayKey=ymd(now);
+    var dates=[];
+    if(range==='month'){
+      for(var i=1;i<=now.getDate();i++) dates.push(new Date(y,m,i));
+    }else{
+      var base=new Date(y,m,now.getDate());
+      for(var k=29;k>=0;k--){ var d=new Date(base); d.setDate(d.getDate()-k); dates.push(d); }
+    }
+    var rows=dates.map(function(d){ var key=ymd(d); return {d:d,key:key,p:dayParts(key,key===todayKey)}; });
+    var max=1;
+    rows.forEach(function(r){ var t=total(r.p); if(t>max) max=t; });
+    var html='';
+    rows.forEach(function(r,idx){
+      var t=total(r.p), segs='';
+      ORDER.forEach(function(kk){
+        var hh=r.p[kk]>0?r.p[kk]/max*H:0;
+        if(hh>0) segs+='<i class="inc-seg" style="height:'+hh.toFixed(1)+'px;background:'+COLOR[kk]+'"></i>';
+      });
+      var lab='';
+      if(idx===rows.length-1) lab='今';
+      else if(r.d.getDate()===1 || idx===0 || (range==='month' && r.d.getDate()%5===0)) lab=(r.d.getMonth()+1)+'/'+r.d.getDate();
+      var tip=(r.d.getMonth()+1)+'/'+r.d.getDate()+' 合计 '+money(t)+' · '+ORDER.map(function(kk){ return KINDS[kk]+' '+money(r.p[kk]); }).join(' / ');
+      html+='<div class="inc-col" title="'+tip+'"><div class="inc-stack">'+segs+'</div><span class="inc-x">'+lab+'</span></div>';
+    });
+    var chart=$('inc-chart');
+    if(chart) chart.innerHTML='<div class="inc-plot">'+html+'</div><div class="inc-max">单日最高 '+money(max)+' · 柱高按金额叠加</div>';
+    /* 今日 / 本月累计：工资按天累加，今天用实时值；三项录入收入按记录的日期归集 */
+    var dayP=dayParts(todayKey,true), monthP=blank();
+    for(var j=1;j<=now.getDate();j++){
+      var kk2=ymd(new Date(y,m,j)), pp=dayParts(kk2,kk2===todayKey);
+      ORDER.forEach(function(kk){ monthP[kk]+=pp[kk]; });
+    }
+    var a=$('inc-day-total'), b=$('inc-day-parts'), c=$('inc-month-total'), e=$('inc-month-parts');
+    if(a) a.textContent=money(total(dayP));
+    if(b) b.innerHTML=partsHtml(dayP);
+    if(c) c.textContent=money(total(monthP));
+    if(e) e.innerHTML=partsHtml(monthP);
+    var cnt=$('cnt-income');
+    if(cnt) cnt.textContent=st().records.filter(function(r){ return String(r.date||'').slice(0,7)===todayKey.slice(0,7); }).length;
+    renderList();
+  }
+  function add(){
+    var date=($('inc-date')&&$('inc-date').value)||ymd(new Date());
+    var kind=$('inc-kind').value;
+    var name=(($('inc-name')&&$('inc-name').value)||'').trim();
+    var amt=Number(($('inc-amount')&&$('inc-amount').value)||0);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){ say('请选择日期','warn'); return; }
+    if(!isFinite(amt)||amt<=0){ say('请填写大于 0 的金额','warn'); return; }
+    if(kind!=='sale'&&kind!=='rent'&&kind!=='part'){ say('请选择收入类型','warn'); return; }
+    st().records.push({ id:'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), date:date, kind:kind, name:name||KINDS[kind], amount:amt });
+    save();
+    if($('inc-name')) $('inc-name').value='';
+    if($('inc-amount')) $('inc-amount').value='';
+    render(); say('已记一笔 '+money(amt),'ok');
+  }
+  var btn=$('inc-add-btn'); if(btn) btn.addEventListener('click',add);
+  ['inc-name','inc-amount'].forEach(function(id){ var el=$(id); if(el) el.addEventListener('keydown',function(ev){ if(ev.key==='Enter') add(); }); });
+  var list=$('inc-list');
+  if(list) list.addEventListener('click',function(ev){
+    var b=ev.target.closest?ev.target.closest('[data-del]'):null; if(!b) return;
+    var id=b.getAttribute('data-del'), arr=st().records;
+    for(var i=0;i<arr.length;i++){ if(String(arr[i].id)===id){ arr.splice(i,1); break; } }
+    save(); render(); say('已删除','ok');
+  });
+  var rb=$('inc-range');
+  if(rb) rb.addEventListener('click',function(ev){
+    var b=ev.target.closest?ev.target.closest('[data-r]'):null; if(!b) return;
+    range=b.getAttribute('data-r');
+    var all=rb.querySelectorAll('[data-r]');
+    for(var i=0;i<all.length;i++) all[i].classList.toggle('on',all[i]===b);
+    render();
+  });
+  var go=$('inc-go-salary');
+  if(go) go.addEventListener('click',function(){ if(typeof setActiveMod==='function') setActiveMod('lifedash',true); });
+  var ls=$('ld-salary'); if(ls) ls.addEventListener('input',render);   /* 改工资 → 收入统计立刻跟着变 */
+  if($('inc-date')) $('inc-date').value=ymd(new Date());
+  var lg=$('inc-legend');
+  if(lg) lg.innerHTML=ORDER.map(function(k){ return '<span class="inc-part"><i style="background:'+COLOR[k]+'"></i>'+KINDS[k]+'</span>'; }).join('');
+  render();
+  setInterval(render,30000);   /* 工资线性增长，30 秒刷新一次；切回前台再补一次 */
+  document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') render(); });
 })();
 </script>
 </body>
