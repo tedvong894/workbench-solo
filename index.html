@@ -1259,11 +1259,18 @@
   .inc-set-t,.inc-add-t{font-size:11px;color:var(--ink2);font-weight:600;background:var(--line2);border-radius:5px;padding:3px 7px;white-space:nowrap}
   .inc-f{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);white-space:nowrap}
   .inc-f input{border:1px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;width:120px;appearance:none;-webkit-appearance:none}
-  .inc-note2{font-size:10.5px;color:var(--ink3);line-height:1.4}
   /* 2026-11-07 第七轮：收支面板分「收入 / 支出」两段，支出段与收入段完全同构 */
   .inc-sec-t{font-size:12px;font-weight:600;color:var(--ink2);margin:2px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line2)}
   .inc-sec-t:not(:first-child){margin-top:24px}
-  /* 2026-11-07 第十六轮：3 条进度条；第1条常规(乌龟+当日深色段) / 第2条预算(预算内实际) / 第3条超预算(超出部分)。
+  /* 第十八轮：支出段可折叠；箭头低饱和、收起时旋转 */
+  .inc-sec-fold{cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between}
+  .inc-fold-ind{font-size:10px;color:var(--ink3);font-weight:400;transition:transform .18s ease}
+  .inc-sec-fold.closed .inc-fold-ind{transform:rotate(-90deg)}
+  .inc-fold-body.hidden{display:none}
+  /* 全月预算额度输入框：并入录入行，不另起一行 */
+  .inc-add-budget{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3);white-space:nowrap}
+  .inc-add-budget input{width:92px}
+  /* 2026-11-07 第十八轮：3 条进度条；第1条常规(乌龟+当日深色段) / 第2条其它(全月预算额度) / 第3条超预算(超出部分)。
      三条共用「长度=金额÷共享比例尺」，共享比例尺=两常规月度总额较高者；金额按分钟实时变动 */
   .turtle-wrap{margin:2px 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
   .tbar-grp{display:flex;align-items:center;gap:9px;margin:10px 0}
@@ -1273,7 +1280,7 @@
   .tbar-lines{flex:1 1 auto;min-width:0}
   .tbar-line{display:flex;align-items:center;gap:7px;margin:5px 0}
   .tbar-line:first-child{margin-top:16px}   /* 给乌龟上方的速度标记留位置 */
-  .tbar-tag{width:36px;flex:none;text-align:right;font-size:9px;color:var(--ink3);white-space:nowrap}
+  .tbar-tag{width:44px;flex:none;text-align:right;font-size:9px;color:var(--ink3);white-space:nowrap}
   /* 轨道：宽度恒定、吃掉剩余空间；三条长度都按金额/共享比例尺，永不跑出白框 */
   .tbar-track{position:relative;flex:1 1 auto;min-width:0;height:20px;background:var(--line2);border-radius:10px}
   /* 长度条：宽度 = 金额/比例尺，max-width:100% 硬约束 */
@@ -1284,7 +1291,7 @@
   .tbar-len.exp .tbar-fill{background:#f0c9c4}
   .tbar-len.exp .tbar-today{background:#dd9a92}
   .tbar-len.exp .tbar-occ{background:repeating-linear-gradient(45deg,#e6b4ad,#e6b4ad 5px,#dc9f97 5px,#dc9f97 10px)}
-  .tbar-len.occ .tbar-occ{left:0;width:100%}   /* 第2条整条斜纹 = 预算内实际金额 */
+  .tbar-len.occ .tbar-occ{left:0;width:100%}   /* 第2条整条斜纹 = 全月预算额度 */
   /* 第3条「超预算」：反向斜纹 + 暖色，和前两条一眼分得开（低饱和） */
   .tbar-len.inc.over .tbar-occ{background:repeating-linear-gradient(-45deg,#e8d3a8,#e8d3a8 5px,#dcc491 5px,#dcc491 10px)}
   .tbar-len.exp.over .tbar-occ{background:repeating-linear-gradient(-45deg,#e0a79f,#e0a79f 5px,#d19088 5px,#d19088 10px)}
@@ -1298,14 +1305,10 @@
     from{transform:scaleX(-1) rotate(-7deg) translateY(0)}
     to  {transform:scaleX(-1) rotate(7deg)  translateY(-2px)}
   }
-  /* 右侧：常规月度总额（固定） / 预算收入·预算支出（预算内已发生） / 超预算收入·超预算支出（超出部分） */
+  /* 右侧：常规月度总额（固定） / 预算收入·预算支出（全月预算额度） / 超预算收入·超预算支出（超出部分） */
   .tbar-spd{width:84px;flex:none;text-align:right;display:flex;flex-direction:column;line-height:1.2}
   .tbar-spd span{font-size:9.5px;color:var(--ink3)}
   .tbar-spd b{font-size:10.5px;font-weight:600;color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
-  .tbar-foot{font-size:11px;color:var(--ink3);margin-top:8px;line-height:1.5}
-  .tbar-foot b{color:var(--ink);font-variant-numeric:tabular-nums}
-  .tb-pos{color:#2f8f4e !important}
-  .tb-neg{color:#c0453a !important}
 </style>
 <style id="sk-style">
   .sk-sum{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;margin-bottom:12px}
@@ -1726,13 +1729,13 @@
           </div>
         </div>
       </section>
-      <!-- 收支模块：收入(常规/预算) + 支出(常规/预算)，两块结构相同；
-           顶部 3 条进度条 = 常规(乌龟) / 预算(预算内实际) / 超预算(超出额度)；
-           预算额度输入框分别放在下面「收入」「支出」两段的录入区（第十七轮） -->
+      <!-- 收支模块：收入(常规/其它) + 支出(常规/其它)，两块结构相同；
+           顶部 3 条进度条 = 常规(乌龟) / 其它(全月预算额度) / 超预算(超出额度)；
+           预算额度输入框并入各自录入行；支出段可折叠（第十八轮） -->
       <section class="panel" id="p-income">
         <div class="p-head"><span class="pmod">💰</span><h2>收支</h2><span class="hint">收入 · 支出</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
         <div class="p-body">
-          <!-- 2026-11-07 第十六轮：3 条 = 常规(乌龟+当日深色) / 预算(预算内实际) / 超预算(超出部分)；共享比例尺、长度=金额 -->
+          <!-- 2026-11-07 第十八轮：3 条 = 常规(乌龟+当日深色) / 其它(全月预算额度) / 超预算(超出部分)；共享比例尺、长度=金额 -->
           <div class="turtle-wrap">
             <div class="tbar-grp">
               <div class="tbar-label"><span>本月实时收入</span><b id="tb-inc-amt">¥0</b></div>
@@ -1743,7 +1746,7 @@
                   <div class="tbar-spd"><span>月度总额</span><b id="tb-inc-reg-amt">¥0</b></div>
                 </div>
                 <div class="tbar-line">
-                  <span class="tbar-tag">预算</span>
+                  <span class="tbar-tag">其它收入</span>
                   <div class="tbar-track"><div class="tbar-len inc occ" id="tb-inc-sum-len"><div class="tbar-occ" id="tb-inc-occ"></div></div></div>
                   <div class="tbar-spd"><span>预算收入</span><b id="tb-inc-occ-n">¥0.00</b></div>
                 </div>
@@ -1763,7 +1766,7 @@
                   <div class="tbar-spd"><span>月度总额</span><b id="tb-exp-reg-amt">¥0</b></div>
                 </div>
                 <div class="tbar-line">
-                  <span class="tbar-tag">预算</span>
+                  <span class="tbar-tag">其它支出</span>
                   <div class="tbar-track"><div class="tbar-len exp occ" id="tb-exp-sum-len"><div class="tbar-occ" id="tb-exp-occ"></div></div></div>
                   <div class="tbar-spd"><span>预算支出</span><b id="tb-exp-occ-n">¥0.00</b></div>
                 </div>
@@ -1774,7 +1777,6 @@
                 </div>
               </div>
             </div>
-            <div class="tbar-foot" id="tb-foot"></div>
           </div>
           <div class="inc-sec-t" id="inc-sec">收入</div>
           <div class="inc-cards">
@@ -1795,15 +1797,10 @@
             <span class="inc-set-t">常规收入</span>
             <label class="inc-f"><span>月到手工资</span><input type="number" id="ld-salary" min="0" step="100" placeholder="如 12000" inputmode="decimal"></label>
             <label class="inc-f"><span>月度房租收入</span><input type="number" id="inc-rent" min="0" step="100" placeholder="如 3000" inputmode="decimal"></label>
-            <span class="inc-note2">工资 + 房租按当月自然日 ÷ 86400 秒均匀计入、今天实时增长</span>
-          </div>
-          <div class="inc-set">
-            <span class="inc-set-t">预算收入</span>
-            <label class="inc-f"><span>本月额度</span><input type="number" id="inc-occ-budget" min="0" step="100" placeholder="如 3000" inputmode="decimal"></label>
-            <span class="inc-note2">超过额度的部分自动显示在上方第 3 条；留空 = 不设预算，全部算预算内</span>
           </div>
           <div class="inc-add">
-            <span class="inc-add-t">预算收入</span>
+            <span class="inc-add-t">其它收入</span>
+            <label class="inc-add-budget"><span>全月预算</span><input type="number" id="inc-occ-budget" min="0" step="100" placeholder="如 3000" inputmode="decimal"></label>
             <input type="date" id="inc-date">
             <select id="inc-kind"><option value="part">兼职收入</option><option value="sale">资产处置</option></select>
             <input id="inc-name" placeholder="名称（如：XX 咨询 / 设备转让）">
@@ -1812,7 +1809,8 @@
           </div>
           <div class="inc-list" id="inc-list"></div>
 
-          <div class="inc-sec-t" id="exp-sec">支出</div>
+          <div class="inc-sec-t inc-sec-fold" id="exp-sec">支出<span class="inc-fold-ind">▾</span></div>
+          <div class="inc-fold-body" id="exp-fold-body">
           <div class="inc-cards">
             <div class="inc-card">
               <div class="inc-k">今日支出</div>
@@ -1831,15 +1829,10 @@
             <span class="inc-set-t">常规支出</span>
             <label class="inc-f"><span>月度房贷</span><input type="number" id="exp-mortgage" min="0" step="100" placeholder="如 5000" inputmode="decimal"></label>
             <label class="inc-f"><span>月度抚养费</span><input type="number" id="exp-child" min="0" step="100" placeholder="如 3000" inputmode="decimal"></label>
-            <span class="inc-note2">房贷 + 抚养费按当月自然日 ÷ 86400 秒均匀计入、今天实时增长</span>
-          </div>
-          <div class="inc-set">
-            <span class="inc-set-t">预算支出</span>
-            <label class="inc-f"><span>本月额度</span><input type="number" id="exp-occ-budget" min="0" step="100" placeholder="如 5000" inputmode="decimal"></label>
-            <span class="inc-note2">超过额度的部分自动显示在上方第 3 条；留空 = 不设预算，全部算预算内</span>
           </div>
           <div class="inc-add">
-            <span class="inc-add-t">预算支出</span>
+            <span class="inc-add-t">其它支出</span>
+            <label class="inc-add-budget"><span>全月预算</span><input type="number" id="exp-occ-budget" min="0" step="100" placeholder="如 5000" inputmode="decimal"></label>
             <input type="date" id="exp-date">
             <select id="exp-kind"><option value="home">家用</option><option value="food">吃喝</option><option value="tuition">学费</option><option value="util">物业水电</option><option value="invest">投资</option></select>
             <input id="exp-name" placeholder="名称（如：超市采购 / 孩子学费）">
@@ -1847,6 +1840,7 @@
             <button class="inc-btn" id="exp-add-btn">记一笔</button>
           </div>
           <div class="inc-list" id="exp-list"></div>
+          </div>
         </div>
       </section>
       <!-- 生活类笔记模块（商务 + 生活备忘录） -->
@@ -5467,7 +5461,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261107-1440').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261107-1505').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5481,7 +5475,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261107-1440 (单机)';
+    var V = '20261107-1505 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5582,12 +5576,12 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 })();
 </script>
 <script id="inc-script">
-/* ===== 收入模块：常规收入(工资/房租 均匀) + 预算收入(兼职/资产处置 按次)；第十七轮移除每日柱状图 ===== */
+/* ===== 收入模块：常规收入(工资/房租 均匀) + 其它收入(兼职/资产处置 按次)；第十八轮第2条=全月预算额度 ===== */
 (function(){
   var $=function(id){ return document.getElementById(id); };
   var KINDS={ wage:'工资', rent:'房租', part:'兼职', sale:'资产处置' };
   var GROUP={ wage:'regular', rent:'regular', part:'occasional', sale:'occasional' };
-  var GNAME={ regular:'常规收入', occasional:'预算收入' };
+  var GNAME={ regular:'常规收入', occasional:'其它收入' };
   var COLOR={ wage:'#c3cfe6', rent:'#a9cdc1', part:'#c9b8df', sale:'#e6cba4' };
   var ORDER=['wage','rent','part','sale'];
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -5600,7 +5594,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var o=state.income;
     if(!Array.isArray(o.records)) o.records=[];
     if(typeof o.rentMonthly!=='number' || !isFinite(o.rentMonthly) || o.rentMonthly<0) o.rentMonthly=0;
-    /* 预算收入额度（0 = 未设预算，全部算预算内） */
+    /* 其它收入的全月预算额度（0 = 未设预算） */
     if(typeof o.occBudget!=='number' || !isFinite(o.occBudget) || o.occBudget<0) o.occBudget=0;
     /* 一次性迁移：旧版「房租按次录入」的记录改成月度房租参数（取最近有记录月份的合计），
        从列表移除，避免房租既按笔又均匀计入造成双算；用户数据不丢，语义等价。 */
@@ -5656,7 +5650,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   function renderList(){
     var box=$('inc-list'); if(!box) return;
     var rs=st().records.filter(function(r){ return r && r.kind!=='rent'; }).slice().sort(function(a,b){ return String(b.date||'').localeCompare(String(a.date||'')) || String(b.id||'').localeCompare(String(a.id||'')); });
-    if(!rs.length){ box.innerHTML='<div class="inc-empty">还没有预算收入。常规收入（工资 / 房租）自动计入，兼职 / 资产处置用上面「记一笔」。</div>'; return; }
+    if(!rs.length){ box.innerHTML='<div class="inc-empty">还没有其它收入。常规收入（工资 / 房租）自动计入，兼职 / 资产处置用上面「记一笔」。</div>'; return; }
     box.innerHTML=rs.slice(0,80).map(function(r){
       return '<div class="inc-row"><span class="inc-d">'+esc(r.date)+'</span><span class="inc-tag">'+esc(KINDS[r.kind]||'其它')+'</span><span class="inc-n">'+esc(r.name||'—')+'</span><span class="inc-a">'+money(r.amount)+'</span><button class="inc-del" data-del="'+esc(r.id)+'">删除</button></div>';
     }).join('');
@@ -5776,9 +5770,9 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
      导致「跨分钟乌龟不前进」；提高精度保证每分钟都能推进一小步 */
   function clampPct(v){ return Math.max(0,Math.min(100,v)).toFixed(4); }
   function money2(n){ return '¥'+(Number(n)||0).toFixed(2); }
-  /* regW=常规条宽度%、todayW=今日段宽度%、budW=预算条宽度%、overW=超预算条宽度%（均按共享比例尺）；
-     total=左侧实时总额，regM=常规月度总额，budPart=预算内已发生，over=超预算金额，speed=¥/分钟 */
-  function turtleSet(pfx, regW, todayW, budW, overW, total, regM, budPart, over, speed){
+  /* regW=常规条宽度%、todayW=今日段宽度%、budW=第2条宽度%、overW=超预算条宽度%（均按共享比例尺）；
+     total=左侧实时总额，regM=常规月度总额，budShow=全月预算额度(未设则为实际)，over=超预算金额，speed=¥/分钟 */
+  function turtleSet(pfx, regW, todayW, budW, overW, total, regM, budShow, over, speed){
     /* —— 第 1 条「常规」：填充=当前累积金额/共享比例尺，长度按绝对值；较高月度总额者满格=月度总额；乌龟立终点 —— */
     var regLen=$('tb-'+pfx+'-reg-len'), regFill=$('tb-'+pfx+'-reg-fill'), regToday=$('tb-'+pfx+'-reg-today');
     if(regLen) regLen.style.width = clampPct(regW)+'%';
@@ -5803,16 +5797,16 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
          避免压住左侧「常规」标签或右侧「月度总额」栏（窄屏同样有效） */
       ttspd.style.transform = regW<18 ? 'translateX(-20%)' : (regW>72 ? 'translateX(-80%)' : 'translateX(-50%)');
     }
-    /* —— 第 2 条「预算」：整条斜纹，长度 = 预算内实际金额/共享比例尺 —— */
+    /* —— 第 2 条「其它」：整条斜纹，长度 = 全月预算额度/共享比例尺 —— */
     var budLen=$('tb-'+pfx+'-sum-len'); if(budLen) budLen.style.width=clampPct(budW)+'%';
     var budEl=$('tb-'+pfx+'-occ'); if(budEl) budEl.style.width='100%';
     /* —— 第 3 条「超预算」：整条反向暖色斜纹，长度 = 超预算金额/共享比例尺 —— */
     var overLen=$('tb-'+pfx+'-over-len'); if(overLen) overLen.style.width=clampPct(overW)+'%';
     var overEl=$('tb-'+pfx+'-over'); if(overEl) overEl.style.width='100%';
-    /* —— 数值：左侧实时总额 / 右侧月度总额(固定) / 预算内 / 超预算，全部两位小数 —— */
+    /* —— 数值：左侧实时总额 / 右侧月度总额(固定) / 全月预算额度 / 超预算，全部两位小数 —— */
     var amt=$('tb-'+pfx+'-amt'); if(amt) amt.textContent=money2(total);
     var regAmt=$('tb-'+pfx+'-reg-amt'); if(regAmt) regAmt.textContent=money2(regM);
-    var budN=$('tb-'+pfx+'-occ-n'); if(budN) budN.textContent=money2(budPart);
+    var budN=$('tb-'+pfx+'-occ-n'); if(budN) budN.textContent=money2(budShow);
     var overN=$('tb-'+pfx+'-over-n'); if(overN) overN.textContent=money2(over);
   }
   function turtleRender(){
@@ -5823,36 +5817,29 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var todayFrac=monthMin>0 ? Math.max(0,Math.min(1,todayMin/monthMin)) : 0;  /* 今日已过比例 */
     var incRegM=salary()+rentMonthly(), incReg=incRegM*frac;
     var expRegM=expRegularMonthly(), expReg=expRegM*frac;
-    /* 实际预算类收支：按次录入的本月记录合计 */
+    /* 实际其它收支：按次录入的本月记录合计 */
     var incAct=recSum(st().records, ym, ['part','sale']);
     var expAct=recSum((state.expense&&state.expense.records)||[], ym, ['home','food','tuition','util','invest']);
-    /* 拆成「预算内」+「超预算」：额度>0 才拆，未设额度则全部算预算内（等同旧版，第3条为空） */
+    /* 第3条「超预算」只有 1 个逻辑 = 实际 − 额度的正差；未设额度则第3条为空 */
     var incBud=occBudget('inc'), expBud=occBudget('exp');
-    var incBudPart = incBud>0 ? Math.min(incAct,incBud) : incAct;
-    var incOver    = incBud>0 ? Math.max(0,incAct-incBud) : 0;
-    var expBudPart = expBud>0 ? Math.min(expAct,expBud) : expAct;
-    var expOver    = expBud>0 ? Math.max(0,expAct-expBud) : 0;
-    /* 用户指定口径：左侧实时总金额 = 常规 + 预算 + 超预算（预算内+超预算=实际，故与统计卡一致、不双算） */
-    var incTotal=incReg+incBudPart+incOver;
-    var expTotal=expReg+expBudPart+expOver;
+    var incOver = incBud>0 ? Math.max(0,incAct-incBud) : 0;
+    var expOver = expBud>0 ? Math.max(0,expAct-expBud) : 0;
+    /* 第2条右侧与长度 = 全月预算额度（未设额度则按实际发生额显示，等同旧版） */
+    var incBudShow = incBud>0 ? incBud : incAct;
+    var expBudShow = expBud>0 ? expBud : expAct;
+    /* 左侧实时总额仍 = 常规 + 实际其它收支，与统计卡 / 顶栏一致、不双算不虚增 */
+    var incTotal=incReg+incAct;
+    var expTotal=expReg+expAct;
     /* 共享比例尺 = 两常规月度总额较高者：三条长度都按「金额÷比例尺」，横向可比 */
     var regScale=Math.max(incRegM, expRegM, 1);
     var incRegW=incReg/regScale*100, incTodayW=incRegM*todayFrac/regScale*100;
-    var incBudW=incBudPart/regScale*100, incOverW=incOver/regScale*100;
+    var incBudW=incBudShow/regScale*100, incOverW=incOver/regScale*100;
     var expRegW=expReg/regScale*100, expTodayW=expRegM*todayFrac/regScale*100;
-    var expBudW=expBudPart/regScale*100, expOverW=expOver/regScale*100;
-    turtleSet('inc', incRegW, incTodayW, incBudW, incOverW, incTotal, incRegM, incBudPart, incOver, incRegM/monthMin);
-    turtleSet('exp', expRegW, expTodayW, expBudW, expOverW, expTotal, expRegM, expBudPart, expOver, expRegM/monthMin);
-    var foot=$('tb-foot');
-    if(foot){
-      var bal=incTotal-expTotal;
-      foot.innerHTML='本月实时 收入 <b>'+money2(incTotal)+'</b> · 支出 <b>'+money2(expTotal)+'</b> · '+
-        (bal>=0?'结余 <b class="tb-pos">'+money2(bal)+'</b>':'超支 <b class="tb-neg">'+money2(-bal)+'</b>')+
-        '　｜　左额 = 常规 + 预算内 + 超预算；第3条只显示超出额度的部分（🐢 第1条常规 / 第2条预算 / 第3条超预算，深处=今日已爬）'+
-        '　｜　预算额度 收入 '+(incBud>0?money2(incBud):'未设')+' / 支出 '+(expBud>0?money2(expBud):'未设');
-    }
+    var expBudW=expBudShow/regScale*100, expOverW=expOver/regScale*100;
+    turtleSet('inc', incRegW, incTodayW, incBudW, incOverW, incTotal, incRegM, incBudShow, incOver, incRegM/monthMin);
+    turtleSet('exp', expRegW, expTodayW, expBudW, expOverW, expTotal, expRegM, expBudShow, expOver, expRegM/monthMin);
   }
-  /* 预算额度输入：两个框分别位于收入 / 支出两段录入区，仍都由本 IIFE 接管（避免跨 IIFE 通信），改完立即重画 3 条 */
+  /* 全月预算额度输入：两个框内联在各自录入行，仍都由本 IIFE 接管（避免跨 IIFE 通信），改完立即重画 3 条 */
   [["inc-occ-budget","inc"],["exp-occ-budget","exp"]].forEach(function(pair){
     var el=$(pair[0]); if(!el) return;
     var o=budgetObj(pair[1]);
@@ -5873,12 +5860,12 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 })();
 </script>
 <script id="exp-script">
-/* ===== 支出模块：常规支出(房贷/抚养费 均匀) + 预算支出(家用/吃喝/学费/物业水电/投资 按次)；第十七轮移除每日柱状图 ===== */
+/* ===== 支出模块：常规支出(房贷/抚养费 均匀) + 其它支出(家用/吃喝/学费/物业水电/投资 按次)；第十八轮支出段可折叠 ===== */
 (function(){
   var $=function(id){ return document.getElementById(id); };
   var KINDS={ mortgage:"房贷", child:"抚养费", home:"家用", food:"吃喝", tuition:"学费", util:"物业水电", invest:"投资" };
   var GROUP={ mortgage:"regular", child:"regular", home:"other", food:"other", tuition:"other", util:"other", invest:"other" };
-  var GNAME={ regular:"常规支出", other:"预算支出" };
+  var GNAME={ regular:"常规支出", other:"其它支出" };
   var COLOR={ mortgage:"#b9c6df", child:"#a9cdc1", home:"#e3c9b0", food:"#e6d2a4", tuition:"#c9b8df", util:"#a8c8d8", invest:"#d8b8bf" };
   var ORDER=["mortgage","child","home","food","tuition","util","invest"];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
@@ -5926,7 +5913,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   function renderList(){
     var box=$("exp-list"); if(!box) return;
     var rs=st().records.slice().sort(function(a,b){ return String(b.date||"").localeCompare(String(a.date||"")) || String(b.id||"").localeCompare(String(a.id||"")); });
-    if(!rs.length){ box.innerHTML="<div class=\"inc-empty\">还没有预算支出。常规支出（房贷 / 抚养费）自动计入，家用 / 吃喝 / 学费 / 物业水电 / 投资用上面「记一笔」。</div>"; return; }
+    if(!rs.length){ box.innerHTML="<div class=\"inc-empty\">还没有其它支出。常规支出（房贷 / 抚养费）自动计入，家用 / 吃喝 / 学费 / 物业水电 / 投资用上面「记一笔」。</div>"; return; }
     box.innerHTML=rs.slice(0,80).map(function(r){
       return "<div class=\"inc-row\"><span class=\"inc-d\">"+esc(r.date)+"</span><span class=\"inc-tag\">"+esc(KINDS[r.kind]||"其它")+"</span><span class=\"inc-n\">"+esc(r.name||"—")+"</span><span class=\"inc-a\">"+money(r.amount)+"</span><button class=\"inc-del\" data-del=\""+esc(r.id)+"\">删除</button></div>";
     }).join("");
@@ -6003,6 +5990,18 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     });
   });
   if($("exp-date")) $("exp-date").value=ymd(new Date());
+  /* 第十八轮：点「支出」标题折叠 / 展开整个支出段；状态存独立 localStorage key，不污染 state */
+  (function(){
+    var sec=$("exp-sec"), body=$("exp-fold-body");
+    if(!sec||!body) return;
+    var FK="workbench_solo_exp_folded_v1";
+    try{ if(localStorage.getItem(FK)==="1"){ body.classList.add("hidden"); sec.classList.add("closed"); } }catch(e){}
+    sec.addEventListener("click",function(){
+      var closed=body.classList.toggle("hidden");
+      sec.classList.toggle("closed",closed);
+      try{ localStorage.setItem(FK,closed?"1":"0"); }catch(e){}
+    });
+  })();
   render();
   setInterval(render,30000);
   setInterval(chipTick,1000);
