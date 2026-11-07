@@ -1276,6 +1276,22 @@
   /* 2026-11-07 第七轮：收支面板分「收入 / 支出」两段，支出段与收入段完全同构 */
   .inc-sec-t{font-size:12px;font-weight:600;color:var(--ink2);margin:2px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line2)}
   .inc-sec-t:not(:first-child){margin-top:24px}
+  /* 2026-11-07 第十轮：收支乌龟进度条（长度=总额，乌龟=常规匀速累积，零星/其它一次性拉长） */
+  .turtle-wrap{margin:2px 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+  .tbar-row{display:flex;align-items:center;gap:10px;margin:7px 0}
+  .tbar-label{width:62px;flex:none;display:flex;flex-direction:column;line-height:1.2}
+  .tbar-label span{font-size:11px;color:var(--ink3)}
+  .tbar-label b{font-size:14px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+  .tbar{position:relative;flex:none;width:40%;height:24px;min-width:2px;background:var(--line2);border-radius:12px;overflow:hidden;transition:width .9s ease}
+  .tbar-fill{position:absolute;left:0;top:0;bottom:0;background:#cfe6cf;transition:width .9s linear}
+  .tbar-occ{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,#bcdccb,#bcdccb 5px,#aed3bf 5px,#aed3bf 10px);transition:left .9s ease,width .9s ease}
+  .tbar.exp .tbar-fill{background:#f0c9c4}
+  .tbar.exp .tbar-occ{background:repeating-linear-gradient(45deg,#e6b4ad,#e6b4ad 5px,#dc9f97 5px,#dc9f97 10px)}
+  .turtle{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:17px;line-height:1;transition:left 1s linear;z-index:2;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15))}
+  .tbar-foot{font-size:11px;color:var(--ink3);margin-top:8px;line-height:1.5}
+  .tbar-foot b{color:var(--ink);font-variant-numeric:tabular-nums}
+  .tb-pos{color:#2f8f4e !important}
+  .tb-neg{color:#c0453a !important}
 </style>
 <style id="sk-style">
   .sk-sum{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;margin-bottom:12px}
@@ -1707,6 +1723,26 @@
       <section class="panel" id="p-income">
         <div class="p-head"><span class="pmod">💰</span><h2>收支</h2><span class="hint">收入 · 支出</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
         <div class="p-body">
+          <!-- 2026-11-07 第十轮：收支乌龟进度条（长度=总额，乌龟=常规匀速累积，零星/其它一次性拉长） -->
+          <div class="turtle-wrap">
+            <div class="tbar-row">
+              <div class="tbar-label"><span>收入</span><b id="tb-inc-amt">¥0</b></div>
+              <div class="tbar inc" id="tb-inc">
+                <div class="tbar-fill" id="tb-inc-fill"></div>
+                <div class="tbar-occ" id="tb-inc-occ"></div>
+                <div class="turtle" id="tb-inc-turtle">🐢</div>
+              </div>
+            </div>
+            <div class="tbar-row">
+              <div class="tbar-label"><span>支出</span><b id="tb-exp-amt">¥0</b></div>
+              <div class="tbar exp" id="tb-exp">
+                <div class="tbar-fill" id="tb-exp-fill"></div>
+                <div class="tbar-occ" id="tb-exp-occ"></div>
+                <div class="turtle" id="tb-exp-turtle">🐢</div>
+              </div>
+            </div>
+            <div class="tbar-foot" id="tb-foot"></div>
+          </div>
           <div class="inc-sec-t" id="inc-sec">收入</div>
           <div class="inc-cards">
             <div class="inc-card">
@@ -5393,7 +5429,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261107-0856').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261107-1048').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5407,7 +5443,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261107-0856 (单机)';
+    var V = '20261107-1048 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5708,8 +5744,49 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var el=$(id); if(!el) return;
     el.addEventListener("click",function(){ if(typeof window!=="undefined" && window.__soloChip) window.__soloChip.guard(id,"income"); });
   });
+  /* 2026-11-07 第十轮：收支乌龟进度条 —— 长度=总额，乌龟=常规匀速累积，零星/其它一次性拉长 */
+  function monthFrac(){ var n=new Date(), d=daysIn(n.getFullYear(),n.getMonth()); return (n.getDate()-1 + dayFrac())/d; }
+  function recSum(arr, ym, kinds){
+    var s=0;
+    (arr||[]).forEach(function(r){ if(r && String(r.date||'').slice(0,7)===ym && kinds.indexOf(r.kind)>=0) s+=(Number(r.amount)||0); });
+    return s;
+  }
+  function expRegularMonthly(){ var e=state.expense||{}; return (Number(e.mortgageMonthly)||0)+(Number(e.childMonthly)||0); }
+  function turtleSet(pfx, total, reg, occ, denom){
+    var bar=$('tb-'+pfx), fill=$('tb-'+pfx+'-fill'), occEl=$('tb-'+pfx+'-occ'), tu=$('tb-'+pfx+'-turtle'), amt=$('tb-'+pfx+'-amt');
+    var w = denom>0 ? total/denom*100 : 0;
+    var rf = denom>0 ? reg/denom*100 : 0;
+    var of = denom>0 ? occ/denom*100 : 0;
+    if(bar) bar.style.width = (total>0?Math.max(w,0.6):0).toFixed(2)+'%';
+    if(fill) fill.style.width = rf.toFixed(2)+'%';
+    if(occEl){ occEl.style.left=rf.toFixed(2)+'%'; occEl.style.width=of.toFixed(2)+'%'; }
+    if(tu) tu.style.left = Math.min(92, rf).toFixed(2)+'%';
+    if(amt) amt.textContent=moneyInt(total);
+  }
+  function turtleRender(){
+    var now=new Date(), ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+    var frac=monthFrac();
+    var incReg=(salary()+rentMonthly())*frac;
+    var incOcc=recSum(st().records, ym, ['part','sale']);
+    var incTotal=incReg+incOcc;
+    var expReg=expRegularMonthly()*frac;
+    var expOcc=recSum((state.expense&&state.expense.records)||[], ym, ['home','food','tuition','util','invest']);
+    var expTotal=expReg+expOcc;
+    var denom=Math.max(incTotal, expTotal, 1);   /* 两条用同一比例尺 → 长度直接比收支总额 */
+    turtleSet('inc', incTotal, incReg, incOcc, denom);
+    turtleSet('exp', expTotal, expReg, expOcc, denom);
+    var foot=$('tb-foot');
+    if(foot){
+      var bal=incTotal-expTotal;
+      foot.innerHTML='本月收入 <b>'+moneyInt(incTotal)+'</b> · 支出 <b>'+moneyInt(expTotal)+'</b> · '+
+        (bal>=0?'结余 <b class="tb-pos">'+moneyInt(bal)+'</b>':'超支 <b class="tb-neg">'+moneyInt(-bal)+'</b>')+
+        '　｜　🐢 匀速=常规(工资/房租·房贷/抚养费)按全月÷天数累积；零星/其它一次性计入并拉长进度条';
+    }
+  }
   render();
   setInterval(render,30000);   /* 图表 / 统计卡 / 记录列表：30 秒重建一次 */
+  setInterval(turtleRender,1000);  /* 乌龟进度条：与工资一样每秒爬 */
+  turtleRender();
   setInterval(chipTick,1000);  /* 顶部两格：跟工资一样每秒线性涨 */
   document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ render(); chipTick(); } });
 })();
