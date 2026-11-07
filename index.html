@@ -1309,6 +1309,8 @@
   .occ-flag b{font-size:9.5px;font-weight:600;color:var(--ink2)}
   .occ-flag i{font-style:normal;font-size:9px;font-weight:600;color:var(--ink3)}
   .occ-flag i.hot{color:#c0453a}
+  /* 第二十三轮：实际比例 > 本月流逝% → 支出标红(花钱快于时间)、收入标绿(进账快于时间)；低饱和、不改字号 */
+  .occ-flag i.good{color:#3f7d5c}
   /* 乌龟：只在常规条上，站在「常规累积点」，朝右（emoji 原生朝左，故 scaleX(-1)）；每分钟推进一小步 */
   .turtle{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);z-index:3;transition:left 1s linear;line-height:1;pointer-events:none}
   .tt-body{display:inline-block;font-size:16px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.18));animation:ttWalk .46s ease-in-out infinite alternate}
@@ -1747,7 +1749,8 @@
       <!-- 收支模块：收入(常规/其它) + 支出(常规/其它)，两块结构相同；
            顶部 2 条进度条 = 常规(乌龟 + 上方标记含常规完成度%) / 其它(整行满格=全月预算额度=分母，
            进度百分比=实际÷月预算金额；灰色段=预算额度、正常色=预算内实际、暖色=超 100% 部分；
-           实时金额(整数)+百分比放在进度条下方、正对实际进度末端)；
+           实时金额(整数)+百分比放在进度条下方、正对实际进度末端；
+           百分比跑赢「本月流逝%」时：其它支出标红、其它收入标绿（第二十三轮）；
            右侧只留「预算 + 额度」；收入段与支出段都可折叠（第二十二轮） -->
       <section class="panel" id="p-income">
         <div class="p-head"><span class="pmod">💰</span><h2>收支</h2><span class="hint">收入 · 支出</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
@@ -5473,7 +5476,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261107-1700').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261108-0012').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5487,7 +5490,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261107-1700 (单机)';
+    var V = '20261108-0012 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5769,6 +5772,12 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var total=d*1440;                                                       /* 全月总分钟 */
     return total>0 ? Math.max(0,Math.min(1,passed/total)) : 0;
   }
+  /* 本月流逝百分比：与生活仪表「本月流逝」顶栏格完全同源（自然月日历进度 + 当天实时秒数，秒级精度）。
+     第二十三轮用它判断「其它收支的实际比例是否跑赢了时间进度」。 */
+  function monthElapsedPct(){
+    var n=new Date(), d=daysIn(n.getFullYear(),n.getMonth());
+    return d>0 ? Math.max(0,Math.min(100,((n.getDate()-1)+dayFrac())/d*100)) : 0;
+  }
   function recSum(arr, ym, kinds){
     var s=0;
     (arr||[]).forEach(function(r){ if(r && String(r.date||'').slice(0,7)===ym && kinds.indexOf(r.kind)>=0) s+=(Number(r.amount)||0); });
@@ -5792,8 +5801,9 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   /* 第二十二轮：第2条分母 = 全月预算额度（不再用常规月度总额！），满格=预算额度=100%。
      capW=预算额度占比(灰色段)、doneW=预算内实际(正常色)、overW=超出部分(暖色)、flagW=实际进度末端。
      超预算时 den 临时放大到实际金额，让超出段放得下；未设额度时 den=实际，整段正常色。
-     p = {regW,todayW,capW,doneW,overW,flagW,total,regM,den,bud,over,speed,act,pct,regPct}；
-     pct = 实际 ÷ 月预算总金额（null=未设额度）；regPct = 当前常规累积 ÷ 该侧月度常规总额 */
+     p = {regW,todayW,capW,doneW,overW,flagW,total,regM,den,bud,over,speed,act,pct,regPct,monthPct}；
+     pct = 实际 ÷ 月预算总金额（null=未设额度）；regPct = 当前常规累积 ÷ 该侧月度常规总额；
+     monthPct = 本月流逝%（第二十三轮，用于百分比涨跌色） */
   function turtleSet(pfx, p){
     /* —— 第 1 条「常规」：填充=当前累积金额/共享比例尺，长度按绝对值；较高月度总额者满格=月度总额；乌龟立终点 —— */
     var regLen=$('tb-'+pfx+'-reg-len'), regFill=$('tb-'+pfx+'-reg-fill'), regToday=$('tb-'+pfx+'-reg-today');
@@ -5854,12 +5864,21 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var pctEl=$('tb-'+pfx+'-pct');
     if(pctEl){
       pctEl.textContent = p.pct===null ? '未设' : p.pct.toFixed(1)+'%';
-      pctEl.classList.toggle('hot', p.pct!==null && p.pct>100);
-      pctEl.title = p.pct===null ? '未设置全月预算额度，无法计算完成率' : '预算完成率 = 实际 '+money2(p.act)+' ÷ 全月预算 '+money2(p.bud)+(p.over>0 ? '，已超 '+money2(p.over) : '');
+      /* 第二十三轮：实际比例 > 本月流逝% 时染色 —— 其它支出红(花钱快于时间)、其它收入绿(进账快于时间)；
+         等于/低于时间进度、以及未设额度，都保持原来的灰色。收入超 100% 也按此规则显示绿色。
+         mp 兜底 0：即使漏传 monthPct 也不会崩。 */
+      var mp = Number(p.monthPct)||0;
+      var ahead = p.pct!==null && p.pct > mp;
+      pctEl.classList.toggle('hot',  pfx==='exp' && ahead);
+      pctEl.classList.toggle('good', pfx==='inc' && ahead);
+      pctEl.title = p.pct===null ? '未设置全月预算额度，无法计算完成率'
+        : '预算完成率 = 实际 '+money2(p.act)+' ÷ 全月预算 '+money2(p.bud)+(p.over>0 ? '，已超 '+money2(p.over) : '')
+          +' · 本月流逝 '+mp.toFixed(1)+'%'+(ahead ? '（已跑赢时间进度）' : '（未跑赢时间进度）');
     }
   }
   function turtleRender(){
     var now=new Date(), y=now.getFullYear(), m=now.getMonth();
+    var monthElapsed=monthElapsedPct();   /* 本月流逝%（与生活仪表顶栏同源），第二十三轮用于百分比涨跌色 */
     var ym=y+'-'+String(m+1).padStart(2,'0'), monthMin=daysIn(y,m)*1440;
     var frac=minuteFrac();                                  /* 本月已过比例 */
     var todayMin=now.getHours()*60+now.getMinutes();
@@ -5900,8 +5919,8 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var incOverW = incOver/incDen*100, expOverW = expOver/expDen*100;
     /* 浮标贴在实际进度末端 = 实际/分母：未超额时正好等于完成率百分比，数字与位置对齐 */
     var incFlagW=incAct/incDen*100, expFlagW=expAct/expDen*100;
-    turtleSet('inc', {regW:incRegW,todayW:incTodayW,capW:incCapW,doneW:incDoneW,overW:incOverW,flagW:incFlagW,total:incTotal,regM:incRegM,den:incDen,bud:incBud,over:incOver,speed:incRegM/monthMin,act:incAct,pct:incPct,regPct:incRegPct});
-    turtleSet('exp', {regW:expRegW,todayW:expTodayW,capW:expCapW,doneW:expDoneW,overW:expOverW,flagW:expFlagW,total:expTotal,regM:expRegM,den:expDen,bud:expBud,over:expOver,speed:expRegM/monthMin,act:expAct,pct:expPct,regPct:expRegPct});
+    turtleSet('inc', {regW:incRegW,todayW:incTodayW,capW:incCapW,doneW:incDoneW,overW:incOverW,flagW:incFlagW,total:incTotal,regM:incRegM,den:incDen,bud:incBud,over:incOver,speed:incRegM/monthMin,act:incAct,pct:incPct,regPct:incRegPct,monthPct:monthElapsed});
+    turtleSet('exp', {regW:expRegW,todayW:expTodayW,capW:expCapW,doneW:expDoneW,overW:expOverW,flagW:expFlagW,total:expTotal,regM:expRegM,den:expDen,bud:expBud,over:expOver,speed:expRegM/monthMin,act:expAct,pct:expPct,regPct:expRegPct,monthPct:monthElapsed});
   }
   /* 全月预算额度输入：两个框内联在各自录入行，仍都由本 IIFE 接管（避免跨 IIFE 通信），改完立即重画 2 条 */
   [["inc-occ-budget","inc"],["exp-occ-budget","exp"]].forEach(function(pair){
