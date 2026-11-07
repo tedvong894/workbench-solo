@@ -1212,6 +1212,12 @@
   .ld-sub{font-size:11px;color:var(--ink3);margin-top:2px}
   .ld-bar{height:6px;border-radius:99px;background:var(--line2);overflow:hidden;margin-top:9px}
   .ld-bar i{display:block;height:100%;width:0;background:var(--brand);opacity:.55;transition:width .5s linear}
+  /* 2026-11-07 第八轮：本月 / 年度流逝各加一条细进度条（与今日条同色，但更细更淡） */
+  .ld-bar2{height:5px;border-radius:99px;background:var(--line2);overflow:hidden;margin:5px 0 3px}
+  .ld-bar2 i{display:block;height:100%;width:0;background:var(--brand);opacity:.45;transition:width .5s linear}
+  /* 2026-11-07 第八轮：顶栏两个支出格用低饱和红表示；只改文字色，格子尺寸/底色/字号一律不变 */
+  #exp-day-chip .stat-n,#exp-month-chip .stat-n{color:#c0453a}
+  #exp-day-chip .stat-l,#exp-month-chip .stat-l{color:#c0453a;opacity:.85}
   /* 2026-11-06 第五轮：取消收入格的放大/淡底/品牌色，顶栏所有格子统一常规显示 */
   .topbar-stats .stat{min-width:46px;padding:3px 5px;border-radius:10px}
   .topbar-stats .stat .stat-n{font-size:12px}
@@ -1684,7 +1690,9 @@
               <div class="ld-bar"><i id="ld-bar-fill"></i></div>
               <div class="ld-sub" id="ld-window">07:00 → 23:00</div>
               <div class="ld-sub" id="ld-month-sub">本月日历已过 0.0%</div>
+              <div class="ld-bar2"><i id="ld-month-bar"></i></div>
               <div class="ld-sub" id="ld-year-sub">本年度已过 0.0%</div>
+              <div class="ld-bar2"><i id="ld-year-bar"></i></div>
             </div>
           </div>
         </div>
@@ -5379,7 +5387,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261107-0818').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261107-0845').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5393,7 +5401,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261107-0818 (单机)';
+    var V = '20261107-0845 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5477,6 +5485,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var monthPct = days>0 ? Math.max(0, Math.min(100, ((now.getDate()-1) + secOfDay/86400)/days*100)) : 0;
     setT("ld-month-n", monthPct.toFixed(1)+"%");
     setT("ld-month-sub", "本月日历已过 "+monthPct.toFixed(1)+"% · 共 "+days+" 天");
+    var mBar=$("ld-month-bar"); if(mBar) mBar.style.width=monthPct.toFixed(1)+"%";
     var chip3=$("ld-month-chip"); if(chip3) chip3.title="本月共 "+days+" 天，已过 "+monthPct.toFixed(1)+"%（按自然月日历进度，含今天实时）· 点击设置";
 
     /* 年度流逝：自然年日历进度，含当天已过的实时秒数（平年 365 / 闰年 366 天） */
@@ -5486,6 +5495,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var yearPct = Math.max(0, Math.min(100, (doy + secOfDay/86400)/yearDays*100));
     setT("ld-year-n", yearPct.toFixed(1)+"%");
     setT("ld-year-sub", "本年度已过 "+yearPct.toFixed(1)+"% · 共 "+yearDays+" 天");
+    var yBar=$("ld-year-bar"); if(yBar) yBar.style.width=yearPct.toFixed(1)+"%";
     var chip4=$("ld-year-chip"); if(chip4) chip4.title="本年度共 "+yearDays+" 天，已过 "+yearPct.toFixed(1)+"%（按自然年日历进度，含今天实时）· 点击设置";
   }
   /* 顶部格点击由全局委托 setActiveMod(data-mod) 统一处理：收入/支出四格 → 收支面板，三个流逝 → 生活仪表 */
