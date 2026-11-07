@@ -1276,14 +1276,15 @@
   /* 2026-11-07 第七轮：收支面板分「收入 / 支出」两段，支出段与收入段完全同构 */
   .inc-sec-t{font-size:12px;font-weight:600;color:var(--ink2);margin:2px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line2)}
   .inc-sec-t:not(:first-child){margin-top:24px}
-  /* 2026-11-07 第十二轮：收支各 2 条（匀速条=乌龟按分钟爬 / 总额条=含零星、无乌龟），共 4 条共用金额比例尺 */
+  /* 2026-11-07 第十三轮：常规条(乌龟+速度贴身) / 零星总额条(无乌龟)；4 条共用金额比例尺；金额按分钟实时变动 */
   .turtle-wrap{margin:2px 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
   .tbar-grp{display:flex;align-items:center;gap:9px;margin:10px 0}
-  .tbar-label{width:56px;flex:none;display:flex;flex-direction:column;line-height:1.2}
+  .tbar-label{width:78px;flex:none;display:flex;flex-direction:column;line-height:1.2}
   .tbar-label span{font-size:11px;color:var(--ink3)}
-  .tbar-label b{font-size:13.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+  .tbar-label b{font-size:12px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
   .tbar-lines{flex:1 1 auto;min-width:0}
   .tbar-line{display:flex;align-items:center;gap:7px;margin:5px 0}
+  .tbar-line:first-child{margin-top:16px}   /* 给乌龟上方的速度标记留位置 */
   .tbar-tag{width:26px;flex:none;text-align:right;font-size:9.5px;color:var(--ink3);white-space:nowrap}
   /* 轨道：宽度恒定、吃掉剩余空间 → 4 条长度条共用同一比例尺，也永远不会跑出白框 */
   .tbar-track{position:relative;flex:1 1 auto;min-width:0;height:20px;background:var(--line2);border-radius:10px}
@@ -1293,16 +1294,19 @@
   .tbar-occ{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,#bcdccb,#bcdccb 5px,#aed3bf 5px,#aed3bf 10px)}
   .tbar-len.exp .tbar-fill{background:#f0c9c4}
   .tbar-len.exp .tbar-occ{background:repeating-linear-gradient(45deg,#e6b4ad,#e6b4ad 5px,#dc9f97 5px,#dc9f97 10px)}
-  /* 乌龟：只在匀速条上，站在「匀速累积点」，朝右（emoji 原生朝左，故 scaleX(-1)）；每分钟推进一小步 */
+  .tbar-len.occ .tbar-occ{left:0;width:100%}   /* 第二条整条斜纹 = 零星总额 */
+  /* 乌龟：只在常规条上，站在「常规累积点」，朝右（emoji 原生朝左，故 scaleX(-1)）；每分钟推进一小步 */
   .turtle{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);z-index:3;transition:left 1s linear;line-height:1;pointer-events:none}
   .tt-body{display:inline-block;font-size:16px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.18));animation:ttWalk .46s ease-in-out infinite alternate}
+  /* 速度标记贴在乌龟正上方，跟着乌龟一起移动 */
+  .tt-spd{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:3px;font-size:9px;line-height:1.3;white-space:nowrap;color:var(--ink2);background:#fff;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-variant-numeric:tabular-nums}
   /* 爬动：轻微上下起伏 + 左右摇摆（含 scaleX(-1) 保持朝右） */
   @keyframes ttWalk{
     from{transform:scaleX(-1) rotate(-7deg) translateY(0)}
     to  {transform:scaleX(-1) rotate(7deg)  translateY(-2px)}
   }
-  /* 速度/零星标记：右侧固定窄列，单位为分钟 */
-  .tbar-spd{width:66px;flex:none;text-align:right;display:flex;flex-direction:column;line-height:1.2}
+  /* 右侧：常规金额总额（实时变动） / 其它收入·其它支出 */
+  .tbar-spd{width:74px;flex:none;text-align:right;display:flex;flex-direction:column;line-height:1.2}
   .tbar-spd span{font-size:9.5px;color:var(--ink3)}
   .tbar-spd b{font-size:10.5px;font-weight:600;color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
   .tbar-foot{font-size:11px;color:var(--ink3);margin-top:8px;line-height:1.5}
@@ -1740,20 +1744,20 @@
       <section class="panel" id="p-income">
         <div class="p-head"><span class="pmod">💰</span><h2>收支</h2><span class="hint">收入 · 支出</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
         <div class="p-body">
-          <!-- 2026-11-07 第十二轮：收支各 2 条（匀速条=乌龟按分钟爬 / 总额条=含零星、无乌龟）；4 条共用金额比例尺 -->
+          <!-- 2026-11-07 第十三轮：常规条(乌龟+速度贴身) / 零星总额条(无乌龟)；金额按分钟实时变动 -->
           <div class="turtle-wrap">
             <div class="tbar-grp">
               <div class="tbar-label"><span>收入</span><b id="tb-inc-amt">¥0</b></div>
               <div class="tbar-lines">
                 <div class="tbar-line">
-                  <span class="tbar-tag">匀速</span>
-                  <div class="tbar-track"><div class="tbar-len inc" id="tb-inc-reg-len"><div class="tbar-fill" id="tb-inc-reg-fill"></div></div><div class="turtle" id="tb-inc-turtle"><span class="tt-body">🐢</span></div></div>
-                  <div class="tbar-spd"><span>速度</span><b id="tb-inc-spd">¥0/分钟</b></div>
+                  <span class="tbar-tag">常规</span>
+                  <div class="tbar-track"><div class="tbar-len inc" id="tb-inc-reg-len"><div class="tbar-fill" id="tb-inc-reg-fill"></div></div><div class="turtle" id="tb-inc-turtle"><span class="tt-body">🐢</span><span class="tt-spd" id="tb-inc-ttspd">¥0/分钟</span></div></div>
+                  <div class="tbar-spd"><span>常规金额</span><b id="tb-inc-reg-amt">¥0</b></div>
                 </div>
                 <div class="tbar-line">
-                  <span class="tbar-tag">总额</span>
-                  <div class="tbar-track"><div class="tbar-len inc" id="tb-inc-sum-len"><div class="tbar-fill" id="tb-inc-sum-fill"></div><div class="tbar-occ" id="tb-inc-occ"></div></div></div>
-                  <div class="tbar-spd"><span>含零星</span><b id="tb-inc-occ-n">+¥0</b></div>
+                  <span class="tbar-tag">零星</span>
+                  <div class="tbar-track"><div class="tbar-len inc occ" id="tb-inc-sum-len"><div class="tbar-occ" id="tb-inc-occ"></div></div></div>
+                  <div class="tbar-spd"><span>其它收入</span><b id="tb-inc-occ-n">+¥0</b></div>
                 </div>
               </div>
             </div>
@@ -1761,14 +1765,14 @@
               <div class="tbar-label"><span>支出</span><b id="tb-exp-amt">¥0</b></div>
               <div class="tbar-lines">
                 <div class="tbar-line">
-                  <span class="tbar-tag">匀速</span>
-                  <div class="tbar-track"><div class="tbar-len exp" id="tb-exp-reg-len"><div class="tbar-fill" id="tb-exp-reg-fill"></div></div><div class="turtle" id="tb-exp-turtle"><span class="tt-body">🐢</span></div></div>
-                  <div class="tbar-spd"><span>速度</span><b id="tb-exp-spd">¥0/分钟</b></div>
+                  <span class="tbar-tag">常规</span>
+                  <div class="tbar-track"><div class="tbar-len exp" id="tb-exp-reg-len"><div class="tbar-fill" id="tb-exp-reg-fill"></div></div><div class="turtle" id="tb-exp-turtle"><span class="tt-body">🐢</span><span class="tt-spd" id="tb-exp-ttspd">¥0/分钟</span></div></div>
+                  <div class="tbar-spd"><span>常规金额</span><b id="tb-exp-reg-amt">¥0</b></div>
                 </div>
                 <div class="tbar-line">
-                  <span class="tbar-tag">总额</span>
-                  <div class="tbar-track"><div class="tbar-len exp" id="tb-exp-sum-len"><div class="tbar-fill" id="tb-exp-sum-fill"></div><div class="tbar-occ" id="tb-exp-occ"></div></div></div>
-                  <div class="tbar-spd"><span>含零星</span><b id="tb-exp-occ-n">+¥0</b></div>
+                  <span class="tbar-tag">零星</span>
+                  <div class="tbar-track"><div class="tbar-len exp occ" id="tb-exp-sum-len"><div class="tbar-occ" id="tb-exp-occ"></div></div></div>
+                  <div class="tbar-spd"><span>其它支出</span><b id="tb-exp-occ-n">+¥0</b></div>
                 </div>
               </div>
             </div>
@@ -5460,7 +5464,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261107-1128').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261107-1149').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5474,7 +5478,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261107-1128 (单机)';
+    var V = '20261107-1149 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5775,9 +5779,11 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var el=$(id); if(!el) return;
     el.addEventListener("click",function(){ if(typeof window!=="undefined" && window.__soloChip) window.__soloChip.guard(id,"income"); });
   });
-  /* 2026-11-07 第十二轮：收支各 2 条（匀速条=乌龟按分钟爬 / 总额条=含零星、无乌龟）
-     4 条全部共用同一「金额比例尺」denom = max(收入总额, 支出总额)，长短直接按金额，不做各自百分比归一化；
-     最长的一条 = 收支中较高者的总额条，占满 100% 轨道。匀速累积按「已过整分钟 / 全月总分钟」，速度单位 ¥/分钟。 */
+  /* 2026-11-07 第十三轮：收支各 2 条 = 第1条「常规」(乌龟+速度贴身) / 第2条「零星」(整条斜纹、无乌龟)
+     第2条长度 = 零星总额，不再表示收支总额；4 条共用同一「金额比例尺」
+     denom = max(收入实时总额, 支出实时总额, 1)，长短按金额、不做各自百分比归一化；
+     常规累积按「已过整分钟 / 全月总分钟」，速度 ¥/分钟；
+     左侧实时总金额 = 常规 + 零星、右侧常规金额，均显示两位小数并随分钟实时变动。 */
   function minuteFrac(){
     var n=new Date(), d=daysIn(n.getFullYear(),n.getMonth());
     var passed=(n.getDate()-1)*1440 + n.getHours()*60 + n.getMinutes();  /* 本月已过整分钟（分钟粒度） */
@@ -5790,29 +5796,36 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     return s;
   }
   function expRegularMonthly(){ var e=state.expense||{}; return (Number(e.mortgageMonthly)||0)+(Number(e.childMonthly)||0); }
-  function clampPct(v){ return Math.max(0,Math.min(100,v)).toFixed(2); }
+  /* 4 位小数：常规金额接近总额时 reg/denom 增长极慢，2 位会被四舍五入抹平，
+     导致「跨分钟乌龟不前进」；提高精度保证每分钟都能推进一小步 */
+  function clampPct(v){ return Math.max(0,Math.min(100,v)).toFixed(4); }
+  function money2(n){ return '¥'+(Number(n)||0).toFixed(2); }
   function turtleSet(pfx, reg, occ, total, denom, speed){
-    /* —— 第 1 条：匀速条（纯色，长度 = 匀速累积金额），乌龟站在条首按速度爬 —— */
+    /* —— 第 1 条「常规」：纯色，长度 = 常规累积金额；乌龟 + 速度标记贴身 —— */
     var regLen=$('tb-'+pfx+'-reg-len'), regFill=$('tb-'+pfx+'-reg-fill');
     var regW = denom>0 ? reg/denom*100 : 0;
     if(regLen) regLen.style.width = clampPct(regW)+'%';
     if(regFill) regFill.style.width = '100%';
     var tu=$('tb-'+pfx+'-turtle');
     if(tu){
-      tu.style.left = Math.max(0,Math.min(95,regW)).toFixed(2)+'%';
+      tu.style.left = Math.max(0,Math.min(94,regW)).toFixed(4)+'%';
       tu.style.display = reg>0 ? '' : 'none';
-      tu.title = '匀速 ¥'+speed.toFixed(3)+'/分钟（¥'+(speed/60).toFixed(4)+'/秒）· 全月金额÷全月分钟数';
+      tu.title = '常规 ¥'+speed.toFixed(3)+'/分钟（¥'+(speed/60).toFixed(4)+'/秒）· 全月金额÷全月分钟数';
     }
-    /* —— 第 2 条：总额条（匀速实心段 + 零星斜纹段），不设置乌龟 —— */
-    var sumLen=$('tb-'+pfx+'-sum-len'), sumFill=$('tb-'+pfx+'-sum-fill'), occEl=$('tb-'+pfx+'-occ');
-    var sumW = denom>0 ? total/denom*100 : 0;
-    var regPart = total>0 ? reg/total*100 : 0;
-    if(sumLen) sumLen.style.width = clampPct(sumW)+'%';
-    if(sumFill) sumFill.style.width = clampPct(regPart)+'%';
-    if(occEl){ occEl.style.left=clampPct(regPart)+'%'; occEl.style.width=clampPct(total>0?occ/total*100:0)+'%'; }
-    /* —— 左侧实时总金额 = 匀速金额 + 实时零星金额；右侧标记速度 / 零星 —— */
-    var amt=$('tb-'+pfx+'-amt'); if(amt) amt.textContent=moneyInt(total);
-    var spd=$('tb-'+pfx+'-spd'); if(spd) spd.textContent='¥'+speed.toFixed(2)+'/分钟';
+    var ttspd=$('tb-'+pfx+'-ttspd');
+    if(ttspd){
+      ttspd.textContent='¥'+speed.toFixed(2)+'/分钟';   /* 速度标记贴乌龟上方 */
+      /* 防溢出：月初靠近左端时标记偏右展开、月末靠近右端时偏左展开，
+         避免压住左侧「常规」标签或右侧「常规金额」栏（窄屏同样有效） */
+      ttspd.style.transform = regW<18 ? 'translateX(-20%)' : (regW>72 ? 'translateX(-80%)' : 'translateX(-50%)');
+    }
+    /* —— 第 2 条「零星」：整条斜纹，长度 = 零星总额（不是总额），不设置乌龟 —— */
+    var sumLen=$('tb-'+pfx+'-sum-len');
+    if(sumLen) sumLen.style.width = clampPct(denom>0?occ/denom*100:0)+'%';
+    var occEl=$('tb-'+pfx+'-occ'); if(occEl) occEl.style.width='100%';
+    /* —— 左侧实时总金额（常规 + 零星）、右侧常规金额：两位小数，随分钟实时变动 —— */
+    var amt=$('tb-'+pfx+'-amt'); if(amt) amt.textContent=money2(total);
+    var regAmt=$('tb-'+pfx+'-reg-amt'); if(regAmt) regAmt.textContent=money2(reg);
     var occN=$('tb-'+pfx+'-occ-n'); if(occN) occN.textContent='+'+moneyInt(occ);
   }
   function turtleRender(){
@@ -5825,16 +5838,16 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var expRegM=expRegularMonthly(), expReg=expRegM*frac;
     var expOcc=recSum((state.expense&&state.expense.records)||[], ym, ['home','food','tuition','util','invest']);
     var expTotal=expReg+expOcc;
-    var denom=Math.max(incTotal, expTotal, 1);   /* 4 条共用金额比例尺；最长=收支较高者的总额条 */
+    var denom=Math.max(incTotal, expTotal, 1);   /* 4 条共用金额比例尺；上限=收支实时总额较高者（第2条为零星总额，不单独占满轨道） */
     turtleSet('inc', incReg, incOcc, incTotal, denom, incRegM/monthMin);
     turtleSet('exp', expReg, expOcc, expTotal, denom, expRegM/monthMin);
     var foot=$('tb-foot');
     if(foot){
       var bal=incTotal-expTotal;
-      foot.innerHTML='实时总额 收入 <b>'+moneyInt(incTotal)+'</b> · 支出 <b>'+moneyInt(expTotal)+'</b> · '+
-        (bal>=0?'结余 <b class="tb-pos">'+moneyInt(bal)+'</b>':'超支 <b class="tb-neg">'+moneyInt(-bal)+'</b>')+
-        '　｜　🐢 匀速 ¥'+(incRegM/monthMin).toFixed(3)+'/分钟（收）· ¥'+(expRegM/monthMin).toFixed(3)+
-        '/分钟（支）＝全月金额÷全月分钟数；4 条按金额共用比例尺，最长=收支较高者';
+      foot.innerHTML='实时总额 收入 <b>'+money2(incTotal)+'</b> · 支出 <b>'+money2(expTotal)+'</b> · '+
+        (bal>=0?'结余 <b class="tb-pos">'+money2(bal)+'</b>':'超支 <b class="tb-neg">'+money2(-bal)+'</b>')+
+        '　｜　🐢 常规 ¥'+(incRegM/monthMin).toFixed(3)+'/分钟（收）· ¥'+(expRegM/monthMin).toFixed(3)+
+        '/分钟（支）＝全月金额÷全月分钟数；第2条为零星总额，4 条按金额共用比例尺（上限=收支总额较高者）';
     }
   }
   render();
