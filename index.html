@@ -1278,8 +1278,9 @@
   /* 2026-11-07 第七轮：收支面板分「收入 / 支出」两段，支出段与收入段完全同构 */
   .inc-sec-t{font-size:12px;font-weight:600;color:var(--ink2);margin:2px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line2)}
   .inc-sec-t:not(:first-child){margin-top:24px}
-  /* 2026-11-07 第十四轮：常规条比例尺=该组常规月度总额（满格=月度总额，月末乌龟抵终点）；当日爬过的那段叠更深色；金额按分钟实时变动 */
-  .turtle-wrap{margin:2px 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+  /* 2026-11-07 第十六轮：3 条进度条；第1条常规(乌龟+当日深色段) / 第2条预算(预算内实际) / 第3条超预算(超出部分)。
+     三条共用「长度=金额÷共享比例尺」，共享比例尺=两常规月度总额较高者；金额按分钟实时变动 */
+  .turtle-wrap{margin:2px 0 10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
   .tbar-grp{display:flex;align-items:center;gap:9px;margin:10px 0}
   .tbar-label{width:90px;flex:none;display:flex;flex-direction:column;line-height:1.2}
   .tbar-label span{font-size:10.5px;color:var(--ink3);white-space:nowrap}
@@ -1287,8 +1288,8 @@
   .tbar-lines{flex:1 1 auto;min-width:0}
   .tbar-line{display:flex;align-items:center;gap:7px;margin:5px 0}
   .tbar-line:first-child{margin-top:16px}   /* 给乌龟上方的速度标记留位置 */
-  .tbar-tag{width:26px;flex:none;text-align:right;font-size:9.5px;color:var(--ink3);white-space:nowrap}
-  /* 轨道：宽度恒定、吃掉剩余空间；常规条比例尺=该组常规月度总额，永不跑出白框 */
+  .tbar-tag{width:36px;flex:none;text-align:right;font-size:9px;color:var(--ink3);white-space:nowrap}
+  /* 轨道：宽度恒定、吃掉剩余空间；三条长度都按金额/共享比例尺，永不跑出白框 */
   .tbar-track{position:relative;flex:1 1 auto;min-width:0;height:20px;background:var(--line2);border-radius:10px}
   /* 长度条：宽度 = 金额/比例尺，max-width:100% 硬约束 */
   .tbar-len{position:absolute;left:0;top:0;bottom:0;width:0;max-width:100%;border-radius:10px;overflow:hidden}
@@ -1298,7 +1299,10 @@
   .tbar-len.exp .tbar-fill{background:#f0c9c4}
   .tbar-len.exp .tbar-today{background:#dd9a92}
   .tbar-len.exp .tbar-occ{background:repeating-linear-gradient(45deg,#e6b4ad,#e6b4ad 5px,#dc9f97 5px,#dc9f97 10px)}
-  .tbar-len.occ .tbar-occ{left:0;width:100%}   /* 第二条整条斜纹 = 零星总额 */
+  .tbar-len.occ .tbar-occ{left:0;width:100%}   /* 第2条整条斜纹 = 预算内实际金额 */
+  /* 第3条「超预算」：反向斜纹 + 暖色，和前两条一眼分得开（低饱和） */
+  .tbar-len.inc.over .tbar-occ{background:repeating-linear-gradient(-45deg,#e8d3a8,#e8d3a8 5px,#dcc491 5px,#dcc491 10px)}
+  .tbar-len.exp.over .tbar-occ{background:repeating-linear-gradient(-45deg,#e0a79f,#e0a79f 5px,#d19088 5px,#d19088 10px)}
   /* 乌龟：只在常规条上，站在「常规累积点」，朝右（emoji 原生朝左，故 scaleX(-1)）；每分钟推进一小步 */
   .turtle{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);z-index:3;transition:left 1s linear;line-height:1;pointer-events:none}
   .tt-body{display:inline-block;font-size:16px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.18));animation:ttWalk .46s ease-in-out infinite alternate}
@@ -1309,14 +1313,16 @@
     from{transform:scaleX(-1) rotate(-7deg) translateY(0)}
     to  {transform:scaleX(-1) rotate(7deg)  translateY(-2px)}
   }
-  /* 右侧：常规金额总额（实时变动） / 其它收入·其它支出 */
-  .tbar-spd{width:74px;flex:none;text-align:right;display:flex;flex-direction:column;line-height:1.2}
+  /* 右侧：常规月度总额（固定） / 预算收入·预算支出（预算内已发生） / 超预算收入·超预算支出（超出部分） */
+  .tbar-spd{width:84px;flex:none;text-align:right;display:flex;flex-direction:column;line-height:1.2}
   .tbar-spd span{font-size:9.5px;color:var(--ink3)}
   .tbar-spd b{font-size:10.5px;font-weight:600;color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
   .tbar-foot{font-size:11px;color:var(--ink3);margin-top:8px;line-height:1.5}
   .tbar-foot b{color:var(--ink);font-variant-numeric:tabular-nums}
   .tb-pos{color:#2f8f4e !important}
   .tb-neg{color:#c0453a !important}
+  /* 预算额度输入行：紧贴 3 条进度条下方，改完立刻能看到条长变化 */
+  .tbar-budget-set{margin:0 0 16px;padding:8px 10px;border:1px dashed var(--line);border-radius:10px;background:#fcfcfd}
 </style>
 <style id="sk-style">
   .sk-sum{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;margin-bottom:12px}
@@ -1737,11 +1743,12 @@
           </div>
         </div>
       </section>
-      <!-- 收支模块：收入(常规/零星) + 支出(常规/其它)，两块结构相同 -->
+      <!-- 收支模块：收入(常规/零星) + 支出(常规/其它)，两块结构相同；
+           顶部 3 条进度条 = 常规(乌龟) / 预算(预算内实际) / 超预算(超出额度)，预算额度在 turtle-wrap 下方输入 -->
       <section class="panel" id="p-income">
         <div class="p-head"><span class="pmod">💰</span><h2>收支</h2><span class="hint">收入 · 支出</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
         <div class="p-body">
-          <!-- 2026-11-07 第十三轮：常规条(乌龟+速度贴身) / 零星总额条(无乌龟)；金额按分钟实时变动 -->
+          <!-- 2026-11-07 第十六轮：3 条 = 常规(乌龟+当日深色) / 预算(预算内实际) / 超预算(超出部分)；共享比例尺、长度=金额 -->
           <div class="turtle-wrap">
             <div class="tbar-grp">
               <div class="tbar-label"><span>本月实时收入</span><b id="tb-inc-amt">¥0</b></div>
@@ -1749,12 +1756,17 @@
                 <div class="tbar-line">
                   <span class="tbar-tag">常规</span>
                   <div class="tbar-track"><div class="tbar-len inc" id="tb-inc-reg-len"><div class="tbar-fill" id="tb-inc-reg-fill"></div><div class="tbar-today" id="tb-inc-reg-today"></div></div><div class="turtle" id="tb-inc-turtle"><span class="tt-body">🐢</span><span class="tt-spd" id="tb-inc-ttspd">¥0/分钟</span></div></div>
-                  <div class="tbar-spd"><span>常规金额</span><b id="tb-inc-reg-amt">¥0</b></div>
+                  <div class="tbar-spd"><span>月度总额</span><b id="tb-inc-reg-amt">¥0</b></div>
                 </div>
                 <div class="tbar-line">
-                  <span class="tbar-tag">零星</span>
+                  <span class="tbar-tag">预算</span>
                   <div class="tbar-track"><div class="tbar-len inc occ" id="tb-inc-sum-len"><div class="tbar-occ" id="tb-inc-occ"></div></div></div>
-                  <div class="tbar-spd"><span>其它收入</span><b id="tb-inc-occ-n">+¥0</b></div>
+                  <div class="tbar-spd"><span>预算收入</span><b id="tb-inc-occ-n">¥0.00</b></div>
+                </div>
+                <div class="tbar-line">
+                  <span class="tbar-tag">超预算</span>
+                  <div class="tbar-track"><div class="tbar-len inc occ over" id="tb-inc-over-len"><div class="tbar-occ" id="tb-inc-over"></div></div></div>
+                  <div class="tbar-spd"><span>超预算收入</span><b id="tb-inc-over-n">¥0.00</b></div>
                 </div>
               </div>
             </div>
@@ -1764,16 +1776,27 @@
                 <div class="tbar-line">
                   <span class="tbar-tag">常规</span>
                   <div class="tbar-track"><div class="tbar-len exp" id="tb-exp-reg-len"><div class="tbar-fill" id="tb-exp-reg-fill"></div><div class="tbar-today" id="tb-exp-reg-today"></div></div><div class="turtle" id="tb-exp-turtle"><span class="tt-body">🐢</span><span class="tt-spd" id="tb-exp-ttspd">¥0/分钟</span></div></div>
-                  <div class="tbar-spd"><span>常规金额</span><b id="tb-exp-reg-amt">¥0</b></div>
+                  <div class="tbar-spd"><span>月度总额</span><b id="tb-exp-reg-amt">¥0</b></div>
                 </div>
                 <div class="tbar-line">
-                  <span class="tbar-tag">零星</span>
+                  <span class="tbar-tag">预算</span>
                   <div class="tbar-track"><div class="tbar-len exp occ" id="tb-exp-sum-len"><div class="tbar-occ" id="tb-exp-occ"></div></div></div>
-                  <div class="tbar-spd"><span>其它支出</span><b id="tb-exp-occ-n">+¥0</b></div>
+                  <div class="tbar-spd"><span>预算支出</span><b id="tb-exp-occ-n">¥0.00</b></div>
+                </div>
+                <div class="tbar-line">
+                  <span class="tbar-tag">超预算</span>
+                  <div class="tbar-track"><div class="tbar-len exp occ over" id="tb-exp-over-len"><div class="tbar-occ" id="tb-exp-over"></div></div></div>
+                  <div class="tbar-spd"><span>超预算支出</span><b id="tb-exp-over-n">¥0.00</b></div>
                 </div>
               </div>
             </div>
             <div class="tbar-foot" id="tb-foot"></div>
+          </div>
+          <div class="inc-set tbar-budget-set">
+            <span class="inc-set-t">其它收支预算</span>
+            <label class="inc-f"><span>其它收入预算</span><input type="number" id="inc-occ-budget" min="0" step="100" placeholder="如 3000" inputmode="decimal"></label>
+            <label class="inc-f"><span>其它支出预算</span><input type="number" id="exp-occ-budget" min="0" step="100" placeholder="如 5000" inputmode="decimal"></label>
+            <span class="inc-note2">超出预算的部分单列在第 3 条；留空 = 不设预算，全部算预算内</span>
           </div>
           <div class="inc-sec-t" id="inc-sec">收入</div>
           <div class="inc-cards">
@@ -5463,7 +5486,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261107-1331').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261107-1420').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5477,7 +5500,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261107-1331 (单机)';
+    var V = '20261107-1420 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5597,6 +5620,8 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var o=state.income;
     if(!Array.isArray(o.records)) o.records=[];
     if(typeof o.rentMonthly!=='number' || !isFinite(o.rentMonthly) || o.rentMonthly<0) o.rentMonthly=0;
+    /* 第十六轮：其它收入预算额度（0 = 未设预算，全部算预算内） */
+    if(typeof o.occBudget!=='number' || !isFinite(o.occBudget) || o.occBudget<0) o.occBudget=0;
     /* 一次性迁移：旧版「房租按次录入」的记录改成月度房租参数（取最近有记录月份的合计），
        从列表移除，避免房租既按笔又均匀计入造成双算；用户数据不丢，语义等价。 */
     if(o._rentMigrated!==true){
@@ -5790,12 +5815,14 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var el=$(id); if(!el) return;
     el.addEventListener("click",function(){ if(typeof window!=="undefined" && window.__soloChip) window.__soloChip.guard(id,"income"); });
   });
-  /* 2026-11-07 第十五轮：收支各 2 条 = 第1条「常规」(乌龟+速度贴身+当日深色段) / 第2条「零星」(整条斜纹、无乌龟)
-     第1条共享比例尺 = 两常规月度总额较高者（收入=工资+房租 / 支出=房贷+抚养费）；长度=当前累积金额/比例尺，
-     故收入、支出长度按绝对值不同，较高者满格(=其月度总额)、较低者按比例缩短（仍以金额较高者为限）；
-     第1条填充最右端叠加「当日爬过的段」= 今日已过分钟÷全月分钟，更深色；
-     第2条长度 = 零星总额，按同一共享比例尺定长（保持「长度=金额」可比）；
-     速度 ¥/分钟 = 全月金额÷全月分钟；左侧实时总额、右侧常规金额均两位小数、随分钟变动。 */
+  /* 2026-11-07 第十六轮：收支各 3 条
+     第1条「常规」= 乌龟 + 速度贴身 + 当日深色段，共享比例尺 = 两常规月度总额较高者，
+                    长度 = 当前累积金额/比例尺，较高者满格(=其月度总额)、较低者按比例缩短；右侧「月度总额」= 固定月度金额。
+     第2条「预算」= 预算内的实际发生额（其它收支落在预算额度内的部分），整条斜纹、无乌龟。
+     第3条「超预算」= 超出预算额度的部分（实际 − 额度，正差才有），反向暖色斜纹、无乌龟。
+     口径：预算内 + 超预算 = 实际其它收支（不重不漏）；未设额度(0) 时第2条=实际、第3条=0，完全等同旧版。
+     左侧实时总额 = 常规实时 + 预算内 + 超预算（= 常规 + 实际其它，与下方统计卡 / 顶栏始终一致，可逐项对账）。
+     三条长度统一 = 金额 ÷ 共享比例尺；速度 ¥/分钟 = 全月金额÷全月分钟。 */
   function minuteFrac(){
     var n=new Date(), d=daysIn(n.getFullYear(),n.getMonth());
     var passed=(n.getDate()-1)*1440 + n.getHours()*60 + n.getMinutes();  /* 本月已过整分钟（分钟粒度） */
@@ -5808,12 +5835,22 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     return s;
   }
   function expRegularMonthly(){ var e=state.expense||{}; return (Number(e.mortgageMonthly)||0)+(Number(e.childMonthly)||0); }
+  /* 预算额度：收入存 state.income.occBudget、支出存 state.expense.occBudget；每次现取，兼容 IDB 恢复 / 导入替换 state */
+  function budgetObj(which){
+    if(which==='inc') return st();
+    if(!state.expense || typeof state.expense!=='object') state.expense={records:[],mortgageMonthly:0,childMonthly:0};
+    var o=state.expense;
+    if(typeof o.occBudget!=='number' || !isFinite(o.occBudget) || o.occBudget<0) o.occBudget=0;
+    return o;
+  }
+  function occBudget(which){ var v=Number(budgetObj(which).occBudget); return (isFinite(v)&&v>0)?v:0; }
   /* 4 位小数：常规条宽度接近满格时 regW 增长极慢，2 位会被四舍五入抹平，
      导致「跨分钟乌龟不前进」；提高精度保证每分钟都能推进一小步 */
   function clampPct(v){ return Math.max(0,Math.min(100,v)).toFixed(4); }
   function money2(n){ return '¥'+(Number(n)||0).toFixed(2); }
-  /* regW=常规条宽度%(=本月已过比例)，todayW=今日段宽度%，occW=零星条宽度%；total/reg/occ 用于数值显示 */
-  function turtleSet(pfx, regW, todayW, occW, total, reg, occ, speed){
+  /* regW=常规条宽度%、todayW=今日段宽度%、budW=预算条宽度%、overW=超预算条宽度%（均按共享比例尺）；
+     total=左侧实时总额，regM=常规月度总额，budPart=预算内已发生，over=超预算金额，speed=¥/分钟 */
+  function turtleSet(pfx, regW, todayW, budW, overW, total, regM, budPart, over, speed){
     /* —— 第 1 条「常规」：填充=当前累积金额/共享比例尺，长度按绝对值；较高月度总额者满格=月度总额；乌龟立终点 —— */
     var regLen=$('tb-'+pfx+'-reg-len'), regFill=$('tb-'+pfx+'-reg-fill'), regToday=$('tb-'+pfx+'-reg-today');
     if(regLen) regLen.style.width = clampPct(regW)+'%';
@@ -5835,17 +5872,20 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     if(ttspd){
       ttspd.textContent='¥'+speed.toFixed(2)+'/分钟';   /* 速度标记贴乌龟上方 */
       /* 防溢出：月初靠近左端时标记偏右展开、月末靠近右端时偏左展开，
-         避免压住左侧「常规」标签或右侧「常规金额」栏（窄屏同样有效） */
+         避免压住左侧「常规」标签或右侧「月度总额」栏（窄屏同样有效） */
       ttspd.style.transform = regW<18 ? 'translateX(-20%)' : (regW>72 ? 'translateX(-80%)' : 'translateX(-50%)');
     }
-    /* —— 第 2 条「零星」：整条斜纹，长度 = 零星总额（按同组月度总额定长），不设置乌龟 —— */
-    var sumLen=$('tb-'+pfx+'-sum-len');
-    if(sumLen) sumLen.style.width = clampPct(occW)+'%';
-    var occEl=$('tb-'+pfx+'-occ'); if(occEl) occEl.style.width='100%';
-    /* —— 左侧实时总金额（常规 + 零星）、右侧常规金额：两位小数，随分钟实时变动 —— */
+    /* —— 第 2 条「预算」：整条斜纹，长度 = 预算内实际金额/共享比例尺 —— */
+    var budLen=$('tb-'+pfx+'-sum-len'); if(budLen) budLen.style.width=clampPct(budW)+'%';
+    var budEl=$('tb-'+pfx+'-occ'); if(budEl) budEl.style.width='100%';
+    /* —— 第 3 条「超预算」：整条反向暖色斜纹，长度 = 超预算金额/共享比例尺 —— */
+    var overLen=$('tb-'+pfx+'-over-len'); if(overLen) overLen.style.width=clampPct(overW)+'%';
+    var overEl=$('tb-'+pfx+'-over'); if(overEl) overEl.style.width='100%';
+    /* —— 数值：左侧实时总额 / 右侧月度总额(固定) / 预算内 / 超预算，全部两位小数 —— */
     var amt=$('tb-'+pfx+'-amt'); if(amt) amt.textContent=money2(total);
-    var regAmt=$('tb-'+pfx+'-reg-amt'); if(regAmt) regAmt.textContent=money2(reg);
-    var occN=$('tb-'+pfx+'-occ-n'); if(occN) occN.textContent='+'+moneyInt(occ);
+    var regAmt=$('tb-'+pfx+'-reg-amt'); if(regAmt) regAmt.textContent=money2(regM);
+    var budN=$('tb-'+pfx+'-occ-n'); if(budN) budN.textContent=money2(budPart);
+    var overN=$('tb-'+pfx+'-over-n'); if(overN) overN.textContent=money2(over);
   }
   function turtleRender(){
     var now=new Date(), y=now.getFullYear(), m=now.getMonth();
@@ -5854,25 +5894,48 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var todayMin=now.getHours()*60+now.getMinutes();
     var todayFrac=monthMin>0 ? Math.max(0,Math.min(1,todayMin/monthMin)) : 0;  /* 今日已过比例 */
     var incRegM=salary()+rentMonthly(), incReg=incRegM*frac;
-    var incOcc=recSum(st().records, ym, ['part','sale']);
-    var incTotal=incReg+incOcc;
     var expRegM=expRegularMonthly(), expReg=expRegM*frac;
-    var expOcc=recSum((state.expense&&state.expense.records)||[], ym, ['home','food','tuition','util','invest']);
-    var expTotal=expReg+expOcc;
-    /* 共享比例尺 = 两常规月度总额较高者：常规条长度=当前累积金额/比例尺 → 收入、支出长度按绝对值不同，较高者满格(=月度总额) */
+    /* 实际「其它 / 零星」收支：按次录入的本月记录合计 */
+    var incAct=recSum(st().records, ym, ['part','sale']);
+    var expAct=recSum((state.expense&&state.expense.records)||[], ym, ['home','food','tuition','util','invest']);
+    /* 拆成「预算内」+「超预算」：额度>0 才拆，未设额度则全部算预算内（等同旧版，第3条为空） */
+    var incBud=occBudget('inc'), expBud=occBudget('exp');
+    var incBudPart = incBud>0 ? Math.min(incAct,incBud) : incAct;
+    var incOver    = incBud>0 ? Math.max(0,incAct-incBud) : 0;
+    var expBudPart = expBud>0 ? Math.min(expAct,expBud) : expAct;
+    var expOver    = expBud>0 ? Math.max(0,expAct-expBud) : 0;
+    /* 用户指定口径：左侧实时总金额 = 常规 + 预算 + 超预算（预算内+超预算=实际，故与统计卡一致、不双算） */
+    var incTotal=incReg+incBudPart+incOver;
+    var expTotal=expReg+expBudPart+expOver;
+    /* 共享比例尺 = 两常规月度总额较高者：三条长度都按「金额÷比例尺」，横向可比 */
     var regScale=Math.max(incRegM, expRegM, 1);
-    var incRegW=incReg/regScale*100, incTodayW=incRegM*todayFrac/regScale*100, incOccW=incOcc/regScale*100;
-    var expRegW=expReg/regScale*100, expTodayW=expRegM*todayFrac/regScale*100, expOccW=expOcc/regScale*100;
-    turtleSet('inc', incRegW, incTodayW, incOccW, incTotal, incReg, incOcc, incRegM/monthMin);
-    turtleSet('exp', expRegW, expTodayW, expOccW, expTotal, expReg, expOcc, expRegM/monthMin);
+    var incRegW=incReg/regScale*100, incTodayW=incRegM*todayFrac/regScale*100;
+    var incBudW=incBudPart/regScale*100, incOverW=incOver/regScale*100;
+    var expRegW=expReg/regScale*100, expTodayW=expRegM*todayFrac/regScale*100;
+    var expBudW=expBudPart/regScale*100, expOverW=expOver/regScale*100;
+    turtleSet('inc', incRegW, incTodayW, incBudW, incOverW, incTotal, incRegM, incBudPart, incOver, incRegM/monthMin);
+    turtleSet('exp', expRegW, expTodayW, expBudW, expOverW, expTotal, expRegM, expBudPart, expOver, expRegM/monthMin);
     var foot=$('tb-foot');
     if(foot){
       var bal=incTotal-expTotal;
       foot.innerHTML='本月实时 收入 <b>'+money2(incTotal)+'</b> · 支出 <b>'+money2(expTotal)+'</b> · '+
         (bal>=0?'结余 <b class="tb-pos">'+money2(bal)+'</b>':'超支 <b class="tb-neg">'+money2(-bal)+'</b>')+
-        '　｜　🐢 第1条(常规)=绝对金额进度（比例尺=两常规月度总额较高者，较高者满格=月度总额）；第2条(零星)=零星总额；深处=今日已爬段';
+        '　｜　左额 = 常规 + 预算内 + 超预算（🐢 第1条常规 / 第2条预算 / 第3条超预算，深处=今日已爬）'+
+        '　｜　预算额度 收入 '+(incBud>0?money2(incBud):'未设')+' / 支出 '+(expBud>0?money2(expBud):'未设');
     }
   }
+  /* 预算额度输入：两个框都由本 IIFE 接管（支出那块是独立脚本，避免跨 IIFE 通信），改完立即重画 3 条 */
+  [["inc-occ-budget","inc"],["exp-occ-budget","exp"]].forEach(function(pair){
+    var el=$(pair[0]); if(!el) return;
+    var o=budgetObj(pair[1]);
+    el.value = o.occBudget ? String(o.occBudget) : '';
+    el.addEventListener('input',function(){
+      var v=Number(el.value);
+      budgetObj(pair[1]).occBudget = (isFinite(v)&&v>0)?v:0;
+      if(typeof save==='function') save();
+      turtleRender();
+    });
+  });
   render();
   setInterval(render,30000);   /* 图表 / 统计卡 / 记录列表：30 秒重建一次 */
   setInterval(turtleRender,1000);  /* 每秒检查，金额按分钟粒度变化，跨分钟乌龟爬一小步 */
@@ -5900,7 +5963,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     if(!state.expense || typeof state.expense!=="object") state.expense={records:[],mortgageMonthly:0,childMonthly:0};
     var o=state.expense;
     if(!Array.isArray(o.records)) o.records=[];
-    ["mortgageMonthly","childMonthly"].forEach(function(k){
+    ["mortgageMonthly","childMonthly","occBudget"].forEach(function(k){
       if(typeof o[k]!=="number" || !isFinite(o[k]) || o[k]<0) o[k]=0;
     });
     return o;
