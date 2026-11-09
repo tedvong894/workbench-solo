@@ -1268,6 +1268,7 @@
   .kt-parts{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:10.5px;color:var(--ink3);margin:6px 0 14px}
   .kt-stat-head{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2);margin-bottom:8px}
   .kt-stat-head select{border:1px solid var(--line);border-radius:8px;padding:4px 7px;font:inherit;font-size:12px;color:var(--ink);background:#fff;appearance:none;-webkit-appearance:none}
+  .kt-flow{margin-left:auto;font-size:10.5px;color:var(--ink3);white-space:nowrap;font-variant-numeric:tabular-nums}
   .kt-charts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
   .kt-chart-box{min-width:0}
   .kt-chart-t{font-size:11px;color:var(--ink3);margin-bottom:4px}
@@ -1739,6 +1740,7 @@
               <span>统计分析</span>
               <select id="kt-mode"><option value="month">月度</option><option value="year">年度</option></select>
               <select id="kt-period"></select>
+              <span class="kt-flow" id="kt-flow-n">时间流逝 0.0%</span>
             </div>
             <div class="kt-charts">
               <div class="kt-chart-box"><div class="kt-chart-t">开源 <b id="kt-c-open-n">¥0</b></div><div class="kt-chart" id="kt-c-open"></div><div class="kt-axis" id="kt-a-open"></div></div>
@@ -5366,7 +5368,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261109-1421').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261109-1449').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5380,7 +5382,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261109-1421 (单机)';
+    var V = '20261109-1449 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5512,7 +5514,15 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     if(t<today) return 1;
     return dayFrac();
   }
-  function monthElapsed(y,m){ var d=daysIn(y,m),sum=0; for(var i=1;i<=d;i++) sum+=elapsedOfDay(y,m,i); return d>0?sum/d:0; }
+  /* 时间流逝统一口径：历史月份的时间流逝统一为 100%，未来月份 = 0%，当前月按天实时累加。
+     历史月不再依赖逐日 elapsedOfDay 相加，直接短路返回 1，杜绝跨月/跨年边界出现非 100%。 */
+  function monthElapsed(y,m){
+    var n=new Date(), cur=new Date(n.getFullYear(),n.getMonth(),1), tgt=new Date(y,m,1);
+    if(tgt<cur) return 1;
+    if(tgt>cur) return 0;
+    var d=daysIn(y,m),sum=0; for(var i=1;i<=d;i++) sum+=elapsedOfDay(y,m,i);
+    return d>0?sum/d:0;
+  }
   function fmt(n){ var v=Math.round(Number(n)||0); return (v<0?'-¥':'¥')+Math.abs(v).toLocaleString('zh-CN'); }
   function mark(el,v){ if(!el) return; el.classList.toggle('kt-neg',(Number(v)||0)<0); }
   function flag(el,good,neg){ if(!el) return; el.classList.toggle('kt-good',!!good); el.classList.toggle('kt-neg',!!neg); }
@@ -5607,6 +5617,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var targets={open:o.incBudget*mult,save:o.saveTarget*mult,net:o.netTarget*mult};
     var vals={open:b.open,save:b.saveAmt,net:b.net};
     var flow=periodElapsedPct(pp);
+    setT('kt-flow-n','时间流逝 '+flow.toFixed(1)+'%');   /* 历史月恒为 100.0% */
     /* ① 用户确认公式 = 节流基准 × 本月流逝 − 实际支出（代码原本就是这个，除号是笔误）。
        把完整算式写进 title，基准原值 / 流逝 / 支出 / 结果四项可直接核对，避免「金额看着不对」时无从查起。 */
     var baseRaw=o.expBudget*mult;
@@ -5651,6 +5662,21 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       for(i=0;i<12;i++){ var d=new Date(n.getFullYear(),n.getMonth()-i,1),v=d.getFullYear()+'-'+pad2(d.getMonth()+1); opts.push('<option value="'+v+'">'+d.getFullYear()+'年'+(d.getMonth()+1)+'月</option>'); }
     }
     sel.innerHTML=opts.join(''); if(opts.length) sel.value=mode.value==='year'?String(n.getFullYear()):n.getFullYear()+'-'+pad2(n.getMonth()+1);
+  }
+  /* —— 记账日期 ↔ 统计分析期间自动同步（2026-11-09 bug 修复）——
+     ① 保持当前「月度 / 年度」这个时间维度不变：月度跳到日期所在月，年度跳到日期所在年；
+     ② 目标期间超出「最近 12 个月 / 最近 5 年」时，自动补一个选项再选中（补记老账也能跳过去）；
+     ③ 只改下拉，由调用方统一 renderAll，避免重复重绘。 */
+  function syncPeriodToDate(dateStr){
+    var d=parseYmd(dateStr); if(!d) return false;
+    var mode=$('kt-mode'),sel=$('kt-period'); if(!mode||!sel) return false;
+    var y=d.getFullYear(),m=d.getMonth(),val,label;
+    if(mode.value==='year'){ val=String(y); label=y+'年'; }
+    else{ val=y+'-'+pad2(m+1); label=y+'年'+(m+1)+'月'; }
+    var html=sel.innerHTML||'';
+    if(html.indexOf('value="'+val+'"')<0) sel.innerHTML='<option value="'+val+'">'+label+'</option>'+html;
+    if(sel.value===val) return false;
+    sel.value=val; return true;
   }
 
   /* —— 图表：零轴居中，正值向上（维度色）、负值向下（低饱和红） —— */
@@ -5737,6 +5763,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     if(!KIND[k.value]||!(amount>0)) return;
     var o=kt();
     o.records.push({id:'kt'+Date.now()+Math.random().toString(36).slice(2,6),date:date,kind:k.value,name:(nm&&nm.value||'').trim(),amount:amount});
+    syncPeriodToDate(date);   /* ① 统计分析自动跳到这笔账所属的期间 */
     if(folded) setFold(false);   /* 刚记的一笔要能立刻看见 */
     saveCfg(); resetForm(); renderAll();
   }
@@ -5746,6 +5773,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var d=$('kt-date'),k=$('kt-kind'),nm=$('kt-name'),a=$('kt-amount'),amount=num(a&&a.value);
     if(!d||!k||!KIND[k.value]||!(amount>0)) return;
     r.date=parseYmd(d.value)?d.value:ymd(new Date()); r.kind=k.value; r.name=(nm&&nm.value||'').trim(); r.amount=amount;
+    syncPeriodToDate(r.date);   /* ① 编辑保存改了日期也要同步 */
     saveCfg(); resetForm(); renderAll();
   }
   function delRec(){
@@ -5757,6 +5785,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 
   /* —— 绑定 —— */
   var d0=$('kt-date'); if(d0&&!d0.value) d0.value=ymd(new Date());
+  if(d0) d0.addEventListener('change',function(){ if(syncPeriodToDate(d0.value)) renderAll(); });  /* ① 选日期即联动 */
   var cfg=kt();
   [['kt-inc-budget','incBudget'],['kt-exp-budget','expBudget'],['kt-save-target','saveTarget'],['kt-net-target','netTarget']].forEach(function(pair){
     var e=$(pair[0]); if(e) e.value=String(cfg[pair[1]]);
