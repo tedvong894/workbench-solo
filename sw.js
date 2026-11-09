@@ -1,6 +1,6 @@
 // 工作台·单机版 - Service Worker
 // 与联网版缓存名完全隔离（solo- 前缀），两版互不影响
-const CACHE_VERSION = 'solo-20261109-1421';
+const CACHE_VERSION = 'solo-20261109-1449';
 const CACHE = 'workbench-solo-shell-' + CACHE_VERSION;
 
 const SHELL = [
