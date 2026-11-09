@@ -1228,20 +1228,28 @@
   .kt-card{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
   .kt-k{font-size:11px;color:var(--ink3)}
   .kt-v{font-size:20px;font-weight:700;color:var(--ink);line-height:1.35;margin-top:2px;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
-  .kt-v.kt-neg,.topbar-stats .stat-n.kt-neg{color:#c0453a}
   .kt-sub{font-size:10.5px;color:var(--ink3);margin-top:2px}
-  /* 2026-11-09：两个预算框 + 记账输入合并成一行；窄屏横向滚动，绝不换行 */
-  .kt-bar{display:flex;gap:6px;align-items:center;flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px;margin-bottom:7px}
+  .kt-sub b{font-weight:600;font-variant-numeric:tabular-nums}
+  /* ③ 完成比例跑赢时间流逝 → 加粗 + 低饱和绿；④ 负数 → 红（红优先） */
+  .kt-sub b.kt-good{font-weight:700;color:#3f7d5c}
+  .kt-v.kt-good,.topbar-stats .stat-n.kt-good{color:#3f7d5c}
+  .kt-v.kt-neg,.topbar-stats .stat-n.kt-neg,.kt-sub b.kt-neg{color:#c0453a;font-weight:700}
+  /* 2026-11-09：1 基准 + 3 目标 + 记账控件全部同一行；压缩输入框，窄屏横向滚动，绝不换行 */
+  .kt-bar{display:flex;gap:3px;align-items:center;flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px;margin-bottom:7px}
   .kt-bar>*{flex:none}
-  .kt-f{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink2);white-space:nowrap}
-  .kt-f input{width:66px;border:1px solid var(--line);border-radius:8px;padding:5px 7px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;min-width:0}
-  .kt-sep{width:1px;height:20px;background:var(--line);margin:0 2px}
-  .kt-bar>input,.kt-bar>select{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;appearance:none;-webkit-appearance:none;min-width:0}
-  .kt-bar>input[type=date]{width:132px}
-  .kt-bar>select{width:120px}
-  .kt-bar>#kt-name{width:88px}
-  .kt-bar>#kt-amount{width:84px}
-  .kt-btn{border:1px solid var(--line);background:var(--brand-soft);color:var(--brand);border-radius:8px;padding:6px 10px;font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap}
+  .kt-f{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;color:var(--ink2);white-space:nowrap}
+  .kt-f input{width:46px;border:1px solid var(--line);border-radius:7px;padding:3px 4px;font:inherit;font-size:11px;color:var(--ink);background:#fff;min-width:0;appearance:none;-webkit-appearance:none}
+  /* 数字框原生上下箭头会挤掉 4 位数的末位（2000 显示成 200），统一隐藏 */
+  .kt-f input::-webkit-inner-spin-button,.kt-f input::-webkit-outer-spin-button,
+  .kt-bar>input::-webkit-inner-spin-button,.kt-bar>input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+  .kt-f input[type=number],.kt-bar>input[type=number]{-moz-appearance:textfield}
+  .kt-sep{width:1px;height:18px;background:var(--line);margin:0}
+  .kt-bar>input,.kt-bar>select{border:1px solid var(--line);border-radius:7px;padding:4px 5px;font:inherit;font-size:11px;color:var(--ink);background:#fff;appearance:none;-webkit-appearance:none;min-width:0}
+  .kt-bar>input[type=date]{width:108px}
+  .kt-bar>select{width:104px}
+  .kt-bar>#kt-name{width:50px}
+  .kt-bar>#kt-amount{width:58px}
+  .kt-btn{border:1px solid var(--line);background:var(--brand-soft);color:var(--brand);border-radius:7px;padding:4px 7px;font:inherit;font-size:11px;cursor:pointer;white-space:nowrap}
   .kt-btn-ghost{background:#fff;color:var(--ink3)}
   .kt-hide{display:none!important}
   .kt-fold-head{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink2);cursor:pointer;user-select:none;padding:5px 2px;border-top:1px solid var(--line2)}
@@ -1694,13 +1702,15 @@
         <div class="p-head"><span class="pmod">🌱</span><h2>开源节流</h2><span class="hint">开源 · 节流 · 净收益</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
         <div class="p-body">
           <div class="kt-sum">
-            <div class="kt-card"><div class="kt-k">开源</div><div class="kt-v" id="kt-open-n">¥0</div><div class="kt-sub" id="kt-open-sub">兼职 + 投资</div></div>
-            <div class="kt-card"><div class="kt-k">节流</div><div class="kt-v" id="kt-save-n">¥0</div><div class="kt-sub" id="kt-save-sub">预算基准 − 实际支出</div></div>
-            <div class="kt-card"><div class="kt-k">净收益</div><div class="kt-v" id="kt-net-n">¥0</div><div class="kt-sub" id="kt-net-sub">开源 + 节流</div></div>
+            <div class="kt-card"><div class="kt-k">开源</div><div class="kt-v" id="kt-open-n">¥0</div><div class="kt-sub" id="kt-open-sub">目标 <b id="kt-open-tgt">¥2,000</b> · 完成 <b id="kt-open-pct">0.0%</b></div></div>
+            <div class="kt-card"><div class="kt-k">节流</div><div class="kt-v" id="kt-save-n">¥0</div><div class="kt-sub" id="kt-save-sub">目标 <b id="kt-save-tgt">¥3,000</b> · 完成 <b id="kt-save-pct">0.0%</b></div></div>
+            <div class="kt-card"><div class="kt-k">净收益</div><div class="kt-v" id="kt-net-n">¥0</div><div class="kt-sub" id="kt-net-sub">目标 <b id="kt-net-tgt">¥5,000</b> · 完成 <b id="kt-net-pct">0.0%</b></div></div>
           </div>
           <div class="kt-bar">
-            <label class="kt-f"><span>开源目标/月</span><input type="number" id="kt-inc-budget" min="0" step="1" value="2000"></label>
-            <label class="kt-f"><span>节流目标/月</span><input type="number" id="kt-exp-budget" min="0" step="1" value="5000"></label>
+            <label class="kt-f" title="开源目标 / 月：兼职 + 投资的期望金额"><span>开源目标</span><input type="number" id="kt-inc-budget" min="0" step="1" value="2000"></label>
+            <label class="kt-f" title="节流基准 / 月：节流 = 基准 × 本月流逝 − 实际支出（公式不变）"><span>节流基准</span><input type="number" id="kt-exp-budget" min="0" step="1" value="5000"></label>
+            <label class="kt-f" title="节流目标 / 月：节流完成比例 = 节流实际 ÷ 节流目标"><span>节流目标</span><input type="number" id="kt-save-target" min="0" step="1" value="3000"></label>
+            <label class="kt-f" title="净收益目标 / 月：净收益完成比例 = 净收益实际 ÷ 净收益目标"><span>净收益目标</span><input type="number" id="kt-net-target" min="0" step="1" value="5000"></label>
             <i class="kt-sep" aria-hidden="true"></i>
             <input type="date" id="kt-date">
             <select id="kt-kind">
@@ -5355,7 +5365,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261109-1331').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261109-1348').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5369,7 +5379,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261109-1331 (单机)';
+    var V = '20261109-1348 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5477,10 +5487,13 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   var ORDER=['part','invest','food','fun','buy','other'];
   var COL={open:'#a9cfb4',save:'#a9c3d9',net:'#d9b98f'}, NEG='#d9a099';
   function kt(){
-    if(!state.ktjl||typeof state.ktjl!=='object') state.ktjl={incBudget:2000,expBudget:5000,records:[]};
+    if(!state.ktjl||typeof state.ktjl!=='object') state.ktjl={incBudget:2000,expBudget:5000,saveTarget:3000,netTarget:5000,records:[]};
     var o=state.ktjl;
     if(typeof o.incBudget!=='number'||!isFinite(o.incBudget)||o.incBudget<0) o.incBudget=2000;
+    /* expBudget = 节流基准（原「节流目标」改名），节流公式仍用它，口径不变 */
     if(typeof o.expBudget!=='number'||!isFinite(o.expBudget)||o.expBudget<0) o.expBudget=5000;
+    if(typeof o.saveTarget!=='number'||!isFinite(o.saveTarget)||o.saveTarget<0) o.saveTarget=3000;
+    if(typeof o.netTarget!=='number'||!isFinite(o.netTarget)||o.netTarget<0) o.netTarget=5000;
     if(!Array.isArray(o.records)) o.records=[];
     return o;
   }
@@ -5501,6 +5514,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   function monthElapsed(y,m){ var d=daysIn(y,m),sum=0; for(var i=1;i<=d;i++) sum+=elapsedOfDay(y,m,i); return d>0?sum/d:0; }
   function fmt(n){ var v=Math.round(Number(n)||0); return (v<0?'-¥':'¥')+Math.abs(v).toLocaleString('zh-CN'); }
   function mark(el,v){ if(!el) return; el.classList.toggle('kt-neg',(Number(v)||0)<0); }
+  function flag(el,good,neg){ if(!el) return; el.classList.toggle('kt-good',!!good); el.classList.toggle('kt-neg',!!neg); }
   function num(v){ var n=Number(v); return isFinite(n)?n:0; }
 
   /* —— 聚合：一次遍历记录，节流基准按已流逝比例逐日累加 —— */
@@ -5544,8 +5558,14 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   function monthSeries(y){ var r=[]; for(var m=0;m<12;m++){var a=aggMonth(y,m);r.push({open:a.open,saveAmt:a.saveAmt,net:a.net});} return r; }
   function period(){ var mode=$('kt-mode'),p=$('kt-period'); var v=(p&&p.value)||''; if(mode&&mode.value==='year') return {mode:'year',y:num(v),m:0}; return {mode:'month',y:num(String(v).slice(0,4)),m:num(String(v).slice(5,7))-1}; }
   function aggPeriod(){ var p=period(); return p.mode==='year'?aggYear(p.y):aggMonth(p.y,p.m); }
+  /* ③ 时间流逝：月度=该月流逝（当前月与生活仪表「本月流逝」同源），年度=该年 12 个月流逝均值。
+     历史期=100%、未来期=0%，故完成比例与所选期间进度可直接比较。 */
+  function periodElapsedPct(p){
+    if(p.mode==='year'){ var s=0; for(var m=0;m<12;m++) s+=monthElapsed(p.y,m); return s/12*100; }
+    return monthElapsed(p.y,p.m)*100;
+  }
 
-  /* —— 顶栏（实时净收益 + 本月净收益预估，另 2 格隐藏保 DOM）+ 面板三大卡 —— */
+  /* —— 顶栏（实时净收益 + 本月净收益预估，另 2 格隐藏保 DOM）+ 面板三大卡（1 基准 3 目标） —— */
   function renderNumbers(){
     var n=new Date(), a=aggMonth(n.getFullYear(),n.getMonth());
     setT('kt-open-chip-n',fmt(a.open)); setT('kt-save-chip-n',fmt(a.saveAmt)); setT('kt-net-chip-n',fmt(a.net));
@@ -5560,12 +5580,27 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       setT('kt-est-chip-n','—'); mark(est,0);
       if(est) est.title='本月刚开始，暂无预估';
     }
-    var b=aggPeriod(), o=kt(), mult=b.mode==='year'?12:1, target=o.incBudget*mult;
-    setT('kt-open-n',fmt(b.open)); setT('kt-save-n',fmt(b.saveAmt)); setT('kt-net-n',fmt(b.net));
-    mark($('kt-save-n'),b.saveAmt); mark($('kt-net-n'),b.net);
-    setT('kt-open-sub','兼职 + 投资 · 目标 '+fmt(target)+'（完成 '+(target>0?(b.open/target*100).toFixed(1):'0.0')+'%）');
-    setT('kt-save-sub','预算基准 '+fmt(b.base)+' − 支出 '+fmt(b.spend));
-    setT('kt-net-sub','开源 '+fmt(b.open)+' + 节流 '+fmt(b.saveAmt));
+    var b=aggPeriod(), o=kt(), pp=period(), mult=pp.mode==='year'?12:1;
+    var targets={open:o.incBudget*mult,save:o.saveTarget*mult,net:o.netTarget*mult};
+    var vals={open:b.open,save:b.saveAmt,net:b.net};
+    var flow=periodElapsedPct(pp);
+    var desc={
+      open:'开源 = 兼职 + 投资实际金额 '+fmt(b.open),
+      save:'节流 = 基准 '+fmt(b.base)+' − 支出 '+fmt(b.spend)+' = '+fmt(b.saveAmt),
+      net:'净收益 = 开源 '+fmt(b.open)+' + 节流 '+fmt(b.saveAmt)+' = '+fmt(b.net)
+    };
+    /* 实际 / 目标 = 完成比例；> 时间流逝 → 加粗绿；实际为负 → 红（红优先，绝不误判为跑赢） */
+    ['open','save','net'].forEach(function(k){
+      var v=vals[k],t=targets[k],pct=(t>0?v/t*100:0),neg=v<0,good=(!neg&&pct>flow);
+      setT('kt-'+k+'-n',fmt(v));
+      setT('kt-'+k+'-tgt',fmt(t));
+      setT('kt-'+k+'-pct',pct.toFixed(1)+'%');
+      flag($('kt-'+k+'-n'),good,neg);
+      flag($('kt-'+k+'-tgt'),good,false);   /* 目标值是用户设的常量，负值时不染红，避免误导 */
+      flag($('kt-'+k+'-pct'),good,neg);
+      var sub=$('kt-'+k+'-sub');
+      if(sub){ var tip=desc[k]+'；目标 '+fmt(t)+'；完成 '+pct.toFixed(1)+'%（时间流逝 '+flow.toFixed(1)+'%）'; if(sub.title!==tip) sub.title=tip; }
+    });
     var cnt=$('cnt-ktjl'); if(cnt) cnt.textContent=(o.records||[]).length;
   }
 
@@ -5685,10 +5720,11 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 
   /* —— 绑定 —— */
   var d0=$('kt-date'); if(d0&&!d0.value) d0.value=ymd(new Date());
-  var ib=$('kt-inc-budget'),eb=$('kt-exp-budget');
-  if(ib) ib.value=String(kt().incBudget);
-  if(eb) eb.value=String(kt().expBudget);
-  [['kt-inc-budget','incBudget'],['kt-exp-budget','expBudget']].forEach(function(pair){
+  var cfg=kt();
+  [['kt-inc-budget','incBudget'],['kt-exp-budget','expBudget'],['kt-save-target','saveTarget'],['kt-net-target','netTarget']].forEach(function(pair){
+    var e=$(pair[0]); if(e) e.value=String(cfg[pair[1]]);
+  });
+  [['kt-inc-budget','incBudget'],['kt-exp-budget','expBudget'],['kt-save-target','saveTarget'],['kt-net-target','netTarget']].forEach(function(pair){
     var el=$(pair[0]); if(!el) return;
     el.addEventListener('input',function(){ var v=num(el.value); kt()[pair[1]]=v<0?0:v; saveCfg(); renderAll(); });
   });
@@ -5706,7 +5742,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   fillPeriods();
   if(mode) mode.addEventListener('change',function(){ fillPeriods(); renderAll(); });
   if(per) per.addEventListener('change',renderAll);
-  /* 顶栏同组三格互点保护，复用 ld-script 暴露的 window.__soloChip */
+  /* 顶栏同组多格互点保护，复用 ld-script 暴露的 window.__soloChip */
   ['kt-open-chip','kt-save-chip','kt-net-chip','kt-est-chip'].forEach(function(id){
     var el=$(id); if(!el) return;
     el.addEventListener('click',function(){ if(typeof window!=='undefined'&&window.__soloChip) window.__soloChip.guard(id,'ktjl'); });
