@@ -1281,28 +1281,42 @@
 </style>
 <style id="sk-style">
   .sk-sum{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;margin-bottom:12px}
+  .sk-sum-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
   .sk-sum-k{font-size:11px;color:var(--ink3)}
-  .sk-sum-v{font-family:"Sora",sans-serif;font-size:22px;font-weight:700;color:var(--ink);line-height:1.35;margin-top:2px;letter-spacing:-.4px}
-  .sk-sum-bar{height:6px;border-radius:99px;background:var(--line2);overflow:hidden;margin-top:8px}
+  .sk-total{font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums}
+  .sk-sum-bar{height:5px;border-radius:99px;background:var(--line2);overflow:hidden;margin-top:7px}
   .sk-sum-bar i{display:block;height:100%;width:0;background:var(--brand);opacity:.55;transition:width .4s ease}
-  .sk-sum-sub{font-size:11px;color:var(--ink3);margin-top:6px}
+  .sk-avgs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  .sk-avg-i{border:1px solid var(--line2);border-radius:10px;padding:8px 10px;background:#fff;min-width:0}
+  .sk-avg-t{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink2)}
+  .sk-dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+  .sk-dot.hi{background:#e5484d}
+  .sk-dot.mid{background:#f5b301}
+  .sk-dot.lo{background:#34c759}
+  .sk-avg-v{font-family:"Sora",sans-serif;font-size:17px;font-weight:700;color:var(--ink);line-height:1.35;margin-top:3px;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+  .sk-avg-c{font-size:10.5px;color:var(--ink3);margin-top:1px}
+  .sk-sum-sub{font-size:11px;color:var(--ink3);margin-top:8px}
   .sk-add{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
   .sk-add input,.sk-add select{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;appearance:none;-webkit-appearance:none;min-width:0}
   .sk-add input{flex:1 1 180px;min-width:140px}
-  .sk-add select{width:150px}
+  .sk-add input[type=number]{flex:0 0 104px;width:104px}
+  .sk-add input[type=number]::-webkit-inner-spin-button,
+  .sk-add input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+  .sk-add input[type=number]{-moz-appearance:textfield}
+  .sk-add select{width:76px}
   .sk-btn{border:1px solid var(--line);background:var(--brand-soft);color:var(--brand);border-radius:8px;padding:6px 12px;font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap}
   .sk-btn-quiet{background:#fff;color:var(--ink3)}
   .sk-list{border-top:1px solid var(--line2);padding-top:6px}
-  .sk-row{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line2);cursor:pointer}
+  .sk-row{display:flex;align-items:center;gap:9px;padding:8px 2px;border-bottom:1px solid var(--line2);cursor:pointer}
   .sk-row:hover{background:var(--brand-soft)}
   .sk-row.on{background:var(--brand-soft)}
+  .sk-row .sk-dot{width:8px;height:8px}
   .sk-row-n{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;color:var(--ink)}
-  .sk-row-l{font-size:10.5px;color:var(--ink2);white-space:nowrap}
   .sk-row-bar{width:110px;height:6px;border-radius:99px;background:var(--line2);overflow:hidden;flex:none}
   .sk-row-bar i{display:block;height:100%;background:var(--brand);opacity:.5}
   .sk-row-p{font-size:11px;color:var(--ink3);width:38px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
   .sk-empty{font-size:11.5px;color:var(--ink3);padding:8px 0}
-  @media (max-width:820px){ .sk-row-bar{width:64px} }
+  @media (max-width:820px){ .sk-row-bar{width:64px} .sk-avgs{gap:6px} .sk-avg-v{font-size:15px} }
 </style>
 </head>
 <body data-page-node-id="AV2oOpzl66jAbdXl4FAQ1J">
@@ -1395,7 +1409,7 @@
         </button>
         <div class="mod-group-body" data-page-node-id="MXdRPTNBxcB6uA9uh1dKrT">
           <button class="mod-tab" data-mod="note-daily" data-sort-key="strat" data-page-node-id="24jo63drG2UDHV2VDT0ONG"><span class="t-ico" data-page-node-id="QHBXmc0KD7XO0asPASJ8Lk">🌟</span><span class="t-name" data-page-node-id="7jek9kZYNBIByF97kNIaxo">今日成长</span><span class="t-cnt" id="cnt-note-daily" data-page-node-id="weobsAPi8ErxdwfYJxWoEr">0</span></button>
-          <button class="mod-tab" data-mod="skill" data-sort-key="strat"><span class="t-ico">🛠️</span><span class="t-name">技能<span class="t-hint">按熟练度评价</span></span><span class="t-cnt" id="cnt-skill">0</span></button>
+          <button class="mod-tab" data-mod="skill" data-sort-key="strat"><span class="t-ico">🛠️</span><span class="t-name">技能<span class="t-hint">熟练度 · 重要程度</span></span><span class="t-cnt" id="cnt-skill">0</span></button>
           <button class="mod-tab" data-mod="asset" data-sort-key="strat" data-page-node-id="asset-nav-1"><span class="t-ico" data-page-node-id="asset-nav-2">💎</span><span class="t-name" data-page-node-id="asset-nav-3">数字资产<span class="t-hint" data-page-node-id="asset-nav-4">持续带来收益的非实物资产</span></span><span class="t-cnt" id="cnt-asset" data-page-node-id="asset-nav-5">0</span></button>
           <button class="mod-tab" data-mod="vision" data-sort-key="strat" data-page-node-id="fR7JJCJgiD6vGqBJzCOTqp"><span class="t-ico" data-page-node-id="D6OqCSBmyYudlssvLjavF2">🎯</span><span class="t-name" data-page-node-id="fECgAeZeKDPlHFFJ5lfG1E">愿景<span class="t-hint" data-page-node-id="pTO7X49gCzT1ZNsvMRm7WG">北极星方向</span></span><span class="t-cnt" id="cnt-vision" data-page-node-id="qt3avJz5dwE8nsuq99jle2">0</span></button>
           <button class="mod-tab" data-mod="strategy" data-sort-key="strat" data-page-node-id="bHtkipIEKdJ76Fbu1BNxnD"><span class="t-ico" data-page-node-id="4ZabzKwXe51DutCVy7XYGW">♟️</span><span class="t-name" data-page-node-id="2apeZ8RqYHzB4wNiwF2yNj">战略<span class="t-hint" data-page-node-id="ZyToE1uvHupSHgBWERTs5J">打法原则</span></span><span class="t-cnt" id="cnt-strategy" data-page-node-id="lZCpC87C6zFRVQs27pxQLT">0</span></button>
@@ -1464,24 +1478,25 @@
           </div>
         </div>
       </section>
-      <!-- 技能：按熟练度评价（2026-11-07 新增，紧跟今日成长） -->
+      <!-- 技能：熟练度手动输入 + 三档重要程度（2026-11-09 改造，紧跟今日成长） -->
       <section class="panel" id="p-skill">
-        <div class="p-head"><span class="pmod">🛠️</span><h2>技能</h2><span class="hint">按熟练度评价</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="p-head"><span class="pmod">🛠️</span><h2>技能</h2><span class="hint">熟练度 · 重要程度</span><span class="collapse-ind" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 6.2l4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
         <div class="p-body">
           <div class="sk-sum">
-            <div class="sk-sum-k">平均熟练度</div>
-            <div class="sk-sum-v" id="sk-avg">0.0%</div>
+            <div class="sk-sum-head"><span class="sk-sum-k">平均熟练度</span><span class="sk-total" id="sk-avg">总平均 0.0%</span></div>
             <div class="sk-sum-bar"><i id="sk-avg-bar"></i></div>
+            <div class="sk-avgs">
+              <div class="sk-avg-i"><div class="sk-avg-t"><i class="sk-dot hi"></i>关键</div><div class="sk-avg-v" id="sk-avg-1">—</div><div class="sk-avg-c" id="sk-avg-c-1">0 项</div></div>
+              <div class="sk-avg-i"><div class="sk-avg-t"><i class="sk-dot mid"></i>重要</div><div class="sk-avg-v" id="sk-avg-2">—</div><div class="sk-avg-c" id="sk-avg-c-2">0 项</div></div>
+              <div class="sk-avg-i"><div class="sk-avg-t"><i class="sk-dot lo"></i>普通</div><div class="sk-avg-v" id="sk-avg-3">—</div><div class="sk-avg-c" id="sk-avg-c-3">0 项</div></div>
+            </div>
             <div class="sk-sum-sub" id="sk-sum-sub">还没有技能，下面添加第一条</div>
           </div>
           <div class="sk-add">
             <input id="sk-name" placeholder="技能名称，如：成本分析 / Excel 建模">
-            <select id="sk-level">
-              <option value="1">生疏 · 20%</option>
-              <option value="2">入门 · 40%</option>
-              <option value="3" selected>熟练 · 60%</option>
-              <option value="4">精通 · 80%</option>
-              <option value="5">大师 · 100%</option>
+            <input id="sk-level" type="number" min="0" max="100" step="1" inputmode="numeric" placeholder="熟练度 0-100" title="手动输入熟练度，0~100">
+            <select id="sk-imp" title="重要程度：关键 / 重要 / 普通">
+              <option value="1">关键</option><option value="2">重要</option><option value="3" selected>普通</option>
             </select>
             <button class="sk-btn" id="sk-save">添加</button>
             <button class="sk-btn sk-btn-quiet" id="sk-del" style="display:none">删除</button>
@@ -5368,7 +5383,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261109-1449').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261109-1517').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5382,7 +5397,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261109-1449 (单机)';
+    var V = '20261109-1517 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5819,37 +5834,62 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 })();
 </script>
 <script id="sk-script">
-/* ===== 技能：5 档熟练度评价 + 平均熟练度（单机版 2026-11-07） ===== */
+/* ===== 技能：熟练度手动输入 + 重要程度三档 + 分组平均熟练度（单机版 2026-11-09） =====
+   数据：state.skills=[{id,name,p:0~100,imp:"1"|"2"|"3"}]；老数据 {level:1~5} 自动折算 p=level*20、imp 默认普通。
+   重要程度圆点与目标/习惯模块同色（红=关键 / 黄=重要 / 绿=普通），UI 不显示系数。 */
 (function(){
   var $=function(id){ return document.getElementById(id); };
-  var LV=[null,{n:"生疏",p:20},{n:"入门",p:40},{n:"熟练",p:60},{n:"精通",p:80},{n:"大师",p:100}];
+  var IMPS=[{v:"1",k:"关键",c:"hi"},{v:"2",k:"重要",c:"mid"},{v:"3",k:"普通",c:"lo"}];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
   function st(){ if(!Array.isArray(state.skills)) state.skills=[]; return state.skills; }
-  function lvOf(x){ return LV[Number(x&&x.level)]||LV[3]; }
+  function pOf(x){
+    var p=Number(x&&x.p);
+    if(!isFinite(p)){ var l=Number(x&&x.level); p=(isFinite(l)&&l>=1&&l<=5)?l*20:60; }
+    return Math.max(0,Math.min(100,Math.round(p)));
+  }
+  function impOf(x){
+    var v=String((x&&x.imp)||"3");
+    for(var i=0;i<IMPS.length;i++) if(IMPS[i].v===v) return IMPS[i];
+    return IMPS[2];
+  }
+  function impRank(x){ return Number(impOf(x).v); }
+  function group(v){ return st().filter(function(x){ return impOf(x).v===v; }); }
+  function avgOf(v){ var g=group(v); return g.length ? g.reduce(function(s,x){ return s+pOf(x); },0)/g.length : null; }
   function say(t,k){ if(typeof toast==="function") toast(t,k||"ok"); }
+  function put(id,v){ var el=$(id); if(el) el.textContent=v; }
   var editing=null;
   function render(){
     var arr=st();
-    var avg=arr.length ? arr.reduce(function(s,x){ return s+lvOf(x).p; },0)/arr.length : 0;
-    var a=$("sk-avg"); if(a) a.textContent=avg.toFixed(1)+"%";
-    var ab=$("sk-avg-bar"); if(ab) ab.style.width=avg.toFixed(1)+"%";
-    var sub=$("sk-sum-sub"); if(sub) sub.textContent=arr.length ? "共 "+arr.length+" 项技能 · 点击任意一行可改名称 / 熟练度" : "还没有技能，下面添加第一条";
+    var total=arr.length ? arr.reduce(function(s,x){ return s+pOf(x); },0)/arr.length : 0;
+    put("sk-avg","总平均 "+total.toFixed(1)+"%");
+    var ab=$("sk-avg-bar"); if(ab) ab.style.width=total.toFixed(1)+"%";
+    IMPS.forEach(function(o){
+      var v=avgOf(o.v), g=group(o.v).length;
+      put("sk-avg-"+o.v, v===null?"—":v.toFixed(1)+"%");
+      put("sk-avg-c-"+o.v, g+" 项");
+    });
+    put("sk-sum-sub", arr.length ? "共 "+arr.length+" 项 · 按重要程度排序，同档按熟练度降序 · 点击行可编辑" : "还没有技能，下面添加第一条");
     var box=$("sk-list");
     if(box){
-      if(!arr.length) box.innerHTML='<div class="sk-empty">还没有技能。添加后会按熟练度给出评价与平均熟练度。</div>';
-      else box.innerHTML=arr.slice().sort(function(x,y){ return lvOf(y).p-lvOf(x).p; }).map(function(x){
-        var L=lvOf(x);
-        return "<div class=\"sk-row"+(editing===x.id?" on":"")+"\" data-id=\""+esc(x.id)+"\"><span class=\"sk-row-n\">"+esc(x.name)+"</span><span class=\"sk-row-l\">"+L.n+"</span><span class=\"sk-row-bar\"><i style=\"width:"+L.p+"%\"></i></span><span class=\"sk-row-p\">"+L.p+"%</span></div>";
+      if(!arr.length) box.innerHTML='<div class="sk-empty">还没有技能。添加时可手动输入熟练度，并按重要程度分组统计。</div>';
+      else box.innerHTML=arr.slice().sort(function(x,y){
+        var d=impRank(x)-impRank(y); if(d) return d;
+        return pOf(y)-pOf(x);
+      }).map(function(x){
+        var I=impOf(x), p=pOf(x);
+        return "<div class=\"sk-row"+(editing===x.id?" on":"")+"\" data-id=\""+esc(x.id)+"\"><i class=\"sk-dot "+I.c+"\" title=\""+I.k+"\"></i><span class=\"sk-row-n\">"+esc(x.name)+"</span><span class=\"sk-row-bar\"><i style=\"width:"+p+"%\"></i></span><span class=\"sk-row-p\">"+p+"%</span></div>";
       }).join("");
     }
-    var c=$("skill-chip-n"); if(c) c.textContent=arr.length;
-    var chip=$("skill-chip"); if(chip) chip.title="技能 "+arr.length+" 项 · 平均熟练度 "+avg.toFixed(1)+"% · 点击查看/评价";
-    var cn=$("cnt-skill"); if(cn) cn.textContent=arr.length;
+    put("skill-chip-n",arr.length);
+    var chip=$("skill-chip");
+    if(chip) chip.title="技能 "+arr.length+" 项 · 总平均 "+total.toFixed(1)+"% · "+IMPS.map(function(o){ var v=avgOf(o.v); return o.k+" "+(v===null?"—":v.toFixed(1)+"%"); }).join(" / ");
+    put("cnt-skill",arr.length);
   }
   function clearEdit(){
     editing=null;
     if($("sk-name")) $("sk-name").value="";
-    if($("sk-level")) $("sk-level").value="3";
+    if($("sk-level")) $("sk-level").value="";
+    if($("sk-imp")) $("sk-imp").value="3";
     if($("sk-save")) $("sk-save").textContent="添加";
     if($("sk-del")) $("sk-del").style.display="none";
     if($("sk-cancel")) $("sk-cancel").style.display="none";
@@ -5857,20 +5897,24 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   function saveItem(){
     var name=(($("sk-name")&&$("sk-name").value)||"").trim();
     if(!name){ say("请填写技能名称","warn"); return; }
-    var level=Number(($("sk-level")&&$("sk-level").value)||3);
-    if(!(level>=1 && level<=5)) level=3;
+    var raw=String((($("sk-level")&&$("sk-level").value)||"")).trim();
+    var p=Number(raw);
+    if(raw===""||!isFinite(p)){ say("请输入 0~100 的熟练度","warn"); return; }
+    p=Math.max(0,Math.min(100,Math.round(p)));
+    var imp=String((($("sk-imp")&&$("sk-imp").value)||"3"));
+    if(!/^[123]$/.test(imp)) imp="3";
     var arr=st();
     if(editing){
-      for(var i=0;i<arr.length;i++){ if(arr[i].id===editing){ arr[i].name=name; arr[i].level=level; break; } }
+      for(var i=0;i<arr.length;i++){ if(arr[i].id===editing){ arr[i].name=name; arr[i].p=p; arr[i].imp=imp; delete arr[i].level; break; } }
       say("已更新","ok");
     }else{
-      arr.push({ id:"s"+Date.now().toString(36)+Math.random().toString(36).slice(2,6), name:name, level:level });
+      arr.push({ id:"s"+Date.now().toString(36)+Math.random().toString(36).slice(2,6), name:name, p:p, imp:imp });
       say("已添加","ok");
     }
     save(); clearEdit(); render();
   }
   var sv=$("sk-save"); if(sv) sv.addEventListener("click",saveItem);
-  var ni=$("sk-name"); if(ni) ni.addEventListener("keydown",function(ev){ if(ev.key==="Enter") saveItem(); });
+  ["sk-name","sk-level"].forEach(function(id){ var el=$(id); if(el) el.addEventListener("keydown",function(ev){ if(ev.key==="Enter") saveItem(); }); });
   var list=$("sk-list");
   if(list) list.addEventListener("click",function(ev){
     var row=ev.target.closest?ev.target.closest(".sk-row"):null; if(!row) return;
@@ -5878,7 +5922,8 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     if(!it) return;
     editing=id;
     if($("sk-name")) $("sk-name").value=it.name||"";
-    if($("sk-level")) $("sk-level").value=String(lvOf({level:it.level}).p/20);
+    if($("sk-level")) $("sk-level").value=String(pOf(it));
+    if($("sk-imp")) $("sk-imp").value=impOf(it).v;
     if($("sk-save")) $("sk-save").textContent="保存";
     if($("sk-del")) $("sk-del").style.display="";
     if($("sk-cancel")) $("sk-cancel").style.display="";
