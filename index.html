@@ -1230,19 +1230,26 @@
   .kt-v{font-size:20px;font-weight:700;color:var(--ink);line-height:1.35;margin-top:2px;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
   .kt-v.kt-neg,.topbar-stats .stat-n.kt-neg{color:#c0453a}
   .kt-sub{font-size:10.5px;color:var(--ink3);margin-top:2px}
-  .kt-set{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px}
-  .kt-f{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);white-space:nowrap}
-  .kt-f input{width:92px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff}
-  .kt-add{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-  .kt-add input,.kt-add select{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;appearance:none;-webkit-appearance:none;min-width:0}
-  .kt-add input[type=date]{width:132px}
-  .kt-add select{width:132px}
-  .kt-add #kt-name{flex:1 1 130px;min-width:110px}
-  .kt-add #kt-amount{width:100px}
-  .kt-btn{border:1px solid var(--line);background:var(--brand-soft);color:var(--brand);border-radius:8px;padding:6px 12px;font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap}
+  /* 2026-11-09：两个预算框 + 记账输入合并成一行；窄屏横向滚动，绝不换行 */
+  .kt-bar{display:flex;gap:6px;align-items:center;flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px;margin-bottom:7px}
+  .kt-bar>*{flex:none}
+  .kt-f{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink2);white-space:nowrap}
+  .kt-f input{width:66px;border:1px solid var(--line);border-radius:8px;padding:5px 7px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;min-width:0}
+  .kt-sep{width:1px;height:20px;background:var(--line);margin:0 2px}
+  .kt-bar>input,.kt-bar>select{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;appearance:none;-webkit-appearance:none;min-width:0}
+  .kt-bar>input[type=date]{width:132px}
+  .kt-bar>select{width:120px}
+  .kt-bar>#kt-name{width:88px}
+  .kt-bar>#kt-amount{width:84px}
+  .kt-btn{border:1px solid var(--line);background:var(--brand-soft);color:var(--brand);border-radius:8px;padding:6px 10px;font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap}
   .kt-btn-ghost{background:#fff;color:var(--ink3)}
   .kt-hide{display:none!important}
-  .kt-list{border-top:1px solid var(--line2);padding-top:4px;max-height:210px;overflow-y:auto}
+  .kt-fold-head{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink2);cursor:pointer;user-select:none;padding:5px 2px;border-top:1px solid var(--line2)}
+  .kt-fold-head:hover{color:var(--ink)}
+  .kt-fold-head:focus-visible{outline:1px solid var(--brand);outline-offset:2px}
+  .kt-fold-ic{width:11px;text-align:center;font-size:10px;color:var(--ink3)}
+  .kt-fold-cnt{color:var(--ink3);font-variant-numeric:tabular-nums}
+  .kt-list{padding-top:2px;max-height:210px;overflow-y:auto}
   .kt-row{display:flex;align-items:center;gap:8px;padding:5px 2px;border-bottom:1px solid var(--line2);font-size:12px;color:var(--ink2);cursor:pointer}
   .kt-row:hover{background:var(--line2)}
   .kt-d{color:var(--ink3);white-space:nowrap;font-variant-numeric:tabular-nums;width:44px;flex:none}
@@ -1250,7 +1257,7 @@
   .kt-n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .kt-a{font-weight:600;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
   .kt-empty{font-size:11.5px;color:var(--ink3);padding:8px 0}
-  .kt-parts{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:10.5px;color:var(--ink3);margin:8px 0 14px}
+  .kt-parts{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:10.5px;color:var(--ink3);margin:6px 0 14px}
   .kt-stat-head{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2);margin-bottom:8px}
   .kt-stat-head select{border:1px solid var(--line);border-radius:8px;padding:4px 7px;font:inherit;font-size:12px;color:var(--ink);background:#fff;appearance:none;-webkit-appearance:none}
   .kt-charts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
@@ -1355,9 +1362,10 @@
       <button class="stat stat-new" data-mod="routine" data-page-node-id="routine-stat-1" style="display:none"><span class="stat-n" id="st-routine">0</span><span class="stat-l">每日</span></button>
       <button class="stat stat-new" data-mod="done" data-page-node-id="done-stat-1" style="display:none"><span class="stat-n" id="st-done">0</span><span class="stat-l">已击败</span></button>
       <!-- 生活区 -->
-      <button class="stat" data-mod="ktjl" id="kt-open-chip" title="本月开源 = 兼职 + 投资实时金额"><span class="stat-n" id="kt-open-chip-n">¥0</span><span class="stat-l">本月开源</span></button>
-      <button class="stat" data-mod="ktjl" id="kt-save-chip" title="本月节流 = 预算目标 × 本月流逝比例 − 实际支出"><span class="stat-n" id="kt-save-chip-n">¥0</span><span class="stat-l">本月节流</span></button>
-      <button class="stat" data-mod="ktjl" id="kt-net-chip" title="本月净收益 = 开源 + 节流"><span class="stat-n" id="kt-net-chip-n">¥0</span><span class="stat-l">本月净收益</span></button>
+      <button class="stat" data-mod="ktjl" id="kt-open-chip" style="display:none" title="本月开源（已隐藏）= 兼职 + 投资实时金额"><span class="stat-n" id="kt-open-chip-n">¥0</span><span class="stat-l">本月开源</span></button>
+      <button class="stat" data-mod="ktjl" id="kt-save-chip" style="display:none" title="本月节流（已隐藏）= 预算目标 × 本月流逝比例 − 实际支出"><span class="stat-n" id="kt-save-chip-n">¥0</span><span class="stat-l">本月节流</span></button>
+      <button class="stat" data-mod="ktjl" id="kt-net-chip" title="实时净收益 = 本月开源 + 本月节流（随本月流逝实时变化）"><span class="stat-n" id="kt-net-chip-n">¥0</span><span class="stat-l">实时净收益</span></button>
+      <button class="stat" data-mod="ktjl" id="kt-est-chip" title="本月净收益预估 = 实时净收益 ÷ 本月流逝比例"><span class="stat-n" id="kt-est-chip-n">¥0</span><span class="stat-l">本月净收益预估</span></button>
       <button class="stat" data-mod="lifedash" id="ld-time-chip" title="今日流逝：点击查看/设置"><span class="stat-n" id="ld-time-n">0.0%</span><span class="stat-l">今日流逝</span></button>
       <button class="stat" data-mod="lifedash" id="ld-month-chip" title="本月流逝：点击查看/设置"><span class="stat-n" id="ld-month-n">0.0%</span><span class="stat-l">本月流逝</span></button>
       <button class="stat" data-mod="lifedash" id="ld-year-chip" title="年度流逝：点击查看/设置"><span class="stat-n" id="ld-year-n">0.0%</span><span class="stat-l">年度流逝</span></button>
@@ -1690,11 +1698,10 @@
             <div class="kt-card"><div class="kt-k">节流</div><div class="kt-v" id="kt-save-n">¥0</div><div class="kt-sub" id="kt-save-sub">预算基准 − 实际支出</div></div>
             <div class="kt-card"><div class="kt-k">净收益</div><div class="kt-v" id="kt-net-n">¥0</div><div class="kt-sub" id="kt-net-sub">开源 + 节流</div></div>
           </div>
-          <div class="kt-set">
-            <label class="kt-f"><span>开源目标 / 月</span><input type="number" id="kt-inc-budget" min="0" step="1" value="2000"></label>
-            <label class="kt-f"><span>节流目标 / 月</span><input type="number" id="kt-exp-budget" min="0" step="1" value="5000"></label>
-          </div>
-          <div class="kt-add">
+          <div class="kt-bar">
+            <label class="kt-f"><span>开源目标/月</span><input type="number" id="kt-inc-budget" min="0" step="1" value="2000"></label>
+            <label class="kt-f"><span>节流目标/月</span><input type="number" id="kt-exp-budget" min="0" step="1" value="5000"></label>
+            <i class="kt-sep" aria-hidden="true"></i>
             <input type="date" id="kt-date">
             <select id="kt-kind">
               <option value="part">开源 · 兼职</option>
@@ -1704,14 +1711,17 @@
               <option value="buy">节流 · 消费投资</option>
               <option value="other">节流 · 其它</option>
             </select>
-            <input id="kt-name" placeholder="名称（选填）">
+            <input id="kt-name" placeholder="名称" title="名称（选填）">
             <input type="number" id="kt-amount" min="0" step="0.01" placeholder="金额" inputmode="decimal">
             <button class="kt-btn" id="kt-add-btn">记一笔</button>
             <button class="kt-btn kt-btn-ghost kt-hide" id="kt-edit-save">保存</button>
             <button class="kt-btn kt-btn-ghost kt-hide" id="kt-edit-del">删除</button>
             <button class="kt-btn kt-btn-ghost kt-hide" id="kt-edit-cancel">取消</button>
           </div>
-          <div class="kt-list" id="kt-list"></div>
+          <div class="kt-fold-head" id="kt-fold-btn" role="button" tabindex="0" title="点击展开 / 收起本期明细"><span class="kt-fold-ic" id="kt-fold-ic">▸</span><span>本期明细</span><span class="kt-fold-cnt" id="kt-fold-cnt">0 笔</span></div>
+          <div class="kt-fold-body kt-hide" id="kt-fold-body">
+            <div class="kt-list" id="kt-list"></div>
+          </div>
           <div class="kt-parts" id="kt-parts"></div>
           <div class="kt-stat">
             <div class="kt-stat-head">
@@ -5345,7 +5355,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261109-1115').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261109-1331').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5359,7 +5369,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261109-1115 (单机)';
+    var V = '20261109-1331 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5535,11 +5545,21 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   function period(){ var mode=$('kt-mode'),p=$('kt-period'); var v=(p&&p.value)||''; if(mode&&mode.value==='year') return {mode:'year',y:num(v),m:0}; return {mode:'month',y:num(String(v).slice(0,4)),m:num(String(v).slice(5,7))-1}; }
   function aggPeriod(){ var p=period(); return p.mode==='year'?aggYear(p.y):aggMonth(p.y,p.m); }
 
-  /* —— 顶栏 3 格 + 面板三大卡（每秒随本月流逝实时变化） —— */
+  /* —— 顶栏（实时净收益 + 本月净收益预估，另 2 格隐藏保 DOM）+ 面板三大卡 —— */
   function renderNumbers(){
     var n=new Date(), a=aggMonth(n.getFullYear(),n.getMonth());
     setT('kt-open-chip-n',fmt(a.open)); setT('kt-save-chip-n',fmt(a.saveAmt)); setT('kt-net-chip-n',fmt(a.net));
     mark($('kt-save-chip-n'),a.saveAmt); mark($('kt-net-chip-n'),a.net);
+    /* 本月净收益预估 = 实时净收益 ÷ 本月流逝比例（与生活仪表「本月流逝」同源） */
+    var e=monthElapsed(n.getFullYear(),n.getMonth()), est=$('kt-est-chip-n');
+    if(e>0.000001){
+      var ev=a.net/e;
+      setT('kt-est-chip-n',fmt(ev)); mark(est,ev);
+      if(est){ var tip='实时净收益 '+fmt(a.net)+' ÷ 本月流逝 '+(e*100).toFixed(2)+'% = '+fmt(ev); if(est.title!==tip) est.title=tip; }
+    }else{
+      setT('kt-est-chip-n','—'); mark(est,0);
+      if(est) est.title='本月刚开始，暂无预估';
+    }
     var b=aggPeriod(), o=kt(), mult=b.mode==='year'?12:1, target=o.incBudget*mult;
     setT('kt-open-n',fmt(b.open)); setT('kt-save-n',fmt(b.saveAmt)); setT('kt-net-n',fmt(b.net));
     mark($('kt-save-n'),b.saveAmt); mark($('kt-net-n'),b.net);
@@ -5602,6 +5622,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var el=$('kt-list'); if(!el) return;
     var rows=(kt().records||[]).filter(function(r){return r&&KIND[r.kind]&&inPeriod(r);});
     rows.sort(function(a,b){ return String(b.date||'').localeCompare(String(a.date||''))||String(b.id||'').localeCompare(String(a.id||'')); });
+    setT('kt-fold-cnt',rows.length+' 笔');
     if(!rows.length){ el.innerHTML='<div class="kt-empty">本期还没有记录，上面记一笔即可</div>'; return; }
     el.innerHTML=rows.map(function(r){
       var d=String(r.date||'').slice(5),k=KIND[r.kind]||{n:'其它'};
@@ -5611,6 +5632,17 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       row.addEventListener('click',function(){ startEdit(row.getAttribute('data-id')); });
     });
   }
+
+  /* —— 明细折叠：默认收起以免篇幅过长；状态独立存 localStorage，刷新后保持 —— */
+  var FOLD_KEY='workbench_solo_kt_folded_v1', folded=true;
+  try { var fv=localStorage.getItem(FOLD_KEY); folded=(fv===null)?true:(fv==='1'); } catch(e){ folded=true; }
+  function writeFold(v){ try{ localStorage.setItem(FOLD_KEY,v?'1':'0'); }catch(e){} }
+  function applyFold(){
+    var body=$('kt-fold-body'),ic=$('kt-fold-ic');
+    if(body) body.classList.toggle('kt-hide',folded);
+    if(ic) ic.textContent=folded?'▸':'▾';
+  }
+  function setFold(v){ folded=!!v; writeFold(folded); applyFold(); }
 
   /* —— 记一笔 / 编辑 / 删除 —— */
   var editing=null;
@@ -5633,6 +5665,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     if(!KIND[k.value]||!(amount>0)) return;
     var o=kt();
     o.records.push({id:'kt'+Date.now()+Math.random().toString(36).slice(2,6),date:date,kind:k.value,name:(nm&&nm.value||'').trim(),amount:amount});
+    if(folded) setFold(false);   /* 刚记的一笔要能立刻看见 */
     saveCfg(); resetForm(); renderAll();
   }
   function saveRec(){
@@ -5659,6 +5692,12 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var el=$(pair[0]); if(!el) return;
     el.addEventListener('input',function(){ var v=num(el.value); kt()[pair[1]]=v<0?0:v; saveCfg(); renderAll(); });
   });
+  var fb=$('kt-fold-btn');
+  if(fb){
+    fb.addEventListener('click',function(){ setFold(!folded); });
+    fb.addEventListener('keydown',function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); setFold(!folded); } });
+  }
+  applyFold();
   var ab=$('kt-add-btn'); if(ab) ab.addEventListener('click',addRec);
   var es=$('kt-edit-save'); if(es) es.addEventListener('click',saveRec);
   var ed=$('kt-edit-del'); if(ed) ed.addEventListener('click',delRec);
@@ -5668,12 +5707,12 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   if(mode) mode.addEventListener('change',function(){ fillPeriods(); renderAll(); });
   if(per) per.addEventListener('change',renderAll);
   /* 顶栏同组三格互点保护，复用 ld-script 暴露的 window.__soloChip */
-  ['kt-open-chip','kt-save-chip','kt-net-chip'].forEach(function(id){
+  ['kt-open-chip','kt-save-chip','kt-net-chip','kt-est-chip'].forEach(function(id){
     var el=$(id); if(!el) return;
     el.addEventListener('click',function(){ if(typeof window!=='undefined'&&window.__soloChip) window.__soloChip.guard(id,'ktjl'); });
   });
   renderAll();
-  setInterval(renderNumbers,1000);   /* 本月流逝比例实时变化 → 节流/净收益每秒刷新 */
+  setInterval(renderNumbers,1000);   /* 本月流逝比例实时变化 → 节流/净收益/预估每秒刷新 */
   document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') renderNumbers(); });
 })();
 </script>
