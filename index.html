@@ -1224,7 +1224,7 @@
   }
 </style>
 <style id="kt-style">
-  .kt-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+  .kt-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
   .kt-card{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
   .kt-k{font-size:11px;color:var(--ink3)}
   .kt-v{font-size:20px;font-weight:700;color:var(--ink);line-height:1.35;margin-top:2px;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
@@ -1373,7 +1373,7 @@
       <button class="stat" data-mod="ktjl" id="kt-open-chip" style="display:none" title="本月开源（已隐藏）= 兼职 + 投资实时金额"><span class="stat-n" id="kt-open-chip-n">¥0</span><span class="stat-l">本月开源</span></button>
       <button class="stat" data-mod="ktjl" id="kt-save-chip" style="display:none" title="本月节流（已隐藏）= 预算目标 × 本月流逝比例 − 实际支出"><span class="stat-n" id="kt-save-chip-n">¥0</span><span class="stat-l">本月节流</span></button>
       <button class="stat" data-mod="ktjl" id="kt-net-chip" title="实时净收益 = 本月开源 + 本月节流（随本月流逝实时变化）"><span class="stat-n" id="kt-net-chip-n">¥0</span><span class="stat-l">实时净收益</span></button>
-      <button class="stat" data-mod="ktjl" id="kt-est-chip" title="本月净收益预估 = 实时净收益 ÷ 本月流逝比例"><span class="stat-n" id="kt-est-chip-n">¥0</span><span class="stat-l">本月净收益预估</span></button>
+      <button class="stat" data-mod="ktjl" id="kt-est-chip" title="净收益预估（当月）= 实时净收益 ÷ 本月流逝比例"><span class="stat-n" id="kt-est-chip-n">¥0</span><span class="stat-l">净收益预估</span></button>
       <button class="stat" data-mod="lifedash" id="ld-time-chip" title="今日流逝：点击查看/设置"><span class="stat-n" id="ld-time-n">0.0%</span><span class="stat-l">今日流逝</span></button>
       <button class="stat" data-mod="lifedash" id="ld-month-chip" title="本月流逝：点击查看/设置"><span class="stat-n" id="ld-month-n">0.0%</span><span class="stat-l">本月流逝</span></button>
       <button class="stat" data-mod="lifedash" id="ld-year-chip" title="年度流逝：点击查看/设置"><span class="stat-n" id="ld-year-n">0.0%</span><span class="stat-l">年度流逝</span></button>
@@ -1705,6 +1705,7 @@
             <div class="kt-card"><div class="kt-k">开源</div><div class="kt-v" id="kt-open-n">¥0</div><div class="kt-sub" id="kt-open-sub">目标 <b id="kt-open-tgt">¥2,000</b> · 完成 <b id="kt-open-pct">0.0%</b></div></div>
             <div class="kt-card"><div class="kt-k">节流</div><div class="kt-v" id="kt-save-n">¥0</div><div class="kt-sub" id="kt-save-sub">目标 <b id="kt-save-tgt">¥3,000</b> · 完成 <b id="kt-save-pct">0.0%</b></div></div>
             <div class="kt-card"><div class="kt-k">净收益</div><div class="kt-v" id="kt-net-n">¥0</div><div class="kt-sub" id="kt-net-sub">目标 <b id="kt-net-tgt">¥5,000</b> · 完成 <b id="kt-net-pct">0.0%</b></div></div>
+            <div class="kt-card" id="kt-fc-card" title="净收益预估：当月 / 全年两种口径"><div class="kt-k">净收益预估</div><div class="kt-v" id="kt-fc-year-n">¥0</div><div class="kt-sub">全年 · 当月 <b id="kt-fc-month-n">¥0</b></div></div>
           </div>
           <div class="kt-bar">
             <label class="kt-f" title="开源目标 / 月：兼职 + 投资的期望金额"><span>开源目标</span><input type="number" id="kt-inc-budget" min="0" step="1" value="2000"></label>
@@ -5365,7 +5366,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261109-1348').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261109-1421').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5379,7 +5380,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261109-1348 (单机)';
+    var V = '20261109-1421 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5565,7 +5566,29 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     return monthElapsed(p.y,p.m)*100;
   }
 
-  /* —— 顶栏（实时净收益 + 本月净收益预估，另 2 格隐藏保 DOM）+ 面板三大卡（1 基准 3 目标） —— */
+  /* —— 净收益预估（2026-11-09 第十一轮）——
+     ① 当月口径 = 实时净收益 ÷ 本月流逝比例（与顶栏「净收益预估」完全同源）。
+     ② 全年口径 = 自然年滚动预算：1-12 月全部计入（用户 2026-11-09 明确「1-10 月不排除」），
+        历史月按整月实际、当前月按当月预估、剩余月按已有月份月均值补齐。 */
+  function forecastMonth(){
+    var n=new Date(), y=n.getFullYear(), m=n.getMonth();
+    var a=aggMonth(y,m), e=monthElapsed(y,m);
+    return {net:a.net,elapsed:e,value:(e>0.000001?a.net/e:null)};
+  }
+  function forecastYear(){
+    var n=new Date(), y=n.getFullYear(), cm=n.getMonth();
+    var startM=0;                     /* 自然年从 1 月起，1-10 月不排除 */
+    var vals=[],i,sum=0;
+    for(i=startM;i<=cm;i++){
+      var a=aggMonth(y,i), e=monthElapsed(y,i);
+      var v=(i===cm&&e>0.000001)?a.net/e:a.net;   /* 当前月用当月预估，历史月用整月实际 */
+      vals.push(v); sum+=v;
+    }
+    var avg=vals.length?sum/vals.length:0, rest=11-cm;
+    return {value:sum+avg*rest,avg:avg,done:vals.length,rest:rest,months:12-startM,startM:startM,y:y};
+  }
+
+  /* —— 顶栏（实时净收益 + 净收益预估，另 2 格隐藏保 DOM）+ 面板四卡（1 基准 3 目标 + 预估） —— */
   function renderNumbers(){
     var n=new Date(), a=aggMonth(n.getFullYear(),n.getMonth());
     setT('kt-open-chip-n',fmt(a.open)); setT('kt-save-chip-n',fmt(a.saveAmt)); setT('kt-net-chip-n',fmt(a.net));
@@ -5584,9 +5607,12 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var targets={open:o.incBudget*mult,save:o.saveTarget*mult,net:o.netTarget*mult};
     var vals={open:b.open,save:b.saveAmt,net:b.net};
     var flow=periodElapsedPct(pp);
+    /* ① 用户确认公式 = 节流基准 × 本月流逝 − 实际支出（代码原本就是这个，除号是笔误）。
+       把完整算式写进 title，基准原值 / 流逝 / 支出 / 结果四项可直接核对，避免「金额看着不对」时无从查起。 */
+    var baseRaw=o.expBudget*mult;
     var desc={
       open:'开源 = 兼职 + 投资实际金额 '+fmt(b.open),
-      save:'节流 = 基准 '+fmt(b.base)+' − 支出 '+fmt(b.spend)+' = '+fmt(b.saveAmt),
+      save:'节流 = 节流基准 '+fmt(baseRaw)+' × 时间流逝 '+flow.toFixed(1)+'% (= '+fmt(b.base)+') − 实际支出 '+fmt(b.spend)+' = '+fmt(b.saveAmt),
       net:'净收益 = 开源 '+fmt(b.open)+' + 节流 '+fmt(b.saveAmt)+' = '+fmt(b.net)
     };
     /* 实际 / 目标 = 完成比例；> 时间流逝 → 加粗绿；实际为负 → 红（红优先，绝不误判为跑赢） */
@@ -5601,6 +5627,17 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       var sub=$('kt-'+k+'-sub');
       if(sub){ var tip=desc[k]+'；目标 '+fmt(t)+'；完成 '+pct.toFixed(1)+'%（时间流逝 '+flow.toFixed(1)+'%）'; if(sub.title!==tip) sub.title=tip; }
     });
+    /* ② 第 4 张卡：当月预估 / 全年滚动预估 */
+    var fm=forecastMonth(), fy=forecastYear(), fmTxt=(fm.value===null?'—':fmt(fm.value));
+    setT('kt-fc-month-n',fmTxt); setT('kt-fc-year-n',fmt(fy.value));
+    mark($('kt-fc-month-n'),fm.value); mark($('kt-fc-year-n'),fy.value);
+    var fc=$('kt-fc-card');
+    if(fc){
+      var ft='当月 = 实时净收益 '+fmt(fm.net)+' ÷ 本月流逝 '+(fm.elapsed*100).toFixed(2)+'% = '+fmTxt
+        +'；全年（'+fy.y+' 自然年，'+(fy.startM+1)+' 月起共 '+fy.months+' 个月）= 已发生 '+fy.done+' 个月按实际/当月预估累加'
+        +' + 剩余 '+fy.rest+' 个月 × 月均值 '+fmt(fy.avg)+' = '+fmt(fy.value);
+      if(fc.title!==ft) fc.title=ft;
+    }
     var cnt=$('cnt-ktjl'); if(cnt) cnt.textContent=(o.records||[]).length;
   }
 
