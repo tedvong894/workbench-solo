@@ -1734,9 +1734,9 @@
         <div class="p-body">
           <div class="kt-sum">
             <div class="kt-card"><div class="kt-k">开源</div><div class="kt-v" id="kt-open-n">¥0</div><div class="kt-sub" id="kt-open-sub">目标 <b id="kt-open-tgt">¥2,000</b> · 完成 <b id="kt-open-pct">0.0%</b></div><div class="kt-avg" id="kt-open-avg-row">全年平均 <b id="kt-open-avg">¥0</b></div></div>
-            <div class="kt-card"><div class="kt-k">节流</div><div class="kt-v" id="kt-save-n">¥0</div><div class="kt-sub" id="kt-save-sub">目标 <b id="kt-save-tgt">¥3,000</b> · 完成 <b id="kt-save-pct">0.0%</b></div><div class="kt-avg" id="kt-save-avg-row">全年平均 <b id="kt-save-avg">¥0</b></div></div>
-            <div class="kt-card"><div class="kt-k">净收益</div><div class="kt-v" id="kt-net-n">¥0</div><div class="kt-sub" id="kt-net-sub">目标 <b id="kt-net-tgt">¥5,000</b> · 完成 <b id="kt-net-pct">0.0%</b></div><div class="kt-avg" id="kt-net-avg-row">全年平均 <b id="kt-net-avg">¥0</b></div></div>
-            <div class="kt-card" id="kt-fc-card" title="净收益预估：当月 / 全年两种口径"><div class="kt-k">净收益预估</div><div class="kt-v" id="kt-fc-year-n">¥0</div><div class="kt-sub">全年 · 当月 <b id="kt-fc-month-n">¥0</b></div></div>
+            <div class="kt-card"><div class="kt-k">节流</div><div class="kt-v" id="kt-save-n">¥0</div><div class="kt-sub" id="kt-save-sub">目标 <b id="kt-save-tgt">¥3,000</b> · 完成 <b id="kt-save-pct">0.0%</b></div><div class="kt-avg" id="kt-save-avg-row">全年平均 <b id="kt-save-avg">¥0</b></div><div class="kt-avg" id="kt-save-spend-row">实际支出 <b id="kt-save-spend">¥0</b></div><div class="kt-avg" id="kt-save-est-row">本月预估 <b id="kt-save-est">¥0</b></div></div>
+            <div class="kt-card"><div class="kt-k">净收益</div><div class="kt-v" id="kt-net-n">¥0</div><div class="kt-sub" id="kt-net-sub">目标 <b id="kt-net-tgt">¥5,000</b> · 完成 <b id="kt-net-pct">0.0%</b></div><div class="kt-avg" id="kt-net-avg-row">全年平均 <b id="kt-net-avg">¥0</b></div><div class="kt-avg" id="kt-net-est-row">净收益预估 <b id="kt-fc-month-n">¥0</b></div></div>
+            <div class="kt-card" id="kt-fc-card" title="年度净收益：全年预估 / 累计净收益两种口径"><div class="kt-k">年度净收益</div><div class="kt-v" id="kt-fc-year-n">¥0</div><div class="kt-sub">累计净收益 <b id="kt-fc-cum-n">¥0</b></div></div>
           </div>
           <div class="kt-bar">
             <label class="kt-f" title="开源目标 / 月：兼职 + 投资的期望金额"><span>开源目标</span><input type="number" id="kt-inc-budget" min="0" step="1" value="2000"></label>
@@ -5398,7 +5398,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261110-1131').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261111-0929').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5412,7 +5412,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261110-1131 (单机)';
+    var V = '20261111-0929 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5679,15 +5679,25 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       var ar=$('kt-'+k+'-avg-row');
       if(ar){ var atip='全年平均值（'+ya.y+' 自然年，固定按当前年，不随统计期间切换）= 已发生 '+ya.months+' 个月（历史月按整月实际、当前月按当月预估）的月均值 '+fmt(avv)+' = 全年预估 ÷ 12；开源 + 节流 = 净收益'; if(ar.title!==atip) ar.title=atip; }
     });
-    /* ② 第 4 张卡：当月预估 / 全年滚动预估 */
+    /* ② 节流卡：实际支出（当前月实际）/ 本月预估（当前月实时节流 ÷ 本月流逝） */
+    var cs=aggMonth(n.getFullYear(),n.getMonth()), cse=monthElapsed(n.getFullYear(),n.getMonth());
+    var saveEst=(cse>0.000001?cs.saveAmt/cse:null);
+    setT('kt-save-spend',fmt(cs.spend)); setT('kt-save-est',(saveEst===null?'—':fmt(saveEst)));
+    mark($('kt-save-spend'),cs.spend); mark($('kt-save-est'),saveEst);
+    var ssr=$('kt-save-spend-row'); if(ssr){ var sstip='实际支出（'+n.getFullYear()+' 年 '+(n.getMonth()+1)+' 月当前真实支出）= '+fmt(cs.spend); if(ssr.title!==sstip) ssr.title=sstip; }
+    var ser=$('kt-save-est-row'); if(ser){ var setip='本月预估（节流）= 实时节流 '+fmt(cs.saveAmt)+' ÷ 本月流逝 '+(cse*100).toFixed(2)+'% = '+(saveEst===null?'—':fmt(saveEst)); if(ser.title!==setip) ser.title=setip; }
+    /* ③ 第 4 张卡（年度净收益）+ 净收益卡「净收益预估」：当月 / 全年滚动预估 / 累计净收益 */
     var fm=forecastMonth(), fy=forecastYear(), fmTxt=(fm.value===null?'—':fmt(fm.value));
     setT('kt-fc-month-n',fmTxt); setT('kt-fc-year-n',fmt(fy.value));
     mark($('kt-fc-month-n'),fm.value); mark($('kt-fc-year-n'),fy.value);
+    var cum=0, _o=kt(); for(var ci=0;ci<=n.getMonth();ci++){ var _a=aggMonth(n.getFullYear(),ci); var _has=(_o.records||[]).some(function(r){ var _d=parseYmd(r.date); return _d&&_d.getFullYear()===n.getFullYear()&&_d.getMonth()===ci; }); if(_has) cum+=_a.net; }
+    setT('kt-fc-cum-n',fmt(cum)); mark($('kt-fc-cum-n'),cum);
+    var ner=$('kt-net-est-row'); if(ner){ var netip='净收益预估（'+n.getFullYear()+' 年 '+(n.getMonth()+1)+' 月）= 实时净收益 '+fmt(fm.net)+' ÷ 本月流逝 '+(fm.elapsed*100).toFixed(2)+'% = '+fmTxt; if(ner.title!==netip) ner.title=netip; }
     var fc=$('kt-fc-card');
     if(fc){
-      var ft='当月 = 实时净收益 '+fmt(fm.net)+' ÷ 本月流逝 '+(fm.elapsed*100).toFixed(2)+'% = '+fmTxt
-        +'；全年（'+fy.y+' 自然年，'+(fy.startM+1)+' 月起共 '+fy.months+' 个月）= 已发生 '+fy.done+' 个月按实际/当月预估累加'
-        +' + 剩余 '+fy.rest+' 个月 × 月均值 '+fmt(fy.avg)+' = '+fmt(fy.value);
+      var ft='全年（'+fy.y+' 自然年，'+(fy.startM+1)+' 月起共 '+fy.months+' 个月）= 已发生 '+fy.done+' 个月按实际/当月预估累加'
+        +' + 剩余 '+fy.rest+' 个月 × 月均值 '+fmt(fy.avg)+' = '+fmt(fy.value)
+        +'；累计净收益（1 月~当前月实际累加，含当前月实时）= '+fmt(cum);
       if(fc.title!==ft) fc.title=ft;
     }
     var cnt=$('cnt-ktjl'); if(cnt) cnt.textContent=(o.records||[]).length;
