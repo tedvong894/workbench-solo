@@ -1224,7 +1224,7 @@
   }
 </style>
 <style id="kt-style">
-  .kt-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+  .kt-sum{display:grid;grid-template-columns:0.85fr 1.25fr 1.15fr 1.25fr;gap:10px;margin-bottom:12px}
   .kt-card{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
   .kt-k{font-size:11px;color:var(--ink3)}
   .kt-v{font-size:20px;font-weight:700;color:var(--ink);line-height:1.35;margin-top:2px;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
@@ -1238,6 +1238,11 @@
   .kt-avg{font-size:10.5px;color:var(--ink3);margin-top:3px;white-space:nowrap}
   .kt-avg b{font-weight:600;font-variant-numeric:tabular-nums}
   .kt-avg b.kt-neg{color:#c0453a;font-weight:700}
+  .kt-mi{margin-top:6px}
+  .kt-ml{display:block;font-size:11px;color:var(--ink3)}
+  .kt-mv{display:block;font-size:20px;font-weight:700;color:var(--ink);line-height:1.35;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+  .kt-mv.kt-good{color:#3f7d5c}
+  .kt-mv.kt-neg{color:#c0453a;font-weight:700}
   /* 2026-11-09：1 基准 + 3 目标 + 记账控件全部同一行；压缩输入框，窄屏横向滚动，绝不换行 */
   .kt-bar{display:flex;gap:3px;align-items:center;flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px;margin-bottom:7px}
   .kt-bar>*{flex:none}
@@ -1734,9 +1739,9 @@
         <div class="p-body">
           <div class="kt-sum">
             <div class="kt-card"><div class="kt-k">开源</div><div class="kt-v" id="kt-open-n">¥0</div><div class="kt-sub" id="kt-open-sub">目标 <b id="kt-open-tgt">¥2,000</b> · 完成 <b id="kt-open-pct">0.0%</b></div><div class="kt-avg" id="kt-open-avg-row">全年平均 <b id="kt-open-avg">¥0</b></div></div>
-            <div class="kt-card"><div class="kt-k">节流</div><div class="kt-v" id="kt-save-n">¥0</div><div class="kt-sub" id="kt-save-sub">目标 <b id="kt-save-tgt">¥3,000</b> · 完成 <b id="kt-save-pct">0.0%</b></div><div class="kt-avg" id="kt-save-avg-row">全年平均 <b id="kt-save-avg">¥0</b></div><div class="kt-avg" id="kt-save-spend-row">实际支出 <b id="kt-save-spend">¥0</b></div><div class="kt-avg" id="kt-save-est-row">本月预估 <b id="kt-save-est">¥0</b></div></div>
-            <div class="kt-card"><div class="kt-k">净收益</div><div class="kt-v" id="kt-net-n">¥0</div><div class="kt-sub" id="kt-net-sub">目标 <b id="kt-net-tgt">¥5,000</b> · 完成 <b id="kt-net-pct">0.0%</b></div><div class="kt-avg" id="kt-net-avg-row">全年平均 <b id="kt-net-avg">¥0</b></div><div class="kt-avg" id="kt-net-est-row">净收益预估 <b id="kt-fc-month-n">¥0</b></div></div>
-            <div class="kt-card" id="kt-fc-card" title="年度净收益：全年预估 / 累计净收益两种口径"><div class="kt-k">年度净收益</div><div class="kt-v" id="kt-fc-year-n">¥0</div><div class="kt-sub">累计净收益 <b id="kt-fc-cum-n">¥0</b></div></div>
+            <div class="kt-card"><div class="kt-k">节流</div><div class="kt-v" id="kt-save-n">¥0</div><div class="kt-sub" id="kt-save-sub">目标 <b id="kt-save-tgt">¥3,000</b> · 完成 <b id="kt-save-pct">0.0%</b></div><div class="kt-avg" id="kt-save-avg-row">全年平均 <b id="kt-save-avg">¥0</b></div><div class="kt-mi" id="kt-save-spend-row"><span class="kt-ml">实际支出</span><b class="kt-mv" id="kt-save-spend">¥0</b></div><div class="kt-mi" id="kt-save-est-row"><span class="kt-ml">本月预估</span><b class="kt-mv" id="kt-save-est">¥0</b></div></div>
+            <div class="kt-card"><div class="kt-k">净收益</div><div class="kt-v" id="kt-net-n">¥0</div><div class="kt-sub" id="kt-net-sub">目标 <b id="kt-net-tgt">¥5,000</b> · 完成 <b id="kt-net-pct">0.0%</b></div><div class="kt-avg" id="kt-net-avg-row">全年平均 <b id="kt-net-avg">¥0</b></div><div class="kt-mi" id="kt-net-est-row"><span class="kt-ml">净收益预估</span><b class="kt-mv" id="kt-fc-month-n">¥0</b></div></div>
+            <div class="kt-card" id="kt-fc-card" title="年度净收益预估：全年预估 / 累计净收益两种口径"><div class="kt-k">年度净收益预估</div><div class="kt-v" id="kt-fc-year-n">¥0</div><div class="kt-mi"><span class="kt-ml">累计净收益</span><b class="kt-mv" id="kt-fc-cum-n">¥0</b></div></div>
           </div>
           <div class="kt-bar">
             <label class="kt-f" title="开源目标 / 月：兼职 + 投资的期望金额"><span>开源目标</span><input type="number" id="kt-inc-budget" min="0" step="1" value="2000"></label>
@@ -5398,7 +5403,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261111-0929').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261111-1008').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5412,7 +5417,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261111-0929 (单机)';
+    var V = '20261111-1008 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
