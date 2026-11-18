@@ -1393,7 +1393,7 @@
       <button class="stat stat-new" data-mod="asset" data-page-node-id="asset-stat-1"><span class="stat-n" id="st-asset">0</span><span class="stat-l">数字资产</span></button>
       <button class="stat" data-mod="vision" data-page-node-id="vision-stat-1" style="display:none"><span class="stat-n" id="st-vision" data-page-node-id="vision-stat-2">0</span><span class="stat-l" data-page-node-id="vision-stat-3">愿景</span></button>
       <button class="stat stat-new" data-mod="strategy" data-page-node-id="strategy-stat-1" style="display:none"><span class="stat-n" id="st-strategy">0</span><span class="stat-l">战略</span></button>
-      <button class="stat" data-mod="idea" data-page-node-id="idea-stat-1" style="display:none"><span class="stat-n" id="st-idea">0</span><span class="stat-l">灵感</span></button>
+      <button class="stat" data-mod="idea" data-page-node-id="idea-stat-1"><span class="stat-n" id="st-idea">0</span><span class="stat-l">灵感</span></button>
       <button class="stat" data-mod="goal" data-page-node-id="HSbr8JKm3FYDYIBVowOFiY" style="display:none"><span class="stat-n" id="st-goal" data-page-node-id="0JN9DzjEkzoojpeCLvRGfw">0</span><span class="stat-l" data-page-node-id="f9WRvudBuixUkBMGlcCnU2">目标</span></button>
       <button class="stat stat-new" data-mod="decomp" data-page-node-id="decomp-stat-1" style="display:none"><span class="stat-n" id="st-decomp">0</span><span class="stat-l">目标分解</span></button>
       <button class="stat" data-mod="habit" data-page-node-id="habit-stat-1" style="display:none"><span class="stat-n" id="st-habit" data-page-node-id="habit-stat-2">0</span><span class="stat-l" data-page-node-id="habit-stat-3">习惯</span></button>
@@ -5418,7 +5418,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261117-1512').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261118-1530').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5432,7 +5432,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261117-1512 (单机)';
+    var V = '20261118-1530 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5737,7 +5737,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     var cnt=$('cnt-ktjl'); if(cnt) cnt.textContent=(o.records||[]).length;
     widgetPush(fcFlow);
   }
-  /* —— 桌面小窗数据桥（v20261117-1457）：把面板已渲染的关键值推给本机 Swift 小窗（127.0.0.1:17321）。
+  /* —— 桌面小窗数据桥（2026-11-17 加）：把面板已渲染的关键值推给本机 Swift 小窗（127.0.0.1:17321）。
      小窗没开时连接被拒 → 静默捕获 + 60s 退避，控制台无刷屏、页面零感知。 */
   var _wbT=0, _wbFailUntil=0;
   function widgetPush(flow){
