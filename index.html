@@ -1249,7 +1249,6 @@
   .kt-pb-track{position:relative;flex:1;height:10px;background:#eef1f5;border-radius:5px}
   .kt-pb-fill{position:absolute;left:0;top:0;bottom:0;width:0%;background:#8b93a1;border-radius:5px;transition:width .4s,background-color .4s}
   .kt-pb-fill.kt-pb-flow{background:#c6cdd8}
-  .kt-pb-mark{position:absolute;top:-2px;bottom:-2px;width:2px;background:#4c5568;left:0;z-index:2}
   .kt-pb-pct{font-size:10.5px;color:var(--ink3);width:48px;text-align:right;flex:none;font-variant-numeric:tabular-nums;font-weight:600}
   .kt-pb-pct.kt-neg{color:#c0453a}
   /* 2026-11-09：1 基准 + 3 目标 + 记账控件全部同一行；压缩输入框，窄屏横向滚动，绝不换行 */
@@ -1769,10 +1768,10 @@
             </div>
           </div>
           <div class="kt-pbs" id="kt-pbs">
-            <div class="kt-pb-row" title="净收益完成比例（实际 ÷ 月度净收益目标）vs 时间流逝；颜色深浅=进度快慢（越快越深，绿色系），为负=红；x 轴归一化 0~1，超出满格"><span class="kt-pb-l">净收益</span><div class="kt-pb-track"><div class="kt-pb-fill" id="kt-pb-net"></div><div class="kt-pb-mark"></div></div><b class="kt-pb-pct" id="kt-pb-net-pct">0.0%</b></div>
-            <div class="kt-pb-row" title="开源完成比例（实际 ÷ 月度开源目标）vs 时间流逝；颜色深浅=进度快慢（越快越深，琥珀色系），为负=红"><span class="kt-pb-l">开源</span><div class="kt-pb-track"><div class="kt-pb-fill" id="kt-pb-open"></div><div class="kt-pb-mark"></div></div><b class="kt-pb-pct" id="kt-pb-open-pct">0.0%</b></div>
-            <div class="kt-pb-row" title="节流完成比例（实际 ÷ 月度节流目标）vs 时间流逝；颜色深浅=进度快慢（越快越深，青蓝色系），为负=红"><span class="kt-pb-l">节流</span><div class="kt-pb-track"><div class="kt-pb-fill" id="kt-pb-save"></div><div class="kt-pb-mark"></div></div><b class="kt-pb-pct" id="kt-pb-save-pct">0.0%</b></div>
-            <div class="kt-pb-row" title="时间流逝：月度=本月流逝（与生活仪表同源），年度=12 个月流逝均值；历史期 100%、未来期 0%。三条完成条以它为基准，超过这条线=进度跑赢时间"><span class="kt-pb-l">本月流逝</span><div class="kt-pb-track"><div class="kt-pb-fill kt-pb-flow" id="kt-pb-flow"></div></div><b class="kt-pb-pct" id="kt-pb-flow-pct">0.0%</b></div>
+            <div class="kt-pb-row" title="净收益完成比例（实际 ÷ 月度净收益目标）；颜色深浅=进度快慢（越快越深，紫色系），为负=红；x 轴归一化 0~1，超出满格"><span class="kt-pb-l">净收益</span><div class="kt-pb-track"><div class="kt-pb-fill" id="kt-pb-net"></div></div><b class="kt-pb-pct" id="kt-pb-net-pct">0.0%</b></div>
+            <div class="kt-pb-row" title="开源完成比例（实际 ÷ 月度开源目标）；颜色深浅=进度快慢（越快越深，琥珀色系），为负=红"><span class="kt-pb-l">开源</span><div class="kt-pb-track"><div class="kt-pb-fill" id="kt-pb-open"></div></div><b class="kt-pb-pct" id="kt-pb-open-pct">0.0%</b></div>
+            <div class="kt-pb-row" title="节流完成比例（实际 ÷ 月度节流目标）；颜色深浅=进度快慢（越快越深，青蓝色系），为负=红"><span class="kt-pb-l">节流</span><div class="kt-pb-track"><div class="kt-pb-fill" id="kt-pb-save"></div></div><b class="kt-pb-pct" id="kt-pb-save-pct">0.0%</b></div>
+            <div class="kt-pb-row" title="时间流逝：月度=本月流逝（与生活仪表同源），年度=12 个月流逝均值；历史期 100%、未来期 0%"><span class="kt-pb-l">本月流逝</span><div class="kt-pb-track"><div class="kt-pb-fill kt-pb-flow" id="kt-pb-flow"></div></div><b class="kt-pb-pct" id="kt-pb-flow-pct">0.0%</b></div>
           </div>
           <div class="kt-bar">
             <label class="kt-f" title="开源目标 / 月：兼职 + 投资的期望金额"><span>开源目标</span><input type="number" id="kt-inc-budget" min="0" step="1" value="2000"></label>
@@ -5434,7 +5433,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261119-1500').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261119-1505').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5448,7 +5447,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261119-1500 (单机)';
+    var V = '20261119-1505 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -5729,15 +5728,12 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     setT('kt-fc-month-n',fmTxt); setT('kt-fc-year-n',fmt(fy.value));
     mark($('kt-fc-month-n'),fm.value); mark($('kt-fc-year-n'),fy.value);
     var cum=0, _o=kt(); for(var ci=0;ci<=n.getMonth();ci++){ var _a=aggMonth(n.getFullYear(),ci); var _has=(_o.records||[]).some(function(r){ var _d=parseYmd(r.date); return _d&&_d.getFullYear()===n.getFullYear()&&_d.getMonth()===ci; }); if(_has) cum+=_a.net; }
-    /* —— 完成进度条：净收益/开源/节流完成比例 vs 时间流逝（x 轴归一化 0~1，超出满格）——
-       完成比例与四卡完全同源（vals/targets，随统计期间切换）；每条轨道上的深色竖线 = 当前时间流逝基准。
-       三条完成条各用一个专属色系（净收益=绿 / 开源=琥珀 / 节流=青蓝），
+    /* —— 完成进度条：净收益/开源/节流完成比例（x 轴归一化 0~1，超出满格）——
+       完成比例与四卡完全同源（vals/targets，随统计期间切换）。
+       三条完成条各用一个专属色系（净收益=紫 / 开源=琥珀 / 节流=青蓝），
        同色系内用深浅表达进度：进度越快颜色越深（完成比例 0%→浅端，100% 及以上→深端）；为负 = 红（红优先）。 */
     (function(){
-      var fl=Math.min(Math.max(flow/100,0),1);
-      var marks=document.querySelectorAll('.kt-pb-mark');
-      for(var mi=0;mi<marks.length;mi++){ marks[mi].style.left=(fl*100)+'%'; }
-      var PB={net:[[194,220,201],[63,125,92]],open:[[236,217,184],[201,138,46]],save:[[195,212,222],[91,138,166]]};
+      var PB={net:[[203,194,221],[110,90,158]],open:[[236,217,184],[201,138,46]],save:[[195,212,222],[91,138,166]]};
       ['net','open','save'].forEach(function(k){
         var fill=$('kt-pb-'+k), pctEl=$('kt-pb-'+k+'-pct'); if(!fill) return;
         var v=vals[k], tg=targets[k], p=(tg>0?v/tg*100:0);
@@ -5751,7 +5747,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
         }
         setT('kt-pb-'+k+'-pct',p.toFixed(1)+'%'); mark(pctEl,v);
       });
-      var ff=$('kt-pb-flow'); if(ff){ ff.style.width=(fl*100)+'%'; }
+      var ff=$('kt-pb-flow'); if(ff){ ff.style.width=(Math.min(Math.max(flow/100,0),1)*100)+'%'; }
       setT('kt-pb-flow-pct',flow.toFixed(1)+'%');
     })();
 
