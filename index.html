@@ -1347,8 +1347,10 @@
   @media (max-width:820px){ .sk-row-bar{width:64px} .sk-avgs{gap:6px} .sk-avg-v{font-size:15px} }
 </style>
 <style id="bs-style">
-  .bs-sum{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .bs-sum{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
   .bs-sum-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:11px 14px;min-width:0}
+  .bs-net-card{background:linear-gradient(135deg,#f7f8fc,#fff)}
+  .bs-neg{color:#c0453a!important}
   .bs-sum-k{font-size:11px;color:var(--ink3);display:block}
   .bs-sum-k i{font-style:normal;opacity:.75}
   .bs-sum-v{display:block;font-family:"Sora",sans-serif;font-size:22px;font-weight:700;color:var(--ink);line-height:1.35;margin-top:2px;letter-spacing:-.4px;font-variant-numeric:tabular-nums}
@@ -1378,6 +1380,43 @@
   .bs-row-val b{font-weight:600;color:var(--ink)}
   .bs-row-up{color:#3f7d5c;font-weight:600}
   .bs-empty{font-size:11.5px;color:var(--ink3);padding:8px 0}
+  .bs-hide{display:none}
+  .bs-fold-head{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink3);cursor:pointer;padding:6px 2px;user-select:none;border-top:1px solid var(--line2);margin-top:5px}
+  .bs-fold-head:hover{color:var(--brand)}
+  .bs-fold-ic{display:inline-block;font-size:9px;transition:transform .2s;color:var(--ink3)}
+  .bs-fold-head.on .bs-fold-ic{transform:rotate(90deg)}
+  .bs-fold-cnt{margin-left:auto;font-variant-numeric:tabular-nums}
+  .bs-d-mp{margin-left:auto;font-size:11px;font-weight:400;color:var(--ink3);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .bs-d-mp b{font-size:13px;font-weight:700;color:var(--ink);margin-left:3px}
+  .bs-chart{border:1px solid var(--line2);border-radius:10px;background:#fff;padding:10px 12px;margin-top:9px}
+  .bs-chart-h{font-size:11px;color:var(--ink3);margin-bottom:7px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .bs-chart-lg{display:inline-flex;align-items:center;gap:4px}
+  .bs-chart-sw{width:9px;height:9px;border-radius:2px;display:inline-block}
+  .bs-chart-sw-fair{background:#8fa8c4}
+  .bs-chart-sw-buy{border:1.5px dashed #c9a45e;background:transparent}
+  .bs-bars{display:flex;align-items:flex-end;gap:6px;height:96px;padding-top:4px;overflow-x:auto}
+  .bs-bar-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;min-width:46px;flex:1 1 46px;height:100%}
+  .bs-bar-pair{position:relative;width:30px;height:76px;flex:none}
+  .bs-bar-fair,.bs-bar-buy{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:26px;border-radius:3px 3px 0 0}
+  .bs-bar-fair{background:#8fa8c4;z-index:1}
+  .bs-bar-buy{border:1.5px dashed #c9a45e;background:transparent;z-index:2;width:30px}
+  .bs-bar-n{font-size:9.5px;color:var(--ink3);max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
+  .bs-chart-empty{font-size:11px;color:var(--ink3);padding:14px 0;text-align:center}
+  .bs-pie-wrap{border:1px solid var(--line2);border-radius:10px;background:#fff;padding:10px 12px;margin-top:9px}
+  .bs-pie-h{font-size:11px;color:var(--ink2);font-weight:600;margin-bottom:8px}
+  .bs-pie-note{font-weight:400;color:var(--ink3);margin-left:5px}
+  .bs-pie-body{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .bs-pie-ring{width:96px;height:96px;flex:none;border-radius:50%;display:grid;place-items:center;position:relative}
+  .bs-pie-center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;line-height:1.15}
+  .bs-pie-center b{font-family:"Sora",sans-serif;font-size:17px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+  .bs-pie-center span{font-size:9px;color:var(--ink3);display:block}
+  .bs-pie-legend{flex:1 1 150px;min-width:140px}
+  .bs-pie-lg{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink2);padding:3px 0}
+  .bs-pie-lg b{margin-left:auto;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .bs-pie-sw{width:10px;height:10px;border-radius:50%;flex:none}
+  .bs-pie-sw-on{background:#6e93a3}
+  .bs-pie-sw-off{background:#e3e7ee}
+  .bs-pie-total{border-top:1px solid var(--line2);margin-top:3px;padding-top:6px}
   .bs-stat{border-top:1px solid var(--line2);padding-top:11px;margin-top:11px}
   .bs-stat-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:9px}
   .bs-stat-head select,.bs-stat-head input[type=month]{border:1px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit;font-size:12px;color:var(--ink);background:#fff;appearance:none;-webkit-appearance:none}
@@ -1866,6 +1905,7 @@
           <div class="bs-sum">
             <div class="bs-sum-card"><span class="bs-sum-k">资产总额 <i>公允价值合计</i></span><b class="bs-sum-v" id="bs-asset-total">¥0</b><span class="bs-sum-sub" id="bs-asset-sub">0 项资产</span></div>
             <div class="bs-sum-card"><span class="bs-sum-k">负债总额 <i>当前剩余本金</i></span><b class="bs-sum-v" id="bs-debt-total">¥0</b><span class="bs-sum-sub" id="bs-debt-sub">0 笔贷款</span></div>
+            <div class="bs-sum-card bs-net-card"><span class="bs-sum-k">净资产 <i>资产 − 负债</i></span><b class="bs-sum-v" id="bs-net-total">¥0</b><span class="bs-sum-sub" id="bs-net-sub">0 项资产 · 0 笔贷款</span></div>
           </div>
 
           <div class="bs-sec">
@@ -1880,11 +1920,13 @@
               <button class="bs-btn bs-btn-quiet" id="bs-a-del" style="display:none">删除</button>
               <button class="bs-btn bs-btn-quiet" id="bs-a-cancel" style="display:none">取消</button>
             </div>
-            <div class="bs-list" id="bs-a-list"></div>
+            <div class="bs-fold-head" id="bs-a-fold" role="button" tabindex="0" title="点击展开 / 收起资产明细"><span class="bs-fold-ic" id="bs-a-fold-ic">▸</span><span>资产明细</span><span class="bs-fold-cnt" id="bs-a-fold-cnt">0 项</span></div>
+            <div class="bs-list bs-hide" id="bs-a-list"></div>
+            <div class="bs-chart" id="bs-a-chart"></div>
           </div>
 
           <div class="bs-sec">
-            <div class="bs-sec-h"><span>💳 负债</span><span class="bs-sec-tip">每笔单独设首次还款年月，逐月摊销测算</span></div>
+            <div class="bs-sec-h"><span>💳 负债</span><span class="bs-sec-tip">每笔单独设首次还款年月，逐月摊销测算</span><span class="bs-d-mp" id="bs-d-mp-row">当月归还本金 <b id="bs-d-mprincipal">¥0</b></span></div>
             <div class="bs-add">
               <select id="bs-d-cls" title="负债类别"><option value="bank">银行贷款</option><option value="other">其它借款</option></select>
               <input id="bs-d-name" placeholder="名称，如：房贷 / 车贷">
@@ -1898,7 +1940,19 @@
               <button class="bs-btn bs-btn-quiet" id="bs-d-del" style="display:none">删除</button>
               <button class="bs-btn bs-btn-quiet" id="bs-d-cancel" style="display:none">取消</button>
             </div>
-            <div class="bs-list" id="bs-d-list"></div>
+            <div class="bs-fold-head" id="bs-d-fold" role="button" tabindex="0" title="点击展开 / 收起负债明细"><span class="bs-fold-ic" id="bs-d-fold-ic">▸</span><span>负债明细</span><span class="bs-fold-cnt" id="bs-d-fold-cnt">0 笔</span></div>
+            <div class="bs-list bs-hide" id="bs-d-list"></div>
+            <div class="bs-pie-wrap" id="bs-pie-wrap">
+              <div class="bs-pie-h">本金已还比例 <span class="bs-pie-note" id="bs-pie-note">截至所选期间</span></div>
+              <div class="bs-pie-body">
+                <div class="bs-pie-ring" id="bs-pie-ring"></div>
+                <div class="bs-pie-legend">
+                  <div class="bs-pie-lg"><i class="bs-pie-sw bs-pie-sw-on"></i><span>已还本金</span><b id="bs-pie-paid">¥0</b></div>
+                  <div class="bs-pie-lg"><i class="bs-pie-sw bs-pie-sw-off"></i><span>剩余本金</span><b id="bs-pie-remain">¥0</b></div>
+                  <div class="bs-pie-lg bs-pie-total"><span>合计</span><b id="bs-pie-total">¥0</b></div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="bs-stat">
@@ -5537,7 +5591,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261121-1325').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261121-1410').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5551,7 +5605,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261121-1325 (单机)';
+    var V = '20261121-1410 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -6227,14 +6281,14 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   function put(id,v){ var e=$(id); if(e&&e.textContent!==v) e.textContent=v; }
   function uid(){ return 'b'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
-  /* —— 单笔摊销：返回 {pay当月, interest累计利息, principal累计本金, remain剩余本金} 截至第 k 期 —— */
+  /* —— 单笔摊销：返回 {pay当月, curPrin当月本金, interest累计利息, principal累计本金, remain剩余本金} 截至第 k 期 —— */
   function amort(d,k){
     var P=Math.max(0,num(d.total)), r=num(d.rate)/100/12, n=Math.round(num(d.years)*12);
-    var res={pay:0,interest:0,principal:0,remain:P};
+    var res={pay:0,curPrin:0,interest:0,principal:0,remain:P};
     if(!(P>0)||!(n>0)) return res;
     if(!(k>=1)){ res.remain=P; return res; }   // 未到首次还款月
     if(k>n){                                   // 已还清
-      res.pay=0; res.principal=P;
+      res.pay=0; res.curPrin=0; res.principal=P;
       if(r>0){
         /* 等额本金总利息 = Σ_{i=1..n}(P-P/n·(i-1))·r = r·(P·n - P·(n-1)/2)；等额本息 = M·n - P */
         if(d.method==='principal'){ res.interest=r*(P*n-P*(n-1)/2); }
@@ -6244,12 +6298,14 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     }
     if(d.method==='principal'){
       var pp=P/n, ti=r*(P*k-pp*k*(k-1)/2);           // Σ_{i=1..k}(P-pp*(i-1))*r
-      res.pay=pp+(P-pp*(k-1))*r; res.principal=pp*k; res.interest=ti; res.remain=Math.max(0,P-pp*k);
+      res.pay=pp+(P-pp*(k-1))*r; res.curPrin=pp; res.principal=pp*k; res.interest=ti; res.remain=Math.max(0,P-pp*k);
     }else{
       var M2=(r>0)?P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1):P/n;
       var bal=(r>0)?P*Math.pow(1+r,k)-M2*(Math.pow(1+r,k)-1)/r:P-M2*k;
       bal=Math.max(0,bal);
-      res.pay=M2; res.principal=P-bal; res.interest=M2*k-res.principal; res.remain=bal;
+      /* 当月本金 = 本期月供 − 本期利息(=上期余额×r)；等价于 P·r/( (1+r)^n−1 )·(1+r)^(k-1) */
+      var prevBal=(r>0)?P*Math.pow(1+r,k-1)-M2*(Math.pow(1+r,k-1)-1)/r:P-M2*(k-1);
+      res.pay=M2; res.curPrin=Math.max(0,M2-(r>0?prevBal*r:0)); res.principal=P-bal; res.interest=M2*k-res.principal; res.remain=bal;
     }
     return res;
   }
@@ -6258,20 +6314,23 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     if(!a) return -1;
     return (y-+a[1])*12+(m-(+a[2]-1))+1;
   }
-  /* 汇总：mode=month → 终点(y,m)、pay=该月单月；mode=year → 终点(y,11)、pay=全年12月合计 */
+  /* 汇总：mode=month → 终点(y,m)、pay=该月单月；mode=year → 终点(y,11)、pay=全年12月合计。
+     ★ 未开始的贷款整笔不纳入统计（pay/利息/本金/剩余本金全为 0），避免把未来贷款总额算进历史期间剩余本金。 */
   function totals(y,m,mode){
-    var arr=st().debts, o={pay:0,interest:0,principal:0,remain:0};
+    var arr=st().debts, o={pay:0,curPrin:0,interest:0,principal:0,remain:0,base:0};
     arr.forEach(function(d){
-      var s,k,ey,em;
+      var endK=(mode==='year')?kth(d,y,11):kth(d,y,m);
+      if(endK<=0) return;                       // 统计期末仍未开始 → 整笔跳过
+      o.base+=num(d.total);                     // 纳入统计的贷款总额（饼图分母）
+      var s,k;
       if(mode==='year'){
-        ey=y; em=11;
-        var payY=0;
-        for(var mm=0;mm<12;mm++){ k=kth(d,y,mm); payY+=amort(d,k).pay; }
-        s=amort(d,ey?kth(d,ey,em):-1); s.pay=payY;
+        var payY=0,prinY=0;
+        for(var mm=0;mm<12;mm++){ k=kth(d,y,mm); var a=amort(d,k); payY+=a.pay; prinY+=a.curPrin; }
+        s=amort(d,kth(d,y,11)); s.pay=payY; s.curPrin=prinY;
       }else{
-        ey=y; em=m; k=kth(d,ey,em); s=amort(d,k);
+        s=amort(d,kth(d,y,m));
       }
-      o.pay+=s.pay; o.interest+=s.interest; o.principal+=s.principal; o.remain+=s.remain;
+      o.pay+=s.pay; o.curPrin+=s.curPrin; o.interest+=s.interest; o.principal+=s.principal; o.remain+=s.remain;
     });
     return o;
   }
@@ -6325,20 +6384,66 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
         '<span class="bs-row-val">'+meth+' · 起'+esc(d.start||'—')+'</span></div>';
     }).join('');
   }
+  /* —— 资产柱状图：公允价值实心蓝柱 + 购入价值虚线金框（同一位置叠加） —— */
+  function renderChart(){
+    var box=$('bs-a-chart'); if(!box) return;
+    var arr=st().assets;
+    if(!arr.length){ box.innerHTML='<div class="bs-chart-h">公允价值 vs 购入价值</div><div class="bs-chart-empty">添加资产后显示柱状图</div>'; return; }
+    var max=0; arr.forEach(function(a){ max=Math.max(max,num(a.fair),num(a.buy)); });
+    if(max<=0) max=1;
+    var cols=arr.map(function(a){
+      var hf=num(a.fair)/max*76, hb=num(a.buy)/max*76;
+      return '<div class="bs-bar-col" title="'+esc(a.name)+' · 公允 '+fmt(a.fair)+' / 购入 '+fmt(a.buy)+'">'+
+        '<div class="bs-bar-pair">'+
+          '<div class="bs-bar-buy" style="height:'+hb.toFixed(1)+'px"></div>'+
+          '<div class="bs-bar-fair" style="height:'+hf.toFixed(1)+'px"></div>'+
+        '</div><div class="bs-bar-n">'+esc(a.name)+'</div></div>';
+    }).join('');
+    box.innerHTML='<div class="bs-chart-h">公允价值 vs 购入价值'+
+      '<span class="bs-chart-lg"><i class="bs-chart-sw bs-chart-sw-fair"></i>公允价值</span>'+
+      '<span class="bs-chart-lg"><i class="bs-chart-sw bs-chart-sw-buy"></i>购入价值</span></div>'+
+      '<div class="bs-bars">'+cols+'</div>';
+  }
+  /* —— 本金已还饼图（环形 SVG）：已还=累计本金，剩余=贷款总额−已还 —— */
+  function renderPie(t){
+    var box=$('bs-pie-ring'); if(!box) return;
+    var base=Math.max(0,num(t.base)), paid=Math.max(0,num(t.principal));
+    if(paid>base) paid=base;
+    var pctV=base>0?paid/base*100:0, remain=base-paid;
+    var R=42, C=2*Math.PI*R, on=C*pctV/100;
+    var color=pctV>0?'#6e93a3':'#e3e7ee';
+    box.innerHTML='<svg viewBox="0 0 100 100" width="96" height="96" style="transform:rotate(-90deg)">'+
+      '<circle cx="50" cy="50" r="'+R+'" fill="none" stroke="#e3e7ee" stroke-width="13"></circle>'+
+      (pctV>0?'<circle cx="50" cy="50" r="'+R+'" fill="none" stroke="'+color+'" stroke-width="13" stroke-dasharray="'+on.toFixed(2)+' '+(C-on).toFixed(2)+'" stroke-linecap="butt"></circle>':'')+
+      '</svg><div class="bs-pie-center"><div><b>'+pctV.toFixed(1)+'%</b><span>已还</span></div></div>';
+    put('bs-pie-paid',fmt(paid)); put('bs-pie-remain',fmt(remain)); put('bs-pie-total',fmt(base));
+  }
   function render(){
     var o=st(), n=new Date();
-    /* 顶部：资产总额=Σ公允价值；负债总额=Σ今天剩余本金 */
+    /* 顶部：资产总额=Σ公允价值；负债总额=Σ今天剩余本金但未开始的不计；净资产=资产−负债 */
     var at=0; o.assets.forEach(function(a){ at+=num(a.fair); });
-    var dt=0; o.debts.forEach(function(d){ dt+=amort(d,kth(d,n.getFullYear(),n.getMonth())).remain; });
+    var dt=0,dCnt=0; o.debts.forEach(function(d){
+      var k=kth(d,n.getFullYear(),n.getMonth());
+      if(k<=0) return;                          // ★ 今天仍未开始 → 不计入负债总额
+      var s=amort(d,k); if(s.remain>0.5||s.principal>0) dCnt++;
+      dt+=s.remain;
+    });
+    var net=at-dt;
     put('bs-asset-total',fmt(at)); put('bs-debt-total',fmt(dt));
-    put('bs-asset-sub',o.assets.length+' 项资产'); put('bs-debt-sub',o.debts.length+' 笔贷款 · 截至今天');
+    var netEl=$('bs-net-total'); put('bs-net-total',fmt(net));
+    if(netEl) netEl.classList.toggle('bs-neg',net<0);
+    put('bs-asset-sub',o.assets.length+' 项资产'); put('bs-debt-sub',dCnt+' 笔在还贷款 · 截至今天');
+    put('bs-net-sub',o.assets.length+' 项资产 · '+dCnt+' 笔在还贷款');
     put('cnt-bsheet',o.assets.length+o.debts.length);
     /* 还款测算 */
     var u=ui(), t=totals(u.y,u.m,u.mode);
     put('bs-pay-l',u.mode==='year'?'全年还款合计':'当月还款额');
     put('bs-stat-label',u.label+(u.mode==='year'?' · 全年合计':''));
     put('bs-pay',fmt(t.pay)); put('bs-int',fmt(t.interest)); put('bs-prin',fmt(t.principal)); put('bs-remain',fmt(t.remain));
-    renderAssets(); renderDebts();
+    put('bs-d-mprincipal',fmt(t.curPrin));                 // 当月/全年归还本金（跟随期间）
+    var pieNote=$('bs-pie-note'); if(pieNote) pieNote.textContent=u.label+' · 已还/贷款总额';
+    put('bs-a-fold-cnt',o.assets.length+' 项'); put('bs-d-fold-cnt',o.debts.length+' 笔');
+    renderAssets(); renderDebts(); renderChart(); renderPie(t);
   }
   /* —— 资产录入/编辑 —— */
   var editA=null;
@@ -6447,9 +6552,30 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   var bm=$('bs-mode'); if(bm) bm.addEventListener('change',function(){ fillYears(); render(); });
   var pm=$('bs-period-m'); if(pm) pm.addEventListener('change',render);
   var py=$('bs-period-y'); if(py) py.addEventListener('change',render);
+  /* —— 明细折叠：默认收起，状态记 localStorage（workbench_solo_bs_fold_v1）—— */
+  var FOLDKEY='workbench_solo_bs_fold_v1';
+  function loadFold(){ try{ var s=JSON.parse(localStorage.getItem(FOLDKEY)||'{}'); return {a:!!s.a,d:!!s.d}; }catch(e){ return {a:false,d:false}; } }
+  function saveFold(v){ try{ localStorage.setItem(FOLDKEY,JSON.stringify(v)); }catch(e){} }
+  var fold=loadFold();
+  function applyFold(){
+    var aList=$('bs-a-list'), dList=$('bs-d-list'), aHead=$('bs-a-fold'), dHead=$('bs-d-fold');
+    if(aList) aList.classList.toggle('bs-hide',!fold.a);
+    if(dList) dList.classList.toggle('bs-hide',!fold.d);
+    if(aHead) aHead.classList.toggle('on',fold.a);
+    if(dHead) dHead.classList.toggle('on',fold.d);
+    var ai=$('bs-a-fold-ic'),di=$('bs-d-fold-ic');
+    if(ai) ai.textContent=fold.a?'▾':'▸';
+    if(di) di.textContent=fold.d?'▾':'▸';
+  }
+  function bindFold(headId,key){
+    var h=$(headId); if(!h) return;
+    h.addEventListener('click',function(){ fold[key]=!fold[key]; saveFold(fold); applyFold(); });
+    h.addEventListener('keydown',function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); fold[key]=!fold[key]; saveFold(fold); applyFold(); } });
+  }
+  bindFold('bs-a-fold','a'); bindFold('bs-d-fold','d');
   /* 暴露摊销函数供验证/调试 */
-  if(typeof window!=='undefined') window.__bsTest={amort:amort,kth:kth,totals:totals,render:render};
-  fillYears(); render();
+  if(typeof window!=='undefined') window.__bsTest={amort:amort,kth:kth,totals:totals,render:render,applyFold:applyFold,fold:fold};
+  fillYears(); applyFold(); render();
   document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') render(); });
 })();
 </script>
