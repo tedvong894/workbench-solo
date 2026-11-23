@@ -764,6 +764,10 @@
   .add-row button:hover{filter:brightness(1.06); transform:translateY(-1px)}
   .add-row button:active{transform:translateY(0) scale(.98)}
   .add-row textarea:focus, .add-row input:focus, .add-row select:focus{border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft)}
+  /* 随机击败怪物：临时事项，与计划添加区分 */
+  .random-defeat-row{border-top:1px dashed var(--line); padding-top:10px; margin-top:10px}
+  .random-defeat-row textarea::placeholder{color:#9aa3b2}
+  .random-defeat-row #btn-random-defeat{background:linear-gradient(135deg,#3f7d5c,#2f6e4c); box-shadow:0 4px 10px rgba(63,125,92,.22)}
   /* 手机端：输入框独占一行，控件换行重排、等高对齐（此 media 排在 base 之后以覆盖） */
   @media (max-width:820px){
     .add-row{flex-wrap:wrap; gap:8px}
@@ -1742,6 +1746,12 @@
           <select id="sel-diff-today" data-page-node-id="7uU0vSqLrmF4zXG5Nm0KmV"><option value="普通" data-page-node-id="8M4FIfuSWr3bytB0s6Sqgd">宵小</option><option value="挑战" data-page-node-id="6dGd6A6ng0R2t0cMRgI6Bx">恶霸</option><option value="困难" data-page-node-id="1bJ9dDjVqGbMv2Cl4mA18q">精锐</option></select>
           <select id="sel-goal-today" class="goal-sel" title="关联（目标/习惯，可选）" data-page-node-id="pThdDQCkZkrAn9uCaOCA4t"></select>
           <button class="btn-primary" id="btn-add-today" data-page-node-id="6oujYDL1nEKGEa6Vdz4Myy">添加</button>
+        </div>
+        <div class="add-row random-defeat-row" title="临时完成的事项：直接击败计分，不进入当天怪物表">
+          <textarea id="in-random-defeat" placeholder="临时完成的事项（随机击败怪物）…" rows="1"></textarea>
+          <select id="sel-diff-random" title="怪物等级（档位）"><option value="普通">宵小</option><option value="挑战">恶霸</option><option value="困难">精锐</option></select>
+          <select id="sel-goal-random" class="goal-sel" title="关联（目标/习惯，可选）"></select>
+          <button class="btn-primary" id="btn-random-defeat">击败</button>
         </div>
         </div>
       </section>
@@ -4525,6 +4535,21 @@ function addToday(){
   if(!state.activeId) setActive(t.id);
   save(); renderToday();
 }
+/* 随机击败怪物：当天临时完成的事项，直接计分，不进入当天怪物表（区别于计划中的事项） */
+function randomDefeat(){
+  const inp=document.getElementById("in-random-defeat");
+  const v=inp?inp.value.trim():""; if(!v){ toast("请先填写临时完成的事项","warn"); return; }
+  const diff=(document.getElementById("sel-diff-random")||{}).value||"普通";
+  const doneItem={id:uid(),title:v,diff:diff,fromBack:false,goalId:curGoal("sel-goal-random"),doneAt:Date.now(),steps:[],tracking:"",random:true};
+  state.done.unshift(doneItem);
+  state.done[0].pts=donePoints(doneItem);
+  if(inp) inp.value="";
+  save(); renderDone(); renderExec(); renderGoals(); renderBacklog(); refreshStats();
+  celebrateTask(doneItem);
+  toast("随机击败 +"+donePoints(doneItem)+" 分"+(doneItem.goalId?"（关联"+(habitById(doneItem.goalId)?"习惯":"目标")+"）":"")+"（"+DIFF_LABEL[doneItem.diff]+"）","ok");
+}
+document.getElementById("btn-random-defeat").addEventListener("click",randomDefeat);
+document.getElementById("in-random-defeat").addEventListener("keydown",e=>{ if((e.metaKey||e.ctrlKey)&&e.key==="Enter") randomDefeat(); });
 
 /* ---------- 每日怪物（阶段性例行，有效期内每天自动出现在③顶部） ---------- */
 function dayStr(d){ const x=d?new Date(d):new Date(); const p=n=>String(n).padStart(2,"0"); return x.getFullYear()+"-"+p(x.getMonth()+1)+"-"+p(x.getDate()); }
@@ -5603,7 +5628,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261121-1435').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261123-1415').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5617,7 +5642,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261121-1435 (单机)';
+    var V = '20261123-1415 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
