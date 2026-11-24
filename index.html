@@ -1276,6 +1276,8 @@
   .kt-fold-head:focus-visible{outline:1px solid var(--brand);outline-offset:2px}
   .kt-fold-ic{width:11px;text-align:center;font-size:10px;color:var(--ink3)}
   .kt-fold-cnt{color:var(--ink3);font-variant-numeric:tabular-nums}
+  /* 本期明细分类筛选：低对比小下拉，靠标题行右侧 */
+  .kt-filter{margin-left:auto;border:1px solid var(--line);border-radius:6px;padding:2px 5px;font:inherit;font-size:10.5px;color:var(--ink2);background:#fff;appearance:none;-webkit-appearance:none;cursor:pointer;max-width:104px}
   .kt-list{padding-top:2px;max-height:210px;overflow-y:auto}
   .kt-row{display:flex;align-items:center;gap:8px;padding:5px 2px;border-bottom:1px solid var(--line2);font-size:12px;color:var(--ink2);cursor:pointer}
   .kt-row:hover{background:var(--line2)}
@@ -1891,7 +1893,7 @@
             <button class="kt-btn kt-btn-ghost kt-hide" id="kt-edit-del">删除</button>
             <button class="kt-btn kt-btn-ghost kt-hide" id="kt-edit-cancel">取消</button>
           </div>
-          <div class="kt-fold-head" id="kt-fold-btn" role="button" tabindex="0" title="点击展开 / 收起本期明细"><span class="kt-fold-ic" id="kt-fold-ic">▸</span><span>本期明细</span><span class="kt-fold-cnt" id="kt-fold-cnt">0 笔</span></div>
+          <div class="kt-fold-head" id="kt-fold-btn" role="button" tabindex="0" title="点击展开 / 收起本期明细"><span class="kt-fold-ic" id="kt-fold-ic">▸</span><span>本期明细</span><span class="kt-fold-cnt" id="kt-fold-cnt">0 笔</span><select class="kt-filter" id="kt-filter" title="按分类筛选本期明细"><option value="">全部分类</option><option value="part">开源 · 兼职</option><option value="invest">开源 · 投资</option><option value="food">节流 · 吃喝</option><option value="fun">节流 · 玩乐</option><option value="buy">节流 · 消费投资</option><option value="other">节流 · 其它</option></select></div>
           <div class="kt-fold-body kt-hide" id="kt-fold-body">
             <div class="kt-list" id="kt-list"></div>
           </div>
@@ -5622,7 +5624,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261123-1443').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261124-1445').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5636,7 +5638,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261123-1443 (单机)';
+    var V = '20261124-1445 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -6066,6 +6068,10 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     });
   }
 
+  /* —— 本期明细分类筛选：只作用于明细列表，不影响四卡统计/图表；状态持久化 —— */
+  var FILTER_KEY='workbench_solo_kt_filter_v1', filterKind='';
+  try { var fk=localStorage.getItem(FILTER_KEY); if(fk&&KIND[fk]) filterKind=fk; } catch(e){ filterKind=''; }
+
   /* —— 本期分项 + 记录列表（点击行回填编辑，列表内不放独立按钮） —— */
   function renderParts(){
     var b=aggPeriod(),el=$('kt-parts'); if(!el) return;
@@ -6078,10 +6084,11 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   }
   function renderList(){
     var el=$('kt-list'); if(!el) return;
-    var rows=(kt().records||[]).filter(function(r){return r&&KIND[r.kind]&&inPeriod(r);});
+    var rows=(kt().records||[]).filter(function(r){return r&&KIND[r.kind]&&inPeriod(r)&&(!filterKind||r.kind===filterKind);});
     rows.sort(function(a,b){ return String(b.date||'').localeCompare(String(a.date||''))||String(b.id||'').localeCompare(String(a.id||'')); });
-    setT('kt-fold-cnt',rows.length+' 笔');
-    if(!rows.length){ el.innerHTML='<div class="kt-empty">本期还没有记录，上面记一笔即可</div>'; return; }
+    var total=(kt().records||[]).filter(function(r){return r&&KIND[r.kind]&&inPeriod(r);}).length;
+    setT('kt-fold-cnt',rows.length+(filterKind&&rows.length!==total?' / '+total:'')+' 笔');
+    if(!rows.length){ el.innerHTML='<div class="kt-empty">'+(filterKind?'本期没有「'+(KIND[filterKind]?KIND[filterKind].n:'该')+'」分类的记录':'本期还没有记录，上面记一笔即可')+'</div>'; return; }
     el.innerHTML=rows.map(function(r){
       var d=String(r.date||'').slice(5),k=KIND[r.kind]||{n:'其它'};
       return '<div class="kt-row" data-id="'+String(r.id||'')+'"><span class="kt-d">'+d+'</span><span class="kt-tag">'+k.n+'</span><span class="kt-n">'+String(r.name||'').replace(/</g,'&lt;')+'</span><span class="kt-a">'+fmt(r.amount)+'</span></div>';
@@ -6158,6 +6165,18 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   if(fb){
     fb.addEventListener('click',function(){ setFold(!folded); });
     fb.addEventListener('keydown',function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); setFold(!folded); } });
+  }
+  /* 筛选下拉：回填状态 + change 重绘；阻止冒泡/按键，避免误触发展开收起 */
+  var fsel=$('kt-filter');
+  if(fsel){
+    fsel.value=filterKind;
+    fsel.addEventListener('click',function(ev){ ev.stopPropagation(); });
+    fsel.addEventListener('keydown',function(ev){ ev.stopPropagation(); });
+    fsel.addEventListener('change',function(){
+      filterKind=KIND[fsel.value]?fsel.value:'';
+      try{ localStorage.setItem(FILTER_KEY,filterKind); }catch(e){}
+      renderList();
+    });
   }
   applyFold();
   var ab=$('kt-add-btn'); if(ab) ab.addEventListener('click',addRec);
