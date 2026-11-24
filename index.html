@@ -1276,8 +1276,16 @@
   .kt-fold-head:focus-visible{outline:1px solid var(--brand);outline-offset:2px}
   .kt-fold-ic{width:11px;text-align:center;font-size:10px;color:var(--ink3)}
   .kt-fold-cnt{color:var(--ink3);font-variant-numeric:tabular-nums}
-  /* 本期明细分类筛选：低对比小下拉，靠标题行右侧 */
-  .kt-filter{margin-left:auto;border:1px solid var(--line);border-radius:6px;padding:2px 5px;font:inherit;font-size:10.5px;color:var(--ink2);background:#fff;appearance:none;-webkit-appearance:none;cursor:pointer;max-width:104px}
+  /* 本期明细分类筛选：紧挨标题文字的小按钮 + 弹出复选面板（可多选） */
+  .kt-filter-wrap{position:relative;display:inline-flex}
+  .kt-filter-btn{border:1px solid var(--line);border-radius:6px;padding:2px 7px;font:inherit;font-size:10.5px;color:var(--ink2);background:#fff;cursor:pointer;white-space:nowrap;line-height:1.5}
+  .kt-filter-btn.on{border-color:var(--brand);color:var(--brand)}
+  .kt-filter-pop{position:absolute;top:calc(100% + 4px);left:0;z-index:20;min-width:132px;background:#fff;border:1px solid var(--line);border-radius:9px;box-shadow:0 6px 18px rgba(30,35,60,.13);padding:5px}
+  .kt-filter-opt{display:flex;align-items:center;gap:6px;padding:4px 5px;font-size:11px;color:var(--ink2);cursor:pointer;white-space:nowrap;border-radius:5px}
+  .kt-filter-opt:hover{background:var(--line2)}
+  .kt-filter-opt input{width:13px;height:13px;margin:0;accent-color:var(--brand);cursor:pointer}
+  .kt-filter-acts{display:flex;gap:6px;border-top:1px solid var(--line2);margin-top:3px;padding-top:5px}
+  .kt-filter-acts button{flex:1;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink2);font:inherit;font-size:10.5px;padding:3px 0;cursor:pointer;white-space:nowrap}
   .kt-list{padding-top:2px;max-height:210px;overflow-y:auto}
   .kt-row{display:flex;align-items:center;gap:8px;padding:5px 2px;border-bottom:1px solid var(--line2);font-size:12px;color:var(--ink2);cursor:pointer}
   .kt-row:hover{background:var(--line2)}
@@ -1893,7 +1901,7 @@
             <button class="kt-btn kt-btn-ghost kt-hide" id="kt-edit-del">删除</button>
             <button class="kt-btn kt-btn-ghost kt-hide" id="kt-edit-cancel">取消</button>
           </div>
-          <div class="kt-fold-head" id="kt-fold-btn" role="button" tabindex="0" title="点击展开 / 收起本期明细"><span class="kt-fold-ic" id="kt-fold-ic">▸</span><span>本期明细</span><span class="kt-fold-cnt" id="kt-fold-cnt">0 笔</span><select class="kt-filter" id="kt-filter" title="按分类筛选本期明细"><option value="">全部分类</option><option value="part">开源 · 兼职</option><option value="invest">开源 · 投资</option><option value="food">节流 · 吃喝</option><option value="fun">节流 · 玩乐</option><option value="buy">节流 · 消费投资</option><option value="other">节流 · 其它</option></select></div>
+          <div class="kt-fold-head" id="kt-fold-btn" role="button" tabindex="0" title="点击展开 / 收起本期明细"><span class="kt-fold-ic" id="kt-fold-ic">▸</span><span>本期明细</span><span class="kt-fold-cnt" id="kt-fold-cnt">0 笔</span><span class="kt-filter-wrap" id="kt-filter-wrap"><button type="button" class="kt-filter-btn" id="kt-filter-btn" title="按分类筛选本期明细（可多选）"><span id="kt-filter-label">筛选</span> ▾</button><div class="kt-filter-pop kt-hide" id="kt-filter-pop"><label class="kt-filter-opt"><input type="checkbox" data-kind="part">开源 · 兼职</label><label class="kt-filter-opt"><input type="checkbox" data-kind="invest">开源 · 投资</label><label class="kt-filter-opt"><input type="checkbox" data-kind="food">节流 · 吃喝</label><label class="kt-filter-opt"><input type="checkbox" data-kind="fun">节流 · 玩乐</label><label class="kt-filter-opt"><input type="checkbox" data-kind="buy">节流 · 消费投资</label><label class="kt-filter-opt"><input type="checkbox" data-kind="other">节流 · 其它</label><div class="kt-filter-acts"><button type="button" id="kt-filter-all">全选</button><button type="button" id="kt-filter-none">清空</button></div></div></span></div>
           <div class="kt-fold-body kt-hide" id="kt-fold-body">
             <div class="kt-list" id="kt-list"></div>
           </div>
@@ -5624,7 +5632,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261124-1445').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261124-1455').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5638,7 +5646,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261124-1445 (单机)';
+    var V = '20261124-1455 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -6068,9 +6076,13 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     });
   }
 
-  /* —— 本期明细分类筛选：只作用于明细列表，不影响四卡统计/图表；状态持久化 —— */
-  var FILTER_KEY='workbench_solo_kt_filter_v1', filterKind='';
-  try { var fk=localStorage.getItem(FILTER_KEY); if(fk&&KIND[fk]) filterKind=fk; } catch(e){ filterKind=''; }
+  /* —— 本期明细分类筛选（可多选）：只作用于明细列表，不影响四卡统计/图表；状态持久化 —— */
+  var FILTER_KEY='workbench_solo_kt_filter_v1', filterKinds=[];
+  try {
+    var fk=localStorage.getItem(FILTER_KEY)||'';
+    filterKinds=fk.split(',').filter(function(k){return !!KIND[k];});   /* 逗号分隔多选；兼容旧单值 */
+  } catch(e){ filterKinds=[]; }
+  function hasFilter(){ return filterKinds.length>0; }
 
   /* —— 本期分项 + 记录列表（点击行回填编辑，列表内不放独立按钮） —— */
   function renderParts(){
@@ -6084,11 +6096,11 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
   }
   function renderList(){
     var el=$('kt-list'); if(!el) return;
-    var rows=(kt().records||[]).filter(function(r){return r&&KIND[r.kind]&&inPeriod(r)&&(!filterKind||r.kind===filterKind);});
+    var rows=(kt().records||[]).filter(function(r){return r&&KIND[r.kind]&&inPeriod(r)&&(!hasFilter()||filterKinds.indexOf(r.kind)>=0);});
     rows.sort(function(a,b){ return String(b.date||'').localeCompare(String(a.date||''))||String(b.id||'').localeCompare(String(a.id||'')); });
     var total=(kt().records||[]).filter(function(r){return r&&KIND[r.kind]&&inPeriod(r);}).length;
-    setT('kt-fold-cnt',rows.length+(filterKind&&rows.length!==total?' / '+total:'')+' 笔');
-    if(!rows.length){ el.innerHTML='<div class="kt-empty">'+(filterKind?'本期没有「'+(KIND[filterKind]?KIND[filterKind].n:'该')+'」分类的记录':'本期还没有记录，上面记一笔即可')+'</div>'; return; }
+    setT('kt-fold-cnt',rows.length+(hasFilter()&&rows.length!==total?' / '+total:'')+' 笔');
+    if(!rows.length){ el.innerHTML='<div class="kt-empty">'+(hasFilter()?'本期没有所选分类的记录':'本期还没有记录，上面记一笔即可')+'</div>'; return; }
     el.innerHTML=rows.map(function(r){
       var d=String(r.date||'').slice(5),k=KIND[r.kind]||{n:'其它'};
       return '<div class="kt-row" data-id="'+String(r.id||'')+'"><span class="kt-d">'+d+'</span><span class="kt-tag">'+k.n+'</span><span class="kt-n">'+String(r.name||'').replace(/</g,'&lt;')+'</span><span class="kt-a">'+fmt(r.amount)+'</span></div>';
@@ -6166,18 +6178,40 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
     fb.addEventListener('click',function(){ setFold(!folded); });
     fb.addEventListener('keydown',function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); setFold(!folded); } });
   }
-  /* 筛选下拉：回填状态 + change 重绘；阻止冒泡/按键，避免误触发展开收起 */
-  var fsel=$('kt-filter');
-  if(fsel){
-    fsel.value=filterKind;
-    fsel.addEventListener('click',function(ev){ ev.stopPropagation(); });
-    fsel.addEventListener('keydown',function(ev){ ev.stopPropagation(); });
-    fsel.addEventListener('change',function(){
-      filterKind=KIND[fsel.value]?fsel.value:'';
-      try{ localStorage.setItem(FILTER_KEY,filterKind); }catch(e){}
-      renderList();
-    });
+  /* 筛选复选面板：点按钮展开；勾选多个分类即时筛选；全选/清空；点外部关闭 */
+  var fbtn=$('kt-filter-btn'), fpop=$('kt-filter-pop'), flabel=$('kt-filter-label');
+  function writeFilter(){
+    try{ localStorage.setItem(FILTER_KEY,filterKinds.join(',')); }catch(e){}
+    if(flabel){ flabel.textContent=hasFilter()?('筛选·'+filterKinds.length):'筛选'; if(fbtn) fbtn.classList.toggle('on',hasFilter()); }
+    var cbs=fpop?fpop.querySelectorAll('input[data-kind]'):[];
+    Array.prototype.forEach.call(cbs,function(cb){ cb.checked=filterKinds.indexOf(cb.getAttribute('data-kind'))>=0; });
   }
+  function openFilter(on){ if(fpop) fpop.classList.toggle('kt-hide',!on); }
+  if(fbtn){
+    fbtn.addEventListener('click',function(ev){ ev.stopPropagation(); openFilter(fpop&&fpop.classList.contains('kt-hide')); });
+    fbtn.addEventListener('keydown',function(ev){ ev.stopPropagation(); });
+  }
+  if(fpop){
+    fpop.addEventListener('click',function(ev){ ev.stopPropagation(); });
+    fpop.addEventListener('keydown',function(ev){ ev.stopPropagation(); });
+    var cbs=fpop.querySelectorAll('input[data-kind]');
+    Array.prototype.forEach.call(cbs,function(cb){
+      cb.checked=filterKinds.indexOf(cb.getAttribute('data-kind'))>=0;
+      cb.addEventListener('change',function(){
+        var k=cb.getAttribute('data-kind'), at=filterKinds.indexOf(k);
+        if(cb.checked&&at<0) filterKinds.push(k);
+        if(!cb.checked&&at>=0) filterKinds.splice(at,1);
+        writeFilter(); renderList();
+      });
+    });
+    var fa=$('kt-filter-all'), fn=$('kt-filter-none');
+    if(fa) fa.addEventListener('click',function(ev){ ev.stopPropagation(); filterKinds=ORDER.slice(); writeFilter(); renderList(); });
+    if(fn) fn.addEventListener('click',function(ev){ ev.stopPropagation(); filterKinds=[]; writeFilter(); renderList(); });
+  }
+  document.addEventListener('click',function(ev){
+    if(fpop&&!fpop.classList.contains('kt-hide')&&!fpop.contains(ev.target)&&fbtn&&!fbtn.contains(ev.target)) openFilter(false);
+  });
+  writeFilter();
   applyFold();
   var ab=$('kt-add-btn'); if(ab) ab.addEventListener('click',addRec);
   var es=$('kt-edit-save'); if(es) es.addEventListener('click',saveRec);
