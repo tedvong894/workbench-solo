@@ -439,7 +439,7 @@
   .asset-add-desc{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13.5px;font-family:inherit;resize:vertical;margin-top:6px;box-sizing:border-box}
   .asset-add-desc:focus{outline:none;border-color:var(--brand)}
   /* 变动记录：编辑面板内记增长轨迹（粉丝数/资产数/作品数/收益…），后期可据此绘制增长曲线 */
-  .asset-log{border:1px solid var(--line);border-radius:10px;padding:9px;margin-bottom:10px;background:#fafbfd}
+  .asset-log{border:1px solid var(--line);border-radius:10px;padding:9px;margin-top:10px;margin-bottom:2px;background:#fafbfd}
   .asset-log-t{font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:7px}
   .asset-log-hint{font-weight:400;color:var(--ink3);font-size:10.5px;margin-left:4px}
   .asset-log-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -462,6 +462,10 @@
   .asset-log-v.up{color:#3f7d5c}
   .asset-log-v.down{color:#c0453a}
   .asset-log-empty{font-size:11px;color:var(--ink3);padding:4px 0}
+  /* 变动累加出的总数徽标（粉丝数/资产数/作品数/收益） */
+  .asset-nums{font-size:12.5px;color:var(--ink2);margin-top:5px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-width:0}
+  .asset-nums .asset-income-l{flex:0 0 auto}
+  .asset-nums .asset-income-v{font-weight:600;color:var(--ink)}
 
   .reset-link{
     font-size:12px;color:var(--ink3);background:#fff;border:1px solid var(--line);
@@ -2904,15 +2908,25 @@ const getAssets = () => (state.assets||[]);
 /* 收益情况的标签与占位提示随类型联动（v=20261010-1610） */
 function assetIncomeLabel(v){ switch(String(v||"other")){ case "ad": return "月收入 / 年收入"; case "rev": return "月收入"; case "fan": return "累积粉丝"; default: return "收益情况"; } }
 function assetIncomePh(v){ switch(String(v||"other")){ case "ad": return "如：月 2000 / 年 2.4 万"; case "rev": return "如：每月带来 800 元"; case "fan": return "如：1.2 万粉"; default: return "如：每月带来 2 个咨询订单"; } }
-/* 变动记录：记增长轨迹（粉丝数/资产数/作品数/收益…），数据存 it.log=[{id,date,field,label,delta}]，后期可据此绘制增长曲线 */
+/* 变动记录：记增长轨迹（粉丝数/资产数/作品数/收益…），数据存 it.log=[{id,date,field,label,delta}]，
+   并自动累加到 it.n 对应总数（it.n={fans,value,works,income}），列表实时显示总数；后期可据此绘制增长曲线 */
 const ASSET_LOG_FIELDS=[{v:"fans",k:"粉丝数"},{v:"value",k:"资产数"},{v:"works",k:"作品数"},{v:"income",k:"收益"},{v:"other",k:"其它"}];
+let assetLogOpen=null;      /* 当前展开快捷变动输入的资产 id */
 let assetLogEditing=null;   /* {aid, lid} 正在编辑的变动条目（点历史行回填） */
 function assetLogLabel(e){
   const f=ASSET_LOG_FIELDS.find(x=>x.v===String(e.field||"other"));
   if(f&&f.v!=="other") return f.k;
   return e.label||"其它";
 }
+function assetNumFmt(v){ const n=Number(v)||0; return n.toLocaleString("zh-CN"); }
+/* 把变动累加进总数：field!=="other" 才有对应总数 */
+function assetLogApply(it,field,delta,sign){
+  if(field==="other") return;
+  if(!it.n||typeof it.n!=="object") it.n={};
+  it.n[field]=Math.round(((Number(it.n[field])||0)+sign*(Number(delta)||0))*100)/100;
+}
 function assetLogHtml(it){
+  if(assetLogOpen!==it.id) return "";
   const logs=[...(it.log||[])].sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))||String(b.id||"").localeCompare(String(a.id||"")));
   const ed=(assetLogEditing&&assetLogEditing.aid===it.id)?(it.log||[]).find(x=>x.id===assetLogEditing.lid):null;
   const date=ed?(ed.date||dayStr()):dayStr();
@@ -2921,14 +2935,14 @@ function assetLogHtml(it){
   const delta=ed?String(ed.delta):"";
   const btns=ed
     ?`<button class="ghost" data-act="assetLogSave" data-id="${it.id}">保存</button><button class="danger" data-act="assetLogDel" data-id="${it.id}">删除</button><button class="ghost" data-act="assetLogCancel" data-id="${it.id}">取消</button>`
-    :`<button data-act="assetLogAdd" data-id="${it.id}">记一笔</button>`;
+    :`<button data-act="assetLogAdd" data-id="${it.id}">记一笔</button><button class="ghost" data-act="assetLogQuick" data-id="${it.id}">收起</button>`;
   const rows=logs.length?logs.map(e=>{
     const d=String(e.date||"").slice(5), v=Number(e.delta)||0;
     const on=assetLogEditing&&assetLogEditing.lid===e.id;
     return `<div class="asset-log-row"${on?' style="background:var(--line2)"':""} data-act="assetLogPick" data-id="${it.id}" data-log="${e.id}"><span class="asset-log-d">${esc(d)}</span><span class="asset-log-f">${esc(assetLogLabel(e))}</span><span class="asset-log-v ${v>=0?"up":"down"}">${v>0?"+":""}${v}</span></div>`;
   }).join(""):`<div class="asset-log-empty">还没有变动记录，上面记一笔（如 粉丝数 +1000）</div>`;
   return `<div class="asset-log">
-    <div class="asset-log-t">变动记录<span class="asset-log-hint">记增长轨迹，点行可改；后期可据此绘制增长曲线</span></div>
+    <div class="asset-log-t">变动记录<span class="asset-log-hint">正=增加 / 负=减少；记完自动累加到总数，点行可改</span></div>
     <div class="asset-log-bar">
       <input type="date" class="asset-log-date" value="${esc(date)}" title="变动日期">
       <select class="asset-log-field" title="变动字段">${ASSET_LOG_FIELDS.map(o=>`<option value="${o.v}"${field===o.v?" selected":""}>${o.k}</option>`).join("")}</select>
@@ -2947,18 +2961,22 @@ function renderAssets(){
   el.innerHTML=arr.map(it=>{
     const descHtml=(it.desc?`<div class="asset-desc">${esc(it.desc)}</div>`:"");
     const incHtml=(it.income?`<div class="asset-income"><span class="asset-income-l">${esc(assetIncomeLabel(it.type))}</span><span class="asset-income-v">${esc(it.income)}</span></div>`:"");
+    /* 变动累加出的总数徽标（记了变动才显示）：粉丝数/资产数/作品数/收益 */
+    const n=(it.n&&typeof it.n==="object")?it.n:{};
+    const numHtml=(n.fans||n.value||n.works||n.income)?`<div class="asset-nums">${[["fans","粉丝数"],["value","资产数"],["works","作品数"],["income","收益"]].filter(p=>n[p[0]]).map(p=>`<span class="asset-income-l">${p[1]}</span><span class="asset-income-v">${assetNumFmt(n[p[0]])}</span>`).join("")}</div>`:"";
     return `<div class="strat-item" data-id="${it.id}">
       <div class="asset-view">
-        <div class="asset-title-row"><b class="asset-name">${esc(it.name||"(未命名)")}</b><span class="asset-badge">${esc(assetTypeLabel(it.type))}</span><button class="icon-btn" data-act="assetEdit" data-id="${it.id}">编辑</button></div>
+        <div class="asset-title-row"><b class="asset-name">${esc(it.name||"(未命名)")}</b><span class="asset-badge">${esc(assetTypeLabel(it.type))}</span><button class="icon-btn" data-act="assetLogQuick" data-id="${it.id}">+ 变动</button><button class="icon-btn" data-act="assetEdit" data-id="${it.id}">编辑</button></div>
         ${(it.income||it.platform||it.works)?`<div class="asset-income">
           ${it.income?`<span class="asset-income-l">${esc(assetIncomeLabel(it.type))}</span><span class="asset-income-v">${esc(it.income)}</span>`:""}
           ${it.platform?`<span class="asset-income-l" style="margin-left:6px">平台</span><span class="asset-income-v">${esc(it.platform)}</span>`:""}
           ${it.works?`<span class="asset-income-l" style="margin-left:6px">累计作品</span><span class="asset-income-v">${esc(it.works)}</span>`:""}
         </div>`:""}
+        ${numHtml}
         ${descHtml}
       </div>
+      ${assetLogHtml(it)}
       <div class="asset-edit" style="display:none">
-        ${assetLogHtml(it)}
         <label class="asset-fld"><span class="asset-fld-l">资产名称</span><input class="asset-edit-name" value="${esc(it.name||"")}" placeholder="如：抖音·制造业情报号"></label>
         <div class="asset-row2">
           <label class="asset-fld asset-fld-t"><span class="asset-fld-l">类型</span><select class="asset-edit-type">${ASSET_TYPES.map(o=>`<option value="${o.v}"${String(it.type||"other")===o.v?" selected":""}>${o.k}</option>`).join("")}</select></label>
@@ -3031,7 +3049,7 @@ function assetDel(id){
   state.assets=getAssets().filter(x=>x.id!==id);
   save(); renderAssets(); toast("已删除","ok");
 }
-/* ===== 数字资产 · 变动记录（2026-11-24 新增）：记增长轨迹，后期可据此绘制增长曲线 ===== */
+/* ===== 数字资产 · 变动记录（2026-11-24 新增）：快捷输入记增长轨迹，自动累加到总数，后期可据此绘制增长曲线 ===== */
 function assetLogRead(root){
   const d=root.querySelector(".asset-log-date"), f=root.querySelector(".asset-log-field"), lb=root.querySelector(".asset-log-label"), v=root.querySelector(".asset-log-delta");
   const date=(d&&d.value)||dayStr();
@@ -3039,6 +3057,12 @@ function assetLogRead(root){
   const label=(field==="other"&&lb?lb.value.trim():"");
   const delta=Math.round(Number(v?v.value:NaN)*100)/100;
   return {date,field,label,delta};
+}
+/* 快捷变动输入的展开 / 收起（列表标题行「+ 变动」按钮） */
+function assetLogQuick(id){
+  assetLogOpen=(assetLogOpen===id)?null:id;
+  assetLogEditing=null;
+  renderAssets();
 }
 function assetLogAdd(id){
   const root=document.querySelector('#list-asset .strat-item[data-id="'+id+'"]'); if(!root) return;
@@ -3048,13 +3072,18 @@ function assetLogAdd(id){
   if(o.field==="other"&&!o.label){ toast("选「其它」时请填写自定义字段名","warn"); return; }
   if(!Array.isArray(it.log)) it.log=[];
   it.log.push({id:uid(),date:o.date,field:o.field,label:o.label,delta:o.delta});
+  assetLogApply(it,o.field,o.delta,1);   /* 自动累加到总数 */
   assetLogEditing=null;
-  save(); renderAssets(); assetEdit(id); toast("已记一笔变动","ok");
+  save(); renderAssets();
+  const lbl=o.field==="other"?o.label:(ASSET_LOG_FIELDS.find(x=>x.v===o.field)||{}).k||o.field;
+  const total=(o.field!=="other"&&it.n)?assetNumFmt(it.n[o.field]):null;
+  toast("已记一笔："+lbl+" "+(o.delta>0?"+":"")+o.delta+(total!==null?"，"+lbl+"共 "+total:""),"ok");
 }
 function assetLogPick(aid,lid){
   const it=getAssets().find(x=>x.id===aid); if(!it||!(it.log||[]).some(x=>x.id===lid)) return;
+  assetLogOpen=aid;
   assetLogEditing={aid,lid};
-  renderAssets(); assetEdit(aid);
+  renderAssets();
 }
 function assetLogSave(aid){
   if(!assetLogEditing||assetLogEditing.aid!==aid) return;
@@ -3064,21 +3093,26 @@ function assetLogSave(aid){
   const o=assetLogRead(root);
   if(!isFinite(o.delta)||o.delta===0){ toast("请填写变动值（正=增加 / 负=减少，不能为 0）","warn"); return; }
   if(o.field==="other"&&!o.label){ toast("选「其它」时请填写自定义字段名","warn"); return; }
+  /* 总数同步：先撤销旧值对旧字段的累加，再应用新值 */
+  assetLogApply(it,rec.field,rec.delta,-1);
+  assetLogApply(it,o.field,o.delta,1);
   rec.date=o.date; rec.field=o.field; rec.label=o.label; rec.delta=o.delta;
   assetLogEditing=null;
-  save(); renderAssets(); assetEdit(aid); toast("变动已更新","ok");
+  save(); renderAssets(); toast("变动已更新","ok");
 }
 function assetLogDel(aid){
   if(!assetLogEditing||assetLogEditing.aid!==aid) return;
   const it=getAssets().find(x=>x.id===aid); if(!it) return;
+  const rec=(it.log||[]).find(x=>x.id===assetLogEditing.lid); if(!rec) return;
   if(!confirm("删除这条变动记录？")) return;
+  assetLogApply(it,rec.field,rec.delta,-1);   /* 总数回退 */
   it.log=(it.log||[]).filter(x=>x.id!==assetLogEditing.lid);
   assetLogEditing=null;
-  save(); renderAssets(); assetEdit(aid); toast("变动已删除","ok");
+  save(); renderAssets(); toast("变动已删除，总数已同步","ok");
 }
 function assetLogCancel(aid){
   assetLogEditing=null;
-  renderAssets(); assetEdit(aid);
+  renderAssets();
 }
 /* 摇晃动画：给空内容时的视觉反馈 */
 const SHAKE_CSS = `@keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
@@ -5480,7 +5514,9 @@ document.querySelector(".stage").addEventListener("click", e=>{
   if(aCancel){ assetCancel(aCancel.dataset.id); return; }
   const aDel=e.target.closest('[data-act="assetDel"]');
   if(aDel){ assetDel(aDel.dataset.id); return; }
-  /* 数字资产变动记录：记一笔 / 点行回填 / 保存 / 删除 / 取消 */
+  /* 数字资产变动记录：快捷开合 / 记一笔 / 点行回填 / 保存 / 删除 / 取消 */
+  const lQuick=e.target.closest('[data-act="assetLogQuick"]');
+  if(lQuick){ assetLogQuick(lQuick.dataset.id); return; }
   const lAdd=e.target.closest('[data-act="assetLogAdd"]');
   if(lAdd){ assetLogAdd(lAdd.dataset.id); return; }
   const lPick=e.target.closest('[data-act="assetLogPick"]');
@@ -5759,7 +5795,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261124-1510').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261124-1530').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5773,7 +5809,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261124-1510 (单机)';
+    var V = '20261124-1530 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
