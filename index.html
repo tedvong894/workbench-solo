@@ -438,6 +438,30 @@
   .asset-btn:active{transform:scale(.97)}
   .asset-add-desc{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13.5px;font-family:inherit;resize:vertical;margin-top:6px;box-sizing:border-box}
   .asset-add-desc:focus{outline:none;border-color:var(--brand)}
+  /* 变动记录：编辑面板内记增长轨迹（粉丝数/资产数/作品数/收益…），后期可据此绘制增长曲线 */
+  .asset-log{border:1px solid var(--line);border-radius:10px;padding:9px;margin-bottom:10px;background:#fafbfd}
+  .asset-log-t{font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:7px}
+  .asset-log-hint{font-weight:400;color:var(--ink3);font-size:10.5px;margin-left:4px}
+  .asset-log-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .asset-log-bar input,.asset-log-bar select{width:auto;flex:0 0 auto;border:1px solid var(--line);border-radius:8px;padding:4px 7px;font:inherit;font-size:11.5px;background:#fff;color:var(--ink);margin:0;transition:border-color .15s, box-shadow .15s;box-sizing:border-box}
+  .asset-log-bar input:focus,.asset-log-bar select:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft);outline:none}
+  .asset-log-date{width:104px}
+  .asset-log-field{max-width:88px}
+  .asset-log-label{width:74px}
+  .asset-log-delta{width:96px}
+  .asset-log-bar button{flex:0 0 auto;border:1px solid var(--line);border-radius:8px;background:var(--brand-soft);color:var(--brand);font:inherit;font-size:11.5px;font-weight:600;padding:4px 9px;cursor:pointer;white-space:nowrap;transition:.15s;margin:0}
+  .asset-log-bar button:hover{filter:brightness(1.05)}
+  .asset-log-bar button.ghost{background:#fff;color:var(--ink3)}
+  .asset-log-bar button.danger{background:#fff;color:#dc2626;border-color:#fecaca}
+  .asset-log-list{margin-top:6px;max-height:150px;overflow-y:auto}
+  .asset-log-row{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ink2);padding:4px 2px;border-bottom:1px solid var(--line2);cursor:pointer}
+  .asset-log-row:hover{background:var(--line2)}
+  .asset-log-d{color:var(--ink3);white-space:nowrap;font-variant-numeric:tabular-nums;flex:0 0 auto}
+  .asset-log-f{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .asset-log-v{font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;flex:0 0 auto}
+  .asset-log-v.up{color:#3f7d5c}
+  .asset-log-v.down{color:#c0453a}
+  .asset-log-empty{font-size:11px;color:var(--ink3);padding:4px 0}
 
   .reset-link{
     font-size:12px;color:var(--ink3);background:#fff;border:1px solid var(--line);
@@ -2880,6 +2904,41 @@ const getAssets = () => (state.assets||[]);
 /* 收益情况的标签与占位提示随类型联动（v=20261010-1610） */
 function assetIncomeLabel(v){ switch(String(v||"other")){ case "ad": return "月收入 / 年收入"; case "rev": return "月收入"; case "fan": return "累积粉丝"; default: return "收益情况"; } }
 function assetIncomePh(v){ switch(String(v||"other")){ case "ad": return "如：月 2000 / 年 2.4 万"; case "rev": return "如：每月带来 800 元"; case "fan": return "如：1.2 万粉"; default: return "如：每月带来 2 个咨询订单"; } }
+/* 变动记录：记增长轨迹（粉丝数/资产数/作品数/收益…），数据存 it.log=[{id,date,field,label,delta}]，后期可据此绘制增长曲线 */
+const ASSET_LOG_FIELDS=[{v:"fans",k:"粉丝数"},{v:"value",k:"资产数"},{v:"works",k:"作品数"},{v:"income",k:"收益"},{v:"other",k:"其它"}];
+let assetLogEditing=null;   /* {aid, lid} 正在编辑的变动条目（点历史行回填） */
+function assetLogLabel(e){
+  const f=ASSET_LOG_FIELDS.find(x=>x.v===String(e.field||"other"));
+  if(f&&f.v!=="other") return f.k;
+  return e.label||"其它";
+}
+function assetLogHtml(it){
+  const logs=[...(it.log||[])].sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))||String(b.id||"").localeCompare(String(a.id||"")));
+  const ed=(assetLogEditing&&assetLogEditing.aid===it.id)?(it.log||[]).find(x=>x.id===assetLogEditing.lid):null;
+  const date=ed?(ed.date||dayStr()):dayStr();
+  const field=ed?String(ed.field||"fans"):"fans";
+  const label=ed?(ed.label||""):"";
+  const delta=ed?String(ed.delta):"";
+  const btns=ed
+    ?`<button class="ghost" data-act="assetLogSave" data-id="${it.id}">保存</button><button class="danger" data-act="assetLogDel" data-id="${it.id}">删除</button><button class="ghost" data-act="assetLogCancel" data-id="${it.id}">取消</button>`
+    :`<button data-act="assetLogAdd" data-id="${it.id}">记一笔</button>`;
+  const rows=logs.length?logs.map(e=>{
+    const d=String(e.date||"").slice(5), v=Number(e.delta)||0;
+    const on=assetLogEditing&&assetLogEditing.lid===e.id;
+    return `<div class="asset-log-row"${on?' style="background:var(--line2)"':""} data-act="assetLogPick" data-id="${it.id}" data-log="${e.id}"><span class="asset-log-d">${esc(d)}</span><span class="asset-log-f">${esc(assetLogLabel(e))}</span><span class="asset-log-v ${v>=0?"up":"down"}">${v>0?"+":""}${v}</span></div>`;
+  }).join(""):`<div class="asset-log-empty">还没有变动记录，上面记一笔（如 粉丝数 +1000）</div>`;
+  return `<div class="asset-log">
+    <div class="asset-log-t">变动记录<span class="asset-log-hint">记增长轨迹，点行可改；后期可据此绘制增长曲线</span></div>
+    <div class="asset-log-bar">
+      <input type="date" class="asset-log-date" value="${esc(date)}" title="变动日期">
+      <select class="asset-log-field" title="变动字段">${ASSET_LOG_FIELDS.map(o=>`<option value="${o.v}"${field===o.v?" selected":""}>${o.k}</option>`).join("")}</select>
+      <input class="asset-log-label" placeholder="自定义字段名" value="${esc(label)}" style="display:${field==="other"?"inline-block":"none"}">
+      <input type="number" class="asset-log-delta" placeholder="如 1000 或 -300" value="${esc(delta)}" title="变动值：正=增加，负=减少">
+      ${btns}
+    </div>
+    <div class="asset-log-list">${rows}</div>
+  </div>`;
+}
 function renderAssets(){
   const el=document.getElementById("list-asset"); if(!el) return;
   const arr=[...getAssets()];
@@ -2899,6 +2958,7 @@ function renderAssets(){
         ${descHtml}
       </div>
       <div class="asset-edit" style="display:none">
+        ${assetLogHtml(it)}
         <label class="asset-fld"><span class="asset-fld-l">资产名称</span><input class="asset-edit-name" value="${esc(it.name||"")}" placeholder="如：抖音·制造业情报号"></label>
         <div class="asset-row2">
           <label class="asset-fld asset-fld-t"><span class="asset-fld-l">类型</span><select class="asset-edit-type">${ASSET_TYPES.map(o=>`<option value="${o.v}"${String(it.type||"other")===o.v?" selected":""}>${o.k}</option>`).join("")}</select></label>
@@ -2959,10 +3019,66 @@ document.addEventListener("change", e=>{
   if(lab) lab.textContent=assetIncomeLabel(sel.value);
   if(inc) inc.placeholder=assetIncomePh(sel.value);
 });
+/* 变动记录：字段选「其它」时显示自定义字段名输入框 */
+document.addEventListener("change", e=>{
+  const sf=e.target.closest("#list-asset .asset-log-field"); if(!sf) return;
+  const bar=sf.closest(".asset-log-bar"); if(!bar) return;
+  const lb=bar.querySelector(".asset-log-label");
+  if(lb) lb.style.display=sf.value==="other"?"inline-block":"none";
+});
 function assetDel(id){
   if(!confirm("删除这个数字资产？")) return;
   state.assets=getAssets().filter(x=>x.id!==id);
   save(); renderAssets(); toast("已删除","ok");
+}
+/* ===== 数字资产 · 变动记录（2026-11-24 新增）：记增长轨迹，后期可据此绘制增长曲线 ===== */
+function assetLogRead(root){
+  const d=root.querySelector(".asset-log-date"), f=root.querySelector(".asset-log-field"), lb=root.querySelector(".asset-log-label"), v=root.querySelector(".asset-log-delta");
+  const date=(d&&d.value)||dayStr();
+  const field=f?f.value:"fans";
+  const label=(field==="other"&&lb?lb.value.trim():"");
+  const delta=Math.round(Number(v?v.value:NaN)*100)/100;
+  return {date,field,label,delta};
+}
+function assetLogAdd(id){
+  const root=document.querySelector('#list-asset .strat-item[data-id="'+id+'"]'); if(!root) return;
+  const it=getAssets().find(x=>x.id===id); if(!it) return;
+  const o=assetLogRead(root);
+  if(!isFinite(o.delta)||o.delta===0){ toast("请填写变动值（正=增加 / 负=减少，不能为 0）","warn"); return; }
+  if(o.field==="other"&&!o.label){ toast("选「其它」时请填写自定义字段名","warn"); return; }
+  if(!Array.isArray(it.log)) it.log=[];
+  it.log.push({id:uid(),date:o.date,field:o.field,label:o.label,delta:o.delta});
+  assetLogEditing=null;
+  save(); renderAssets(); assetEdit(id); toast("已记一笔变动","ok");
+}
+function assetLogPick(aid,lid){
+  const it=getAssets().find(x=>x.id===aid); if(!it||!(it.log||[]).some(x=>x.id===lid)) return;
+  assetLogEditing={aid,lid};
+  renderAssets(); assetEdit(aid);
+}
+function assetLogSave(aid){
+  if(!assetLogEditing||assetLogEditing.aid!==aid) return;
+  const root=document.querySelector('#list-asset .strat-item[data-id="'+aid+'"]'); if(!root) return;
+  const it=getAssets().find(x=>x.id===aid);
+  const rec=it&&(it.log||[]).find(x=>x.id===assetLogEditing.lid); if(!rec){ assetLogEditing=null; renderAssets(); return; }
+  const o=assetLogRead(root);
+  if(!isFinite(o.delta)||o.delta===0){ toast("请填写变动值（正=增加 / 负=减少，不能为 0）","warn"); return; }
+  if(o.field==="other"&&!o.label){ toast("选「其它」时请填写自定义字段名","warn"); return; }
+  rec.date=o.date; rec.field=o.field; rec.label=o.label; rec.delta=o.delta;
+  assetLogEditing=null;
+  save(); renderAssets(); assetEdit(aid); toast("变动已更新","ok");
+}
+function assetLogDel(aid){
+  if(!assetLogEditing||assetLogEditing.aid!==aid) return;
+  const it=getAssets().find(x=>x.id===aid); if(!it) return;
+  if(!confirm("删除这条变动记录？")) return;
+  it.log=(it.log||[]).filter(x=>x.id!==assetLogEditing.lid);
+  assetLogEditing=null;
+  save(); renderAssets(); assetEdit(aid); toast("变动已删除","ok");
+}
+function assetLogCancel(aid){
+  assetLogEditing=null;
+  renderAssets(); assetEdit(aid);
 }
 /* 摇晃动画：给空内容时的视觉反馈 */
 const SHAKE_CSS = `@keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
@@ -5364,6 +5480,17 @@ document.querySelector(".stage").addEventListener("click", e=>{
   if(aCancel){ assetCancel(aCancel.dataset.id); return; }
   const aDel=e.target.closest('[data-act="assetDel"]');
   if(aDel){ assetDel(aDel.dataset.id); return; }
+  /* 数字资产变动记录：记一笔 / 点行回填 / 保存 / 删除 / 取消 */
+  const lAdd=e.target.closest('[data-act="assetLogAdd"]');
+  if(lAdd){ assetLogAdd(lAdd.dataset.id); return; }
+  const lPick=e.target.closest('[data-act="assetLogPick"]');
+  if(lPick){ assetLogPick(lPick.dataset.id, lPick.dataset.log); return; }
+  const lSave=e.target.closest('[data-act="assetLogSave"]');
+  if(lSave){ assetLogSave(lSave.dataset.id); return; }
+  const lDel=e.target.closest('[data-act="assetLogDel"]');
+  if(lDel){ assetLogDel(lDel.dataset.id); return; }
+  const lCancel=e.target.closest('[data-act="assetLogCancel"]');
+  if(lCancel){ assetLogCancel(lCancel.dataset.id); return; }
   /* 今日成长：日期徽章菜单 / 编辑 / 保存 / 取消 / 删除 / 历史折叠 */
   const dMenu=e.target.closest('[data-act="dailyMenu"]');
   if(dMenu){ dailyMenu(dMenu.dataset.mod, dMenu.dataset.id); return; }
@@ -5632,7 +5759,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261124-1455').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261124-1510').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5646,7 +5773,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261124-1455 (单机)';
+    var V = '20261124-1510 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
