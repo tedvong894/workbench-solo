@@ -1,11 +1,12 @@
 // 工作台·单机版 - Service Worker
 // 与联网版缓存名完全隔离（solo- 前缀），两版互不影响
-const CACHE_VERSION = 'solo-20261124-1556';
+const CACHE_VERSION = 'solo-20261125-1402';
 const CACHE = 'workbench-solo-shell-' + CACHE_VERSION;
 
 const SHELL = [
   './',
   'index.html',
+  'supabase-js.js',
   'sw.js',
   'manifest.json',
   'icon-192.png',
