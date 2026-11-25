@@ -28,5 +28,9 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
+      # GitHub Actions 偶发 artifact 上传成功但 metadata API 尚未可见（Found 0 artifact(s)），
+      # 等 15 秒再部署，避免 deploy-pages 抢跑。
+      - name: Wait for artifact metadata
+        run: sleep 15
       - id: deployment
         uses: actions/deploy-pages@v4
