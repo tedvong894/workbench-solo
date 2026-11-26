@@ -1525,7 +1525,8 @@
         <button class="reset-link" id="btn-more" title="更多">☰</button>
         <div class="more-menu" id="more-menu" style="display:none" data-page-node-id="572pyyDxj0H17ATWx6EFp2">
           <div class="more-item more-sync" data-page-node-id="KkQCHuvecfGfGrOyH9F8K0"><span id="sync-state-m" data-page-node-id="qHwaHOl3YFtt9yrSNwRMiL">本地</span></div>
-          <div class="more-item" id="more-refresh">🔄 手动同步（推/拉云端）</div>
+          <div class="more-item" id="more-push" title="用本地数据覆盖云端（只推不拉）">⬆️ 推送到云端</div>
+          <div class="more-item" id="more-pull" title="用云端数据覆盖本地（只拉不推）">⬇️ 从云端拉取</div>
           <div class="more-item" id="more-export" data-page-node-id="pJghlGhtUiqXAt1ncOu8lX">导出备份</div>
           <div class="more-item" id="more-import" data-page-node-id="hVTNATSD9REReldCn0Nf87">导入备份</div>
           <div class="more-item more-danger" id="more-reset" data-page-node-id="2mQLqMlqgseouLgSPgolSN">清空数据</div>
@@ -2469,6 +2470,51 @@ async function pullState(){
   }catch(e){ setSync("同步失败"); }
 }
 
+/* ===== 推 / 拉分开（手动、互不联动）=====
+   ⬆️ pushToCloud：本地全量覆盖云端，拉取逻辑一概不跑。
+   ⬇️ pullFromCloud：云端全量覆盖本地（用户口径），推送逻辑一概不跑。
+   两者都不触发 mergeAdditions——方向由用户明确指定，不做双向合并。 */
+function pushToCloud(manual){
+  const sb=sbClient();
+  if(!sb){ if(manual) toast("未开启云同步","warn"); return; }
+  setSync("同步中…");
+  clearTimeout(_pushTimer);
+  sb.from("workbench_state").upsert({id:SYNCCFG.board,data:state,updated_at:new Date().toISOString()}).then(({error})=>{
+    if(error) throw error;
+    _dirty=false; _lastCloudJson=canonStr(state); _pulled=true;
+    setSync("已同步"); if(manual) toast("✅ 已推送到云端（本地覆盖云端）","ok");
+  }).catch(e=>{ setSync("同步失败"); if(manual) toast("推送失败："+(e.message||e),"warn"); });
+}
+async function pullFromCloud(manual){
+  const sb=sbClient();
+  if(!sb){ if(manual) toast("未开启云同步","warn"); return; }
+  setSync("同步中…");
+  try{
+    const {data,error}=await sb.from("workbench_state").select("data,updated_at").eq("id",SYNCCFG.board).maybeSingle();
+    if(error) throw error;
+    if(!data||!data.data||!data.data.backlog){ if(manual) toast("云端暂无数据可拉","warn"); setSync("已同步"); return; }
+    state=data.data;
+    /* 云端覆盖后补齐各模块字段（与 pullState 同款迁移，避免老数据缺字段报错） */
+    state.done=state.done||[]; state.exec=state.exec||{}; state.notes=state.notes||{}; state.trash=state.trash||[];
+    state.routines=state.routines||[]; state.goals=state.goals||[]; state.habits=state.habits||[];
+    state.strat=state.strat||{vision:[],strategy:[],idea:[]}; state.assets=state.assets||[];
+    state.keydays=state.keydays||[]; state.monsterCombo=state.monsterCombo||{};
+    const _m=(arr)=>{ (arr||[]).forEach(t=>{ if(t&&t.habitId!==undefined){ if(t.goalId===undefined) t.goalId=t.habitId; delete t.habitId; } }); };
+    _m(state.backlog); _m(state.today); _m(state.routines); (state.done||[]).forEach(d=>{ if(d&&d.habitId!==undefined){ if(d.goalId===undefined) d.goalId=d.habitId; delete d.habitId; } });
+    dedupePromos(state); cleanupRoutinesInToday(state); migrateLegacyPts(state); recomputeDonePtsV1505(state);
+    if(!("trashKeep" in state)) state.trashKeep=30;
+    if(!("activeId" in state)) state.activeId=null;
+    (state.goals||[]).forEach(g=>{ if(!("imp" in g)) g.imp="1"; });
+    (state.habits||[]).forEach(h=>{ if(!("imp" in h)) h.imp="1"; });
+    normalizeActiveHabitSeq();
+    if(state.activeId && !state.exec[state.activeId]) state.exec[state.activeId]={steps:[],tracking:""};
+    trashPurge(); rolloverDay();
+    _pulled=true; _dirty=false; _lastCloudJson=canonStr(state);
+    persist(); renderAll(); setSync("已同步");
+    if(manual) toast("✅ 已从云端拉取（云端覆盖本地）","ok");
+  }catch(e){ setSync("同步失败"); if(manual) toast("拉取失败："+(e.message||e),"warn"); }
+}
+
 /* ---- 数据导入 / 导出（本地备份，所有用户可用） ---- */
 function exportData(){
   try{
@@ -2530,7 +2576,9 @@ function importData(file){
     document.addEventListener("click", e=>{ if(!moreMenu.contains(e.target) && e.target!==btnMore) moreMenu.style.display="none"; });
   }
   const moreExport=document.getElementById("more-export"); if(moreExport) moreExport.addEventListener("click", ()=>exportData());
-  const moreRefresh=document.getElementById("more-refresh"); if(moreRefresh) moreRefresh.addEventListener("click", ()=>{ moreMenu.style.display="none"; syncNow(true); });
+  /* 推 / 拉 分开：⬆️ 只把本地推上云（覆盖云端）；⬇️ 只把云端拉回本地（覆盖本地）。互不联动。 */
+  const morePush=document.getElementById("more-push"); if(morePush) morePush.addEventListener("click", ()=>{ moreMenu.style.display="none"; pushToCloud(true); });
+  const morePull=document.getElementById("more-pull"); if(morePull) morePull.addEventListener("click", ()=>{ moreMenu.style.display="none"; pullFromCloud(true); });
   const moreImport=document.getElementById("more-import"); if(moreImport) moreImport.addEventListener("click", ()=>{ const f=document.getElementById("file-import"); if(f) f.click(); });
   const moreReset=document.getElementById("more-reset"); if(moreReset) moreReset.addEventListener("click", ()=>{ const b=document.getElementById("btn-reset"); if(b) b.click(); });
 })();
@@ -5796,7 +5844,12 @@ setActiveMod(_ui0.active && document.getElementById("p-"+_ui0.active) ? _ui0.act
 /* 启动拉一次云端（关门推 + 开门拉 = 闭环）：把其他设备关页时自动上传的数据取回来。
    与「自动同步模式」的区别：只在启动时拉一次，没有 30 秒轮询、没有 focus 反复拉，用户编辑照旧手动同步。
    pullState 内部首次拉取用 mergeAdditions 合并本地离线新增，不会用云端覆盖本地独有数据。 */
-if(SYNCCFG.enabled) pullState();
+if(SYNCCFG.enabled){
+  pullState();   // 开门拉一次
+  /* 从后台切回前台也拉一次（手机端 PWA 很少真杀进程，多是切后台）：syncNow 内部有 isEditing 保护，正在输入时不打断；
+     云端内容没变时 pullState 用指纹比对直接返回、不重渲染。没有 30 秒轮询、没有 focus 反复拉。 */
+  document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible") syncNow(false); });
+}
 else _endBoot();                                  // 离线模式：本地数据渲染完即结束 boot 抑制
 setTimeout(_endBoot, 3000);                       // 兜底：云拉取挂起也不长期阻塞正常升级特效
 
