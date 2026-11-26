@@ -2348,24 +2348,45 @@ function pushState(force){
     }catch(e){ setSync("同步失败"); }
   },250);
 }
-/* 关闭页面兜底上传：手动模式(auto:false)平时不自动推，但用户关掉 App 时，
-   把「本地确有编辑但还没上云」的数据补推一次，避免关掉就没上传。
-   - 只在 _dirty=true（本地真有改动）时推，避免拿旧本地数据覆盖云端新数据
-   - 用 fetch keepalive 直接 upsert，绕开 250ms 防抖；页面被关掉也能把请求送出去
-   - visibilitychange(hidden) 先推一次（页面还活着最稳），pagehide 再兜底（同一轮只推一次；失败下一轮再试） */
-function pushOnExit(){
-  if(!SYNCCFG.enabled || !_dirty) return;
-  _dirty=false;
+/* ===== 关闭兜底上传：确保「有改动时至少上传一次」=====
+   三层保险，任何一个成功即算上传：
+   ① 关页立即 fetch keepalive 直推（不等 250ms 防抖，页面关闭也能送出）
+   ② 推之前先把 payload 落盘到 EXIT_PENDING_KEY；只有收到 HTTP 2xx 才清除
+      → 就算请求没发出去 / 手机把页面冻住 / 网络断了，标记仍在
+   ③ 下次启动先检查标记：有待上传就先补推，成功后才清；补推完再拉云端
+   只在 _dirty=true（本地真有编辑）时才启动这套，避免拿旧本地数据覆盖云端新数据。 */
+const EXIT_PENDING_KEY = "workbench_solo_exit_pending_v1";
+function _exitUpsert(payload, onOk, onFail){
   const url=String(SYNCCFG.url).replace(/\/$/,"")+"/rest/v1/workbench_state";
-  const body=JSON.stringify({id:SYNCCFG.board,data:state,updated_at:new Date().toISOString()});
   try{
-    fetch(url,{
+    return fetch(url,{
       method:"POST", keepalive:true,
       headers:{apikey:SYNCCFG.anon, Authorization:"Bearer "+SYNCCFG.anon, "Content-Type":"application/json", Prefer:"resolution=merge-duplicates,return=minimal"},
-      body:body
-    }).then(r=>{ if(!r.ok) throw new Error("HTTP "+r.status); setSync("已同步"); })
-      .catch(()=>{ _dirty=true; setSync("同步失败"); });
-  }catch(e){ _dirty=true; }
+      body:payload
+    }).then(r=>{ if(!r.ok) throw new Error("HTTP "+r.status); onOk&&onOk(); })
+      .catch(e=>{ onFail&&onFail(e); });
+  }catch(e){ onFail&&onFail(e); return Promise.resolve(); }
+}
+function pushOnExit(){
+  if(!SYNCCFG.enabled || !_dirty) return;
+  const payload=JSON.stringify({id:SYNCCFG.board,data:state,updated_at:new Date().toISOString()});
+  /* ② 先落盘，再发请求——宁可重复推（幂等 upsert），不可丢改动 */
+  try{ localStorage.setItem(EXIT_PENDING_KEY, payload); }catch(e){}
+  _dirty=false;   // 防 hidden+pagehide 同轮重复触发
+  _exitUpsert(payload,
+    ()=>{ try{ localStorage.removeItem(EXIT_PENDING_KEY); }catch(e){} setSync("已同步"); },
+    ()=>{ _dirty=true; setSync("同步失败"); });   // 失败：标记留着，下次启动补推
+}
+/* ③ 启动时补推上次没确认成功的关闭上传；必须早于 pullState，否则会被云端旧数据覆盖 */
+function flushPendingExit(){
+  if(!SYNCCFG.enabled) return Promise.resolve();
+  let payload=null;
+  try{ payload=localStorage.getItem(EXIT_PENDING_KEY); }catch(e){}
+  if(!payload) return Promise.resolve();
+  setSync("补传上次改动…");
+  return _exitUpsert(payload,
+    ()=>{ try{ localStorage.removeItem(EXIT_PENDING_KEY); }catch(e){} setSync("已同步"); },
+    ()=>{ setSync("待上传"); });   // 还失败就留着标记，下次再试
 }
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") pushOnExit(); });
 window.addEventListener("pagehide",pushOnExit);
@@ -5845,7 +5866,8 @@ setActiveMod(_ui0.active && document.getElementById("p-"+_ui0.active) ? _ui0.act
    与「自动同步模式」的区别：只在启动时拉一次，没有 30 秒轮询、没有 focus 反复拉，用户编辑照旧手动同步。
    pullState 内部首次拉取用 mergeAdditions 合并本地离线新增，不会用云端覆盖本地独有数据。 */
 if(SYNCCFG.enabled){
-  pullState();   // 开门拉一次
+  /* 先补传上次关闭时没确认成功的改动，成功后才拉云端——串行，避免两路异步互相覆盖 */
+  flushPendingExit().then(()=>pullState());   // 开门：补传 → 拉一次
   /* 从后台切回前台也拉一次（手机端 PWA 很少真杀进程，多是切后台）：syncNow 内部有 isEditing 保护，正在输入时不打断；
      云端内容没变时 pullState 用指纹比对直接返回、不重渲染。没有 30 秒轮询、没有 focus 反复拉。 */
   document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible") syncNow(false); });
@@ -5922,7 +5944,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261126-2215').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261126-2225').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5936,7 +5958,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto){
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261126-2215 (单机)';
+    var V = '20261126-2225 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
