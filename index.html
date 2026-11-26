@@ -1524,9 +1524,8 @@
       <div class="more-wrap" data-page-node-id="8jAmmU6AQZkrDQTMmAgwX9">
         <button class="reset-link" id="btn-more" title="更多">☰</button>
         <div class="more-menu" id="more-menu" style="display:none" data-page-node-id="572pyyDxj0H17ATWx6EFp2">
-          <div class="more-item more-sync" data-page-node-id="KkQCHuvecfGfGrOyH9F8K0"><span id="sync-state-m" data-page-node-id="qHwaHOl3YFtt9yrSNwRMiL">联网·自动</span></div>
-          <div class="more-item" id="more-push" title="应急：强制把本机数据全量推送到云端（覆盖云端）">⬆ 强制推送</div>
-          <div class="more-item" id="more-pull" title="应急：强制从云端全量拉取（覆盖本机数据）">⬇ 强制拉取</div>
+          <div class="more-item more-sync" data-page-node-id="KkQCHuvecfGfGrOyH9F8K0"><span id="sync-state-m" data-page-node-id="qHwaHOl3YFtt9yrSNwRMiL">本地</span></div>
+          <div class="more-item" id="more-refresh">🔄 手动同步（推/拉云端）</div>
           <div class="more-item" id="more-export" data-page-node-id="pJghlGhtUiqXAt1ncOu8lX">导出备份</div>
           <div class="more-item" id="more-import" data-page-node-id="hVTNATSD9REReldCn0Nf87">导入备份</div>
           <div class="more-item more-danger" id="more-reset" data-page-node-id="2mQLqMlqgseouLgSPgolSN">清空数据</div>
@@ -2314,7 +2313,7 @@ const KEY = "workbench_solo_v1";
    这样即使 Supabase 限额/故障，本地数据照常使用、绝不丢失；想多端同步时手动点一下即可。
    若需完全离线（连手动同步也不要），把 enabled 改为 false。
    建表语句在本文件末尾。board 用一串只有你自己知道的随机串。 */
-const SYNCCFG = { enabled:true, auto:true, url:"https://gcwehwqcccmjxrqtolev.supabase.co", anon:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdjd2Vod3FjY2NtanhycXRvbGV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MTQzNDAsImV4cCI6MjEwMDE5MDM0MH0.X0X-75d1wPSTXECZDRVtkWVyDaj9ot9JLp_Qc2YamB8", board:"wb_solo_7d4e9a2c1b6f8053" }; // 工作台独立云端空间(2026-11-26)：自动推拉，编辑防抖推/启动回前台60秒拉/指纹去重不反复推拉；与联网版 board 隔离
+const SYNCCFG = { enabled:true, auto:false, url:"https://gcwehwqcccmjxrqtolev.supabase.co", anon:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdjd2Vod3FjY2NtanhycXRvbGV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MTQzNDAsImV4cCI6MjEwMDE5MDM0MH0.X0X-75d1wPSTXECZDRVtkWVyDaj9ot9JLp_Qc2YamB8", board:"wb_solo_7d4e9a2c1b6f8053" }; // 工作台独立云端空间(2026-11-26)：与工作台保持一致的手动同步模式(auto:false)，仅点「手动同步」时 pull+merge+push；与联网版 board 隔离
 
 let state = load();
 rolloverDay();   // 本地数据首次加载即清理历史已击败的当天怪物
@@ -2510,6 +2509,7 @@ function importData(file){
     document.addEventListener("click", e=>{ if(!moreMenu.contains(e.target) && e.target!==btnMore) moreMenu.style.display="none"; });
   }
   const moreExport=document.getElementById("more-export"); if(moreExport) moreExport.addEventListener("click", ()=>exportData());
+  const moreRefresh=document.getElementById("more-refresh"); if(moreRefresh) moreRefresh.addEventListener("click", ()=>{ moreMenu.style.display="none"; syncNow(true); });
   const moreImport=document.getElementById("more-import"); if(moreImport) moreImport.addEventListener("click", ()=>{ const f=document.getElementById("file-import"); if(f) f.click(); });
   const moreReset=document.getElementById("more-reset"); if(moreReset) moreReset.addEventListener("click", ()=>{ const b=document.getElementById("btn-reset"); if(b) b.click(); });
 })();
@@ -2597,7 +2597,7 @@ function persist(){
   try { localStorage.setItem('workbench_solo_backup_v1', json); } catch(e){}  // 滚动快照：最近一份成功状态
   if(!ok && typeof toast==='function') toast("⚠️ 本机主存储写入失败，已写入备用存储；清缓存/换浏览器可能丢失，建议用「导出备份」", "warn");
 }
-function save(){ persist(); _dirty=true; try{ if(window.__soloSync) window.__soloSync.onLocalEdit(); }catch(e){} }
+function save(){ persist(); _dirty=true; pushState(); }
 const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const esc = s => (s??"").toString().replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const DIFF_LABEL={"普通":"宵小","挑战":"恶霸","困难":"精锐"};const badge = d => `<span class="badge ${d==='困难'?'b-h':d==='挑战'?'b-c':d==='特殊'?'b-s':'b-n'}">${DIFF_LABEL[d]||d}</span>`;
@@ -5738,12 +5738,21 @@ document.addEventListener("gesturechange", e=>e.preventDefault());
 
 activeMod=null;  // 重置，避免初始调用误触发 toggle 折叠默认面板
 setActiveMod(_ui0.active && document.getElementById("p-"+_ui0.active) ? _ui0.active : "backlog");
-_endBoot();                                  // 手动模式：本地数据渲染完即结束 boot 抑制，启动不拉云端
+if(SYNCCFG.enabled && SYNCCFG.auto) pullState();
+else _endBoot();                                  // 手动/离线模式：本地数据渲染完即结束 boot 抑制
 setTimeout(_endBoot, 3000);                       // 兜底：云拉取挂起也不长期阻塞正常升级特效
 
 /* 手动/离线模式提示：本地优先，仅手动同步 */
-if(SYNCCFG.enabled && SYNCCFG.auto) setSync("联网·自动");
-/* 手动联网模式：无 focus/可见性/定时/关页自动同步；只由「推送到云端」「从云端拉取」两个按钮触发 */
+if(SYNCCFG.enabled && !SYNCCFG.auto) setSync("本地优先·手动同步");
+/* 数据自动保持最新：回到本页立即拉一次 + 每 30 秒后台拉一次（输入中自动跳过，不打断） */
+if(SYNCCFG.enabled && SYNCCFG.auto){
+  window.addEventListener("focus", ()=>syncNow(false));
+  document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible") syncNow(false); });
+  setInterval(()=>{ if(document.visibilityState==="visible") syncNow(false); }, 30000);
+  /* 离开页面前尽量把未上云改动推上去（离线编辑兜底；联网时主路径已即时推送） */
+  window.addEventListener("beforeunload", ()=>{ if(_dirty) pushState(); });
+  document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden" && _dirty) pushState(); });
+}
 
 
 /* 手机端样式兜底注入：用 JS 在运行时插入带 !important 的样式，防止任何缓存导致旧 flex 布局生效 */
@@ -5802,7 +5811,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto) setSync("联网·自动");
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261126-2130').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261126-2155').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5816,7 +5825,7 @@ if(SYNCCFG.enabled && SYNCCFG.auto) setSync("联网·自动");
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261126-2130 (单机)';
+    var V = '20261126-2155 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -6868,131 +6877,6 @@ if(SYNCCFG.enabled && SYNCCFG.auto) setSync("联网·自动");
   }
   fillYears(); applyFold(); render();
   document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') render(); });
-})();
-</script>
-<script id="auto-sync-script">
-/* 工作台自动同步：本地编辑只推、启动/回前台/定时只拉；本地脏不拉；拉下来不回推；失败退避 */
-(function(){
-  var EDIT_DEBOUNCE=1500, PULL_INTERVAL=60000;
-  var _pushTimer=null, _retryTimer=null, _retryDelay=5000, _pushing=false, _pulling=false, _editDuringPush=false;
-  function sb(){
-    if(!SYNCCFG.enabled||!SYNCCFG.url||!SYNCCFG.anon||typeof supabase==="undefined") return null;
-    try{ return supabase.createClient(SYNCCFG.url,SYNCCFG.anon); }catch(e){ return null; }
-  }
-  function setSync(t){
-    var a=document.getElementById("sync-state"),b=document.getElementById("sync-state-m");
-    if(a)a.textContent=t; if(b)b.textContent=t;
-  }
-  function fp(){ try{ return canonStr(state); }catch(e){ return ""; } }
-  function bsCount(){ var b=state.bsheet||{}; return ((b.assets||[]).length)+" 项资产 / "+((b.debts||[]).length)+" 项负债"; }
-  /* save() 钩子：只标脏 + 1.5 秒防抖，连续编辑合并成一次上传 */
-  function onLocalEdit(){
-    _dirty=true;
-    if(_pushing){ _editDuringPush=true; return; }
-    if(_retryTimer) return;
-    clearTimeout(_pushTimer);
-    _pushTimer=setTimeout(function(){ doPush(false,false); }, EDIT_DEBOUNCE);
-  }
-  function scheduleRetry(){
-    if(_retryTimer) return;
-    _retryTimer=setTimeout(function(){ _retryTimer=null; doPush(true,false); }, _retryDelay);
-    _retryDelay=Math.min(_retryDelay*3,60000);   /* 5s → 15s → 45s → 60s 封顶，不轰炸接口 */
-  }
-  /* 推送：本地全量覆盖云端。force=应急手动；manual=显示 toast */
-  async function doPush(force, manual){
-    if(!SYNCCFG.enabled) return false;
-    if(!force && !_dirty) return false;
-    if(_pushing) return false;
-    var c=sb(); if(!c){ if(manual) toast("云端未连接（supabase 库未加载或配置为空）","warn"); setSync("同步失败"); return false; }
-    _pushing=true; setSync("同步中…");
-    try{
-      var snap=fp();
-      var r=await c.from("workbench_state").upsert({id:SYNCCFG.board,data:state,updated_at:new Date().toISOString()});
-      if(r.error) throw r.error;
-      _pulled=true; _lastCloudJson=snap; _retryDelay=5000;
-      if(_retryTimer){ clearTimeout(_retryTimer); _retryTimer=null; }
-      var edited=_editDuringPush; _editDuringPush=false;
-      _dirty=edited;                                /* 推送途中又有编辑 → 继续标脏再推一次 */
-      if(edited) onLocalEdit();
-      setSync(edited?"待上传":"已同步");
-      if(manual) toast("已强制推送（"+bsCount()+"）","ok");
-      return true;
-    }catch(e){
-      setSync(_dirty?"待上传":"同步失败");
-      if(manual) toast("推送失败："+(e.message||e),"warn");
-      scheduleRetry();
-      return false;
-    }finally{ _pushing=false; }
-  }
-  /* 拉取后的字段规范化（兼容老备份） */
-  function normalize(d){
-    state=d;
-    state.done=state.done||[]; state.exec=state.exec||{}; state.notes=state.notes||{};
-    state.trash=state.trash||[]; state.routines=state.routines||[]; state.goals=state.goals||[];
-    state.habits=state.habits||[]; state.assets=state.assets||[]; state.keydays=state.keydays||[];
-    state.bsheet=state.bsheet||{assets:[],debts:[]};
-    state.bsheet.assets=state.bsheet.assets||[]; state.bsheet.debts=state.bsheet.debts||[];
-    state.strat=state.strat||{vision:[],strategy:[],idea:[]};
-    function _mig(arr){ (arr||[]).forEach(function(t){ if(t&&t.habitId!==undefined){ if(t.goalId===undefined)t.goalId=t.habitId; delete t.habitId; } }); }
-    _mig(state.backlog); _mig(state.today); _mig(state.routines); _mig(state.done);
-    (state.goals||[]).forEach(function(g){ if(!("imp" in g)) g.imp="1"; });
-    (state.habits||[]).forEach(function(h){ if(!("imp" in h)) h.imp="1"; });
-    ["dedupePromos","cleanupRoutinesInToday","migrateLegacyPts","recomputeDonePtsV1505","normalizeActiveHabitSeq"].forEach(function(fn){
-      if(typeof window!=="undefined" && typeof window[fn]==="function"){ try{ window[fn](state); }catch(e){} }
-    });
-    [...state.backlog,...state.today].forEach(function(t){ if(t.diff==="特殊") t.diff="困难"; });
-    if(!("trashKeep" in state)) state.trashKeep=30;
-    if(!("activeId" in state)) state.activeId=null;
-    if(state.activeId && !state.exec[state.activeId]) state.exec[state.activeId]={steps:[],tracking:""};
-    trashPurge(); rolloverDay();
-  }
-  /* 拉取：云端全量覆盖本地。force=应急手动；本地脏或正在推时自动拉取直接跳过 */
-  async function doPull(force, manual){
-    if(!SYNCCFG.enabled) return false;
-    if(!force && (_dirty||_pushing)) return false;
-    if(_pulling) return false;
-    var c=sb(); if(!c){ if(manual) toast("云端未连接（supabase 库未加载或配置为空）","warn"); setSync("同步失败"); return false; }
-    _pulling=true;
-    try{
-      var r=await c.from("workbench_state").select("data,updated_at").eq("id",SYNCCFG.board).maybeSingle();
-      if(r.error) throw r.error;
-      if(!r.data||!r.data.data||!r.data.data.backlog){
-        if(manual) toast("云端还没有工作台数据，可先强制推送","warn");
-        setSync(_dirty?"待上传":"联网·自动"); return false;
-      }
-      var cloudStr=canonStr(r.data.data);
-      /* ★ 指纹相同：云端没变 → 什么都不做（不换 state、不重渲染、不回推），这是不反复推拉的关键 */
-      if(!force && _pulled && cloudStr===_lastCloudJson){ setSync(_dirty?"待上传":"已同步"); return false; }
-      normalize(r.data.data);
-      _pulled=true; _dirty=false; _lastCloudJson=cloudStr;
-      if(_pushTimer){ clearTimeout(_pushTimer); _pushTimer=null; }
-      persist(); renderAll();
-      try{ (window.__soloRefresh||[]).forEach(function(fn){ fn(); }); }catch(e){}
-      setSync("已同步");
-      if(manual) toast("已强制拉取（"+bsCount()+"）","ok");
-      return true;
-    }catch(e){
-      setSync(_dirty?"待上传":"同步失败");
-      if(manual) toast("拉取失败："+(e.message||e),"warn");
-      return false;
-    }finally{ _pulling=false; }
-  }
-  window.__soloSync={onLocalEdit:onLocalEdit,push:function(){ return doPush(true,false); },pull:function(){ return doPull(true,false); }};
-  if(SYNCCFG.enabled && SYNCCFG.auto){
-    window.addEventListener("focus",function(){ doPull(false,false); });
-    document.addEventListener("visibilitychange",function(){
-      if(document.visibilityState==="visible") doPull(false,false);
-      else if(_dirty) doPush(false,false);          /* 切后台兜底：有待上传就推一次 */
-    });
-    setInterval(function(){ if(document.visibilityState==="visible") doPull(false,false); }, PULL_INTERVAL);
-    window.addEventListener("beforeunload",function(){ if(_dirty) doPush(false,false); });
-    setTimeout(function(){ doPull(false,false); },300);   /* 启动拉一次，本地秒开不等网络 */
-    if(_dirty) onLocalEdit();                             /* 启动前的编辑补推 */
-  }
-  var pb=document.getElementById("more-push"), pl=document.getElementById("more-pull"), mm=document.getElementById("more-menu");
-  if(pb) pb.addEventListener("click",function(){ if(mm)mm.style.display="none"; doPush(true,true); });
-  if(pl) pl.addEventListener("click",function(){ if(mm)mm.style.display="none"; doPull(true,true); });
-  window.__manualSync={push:function(){ return doPush(true,true); },pull:function(){ return doPull(true,true); }};
 })();
 </script>
 </body>
