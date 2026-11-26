@@ -5802,7 +5802,7 @@ if(SYNCCFG.enabled && !SYNCCFG.auto) setSync("联网·手动");
       // 直接注册本版独立 SW（离线可打开）；保留原 load 回调结构，尾部 }); 正好闭合
 
       // 注册 URL 带 ?v= 版本号：绕过浏览器对 sw.js 的缓存，确保每次部署都能拉到新 SW
-      navigator.serviceWorker.register('sw.js?v=solo-20261125-1512').catch(function (e) { console.warn('SW 注册失败', e); });
+      navigator.serviceWorker.register('sw.js?v=solo-20261126-0933').catch(function (e) { console.warn('SW 注册失败', e); });
       // 页面已打开时，主动检查一次 SW 更新（配合上面的自动刷新）
       if (navigator.serviceWorker.getRegistration) {
         navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -5816,7 +5816,7 @@ if(SYNCCFG.enabled && !SYNCCFG.auto) setSync("联网·手动");
 <div id="ver-badge" style="position:fixed;right:6px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:99998;font-size:10px;line-height:1.3;color:#8b93a1;opacity:.55;background:rgba(255,255,255,.55);border-radius:4px;padding:1px 4px;pointer-events:none;user-select:none;letter-spacing:.2px"></div>
 <script>
   (function () {
-    var V = '20261125-1512 (单机)';
+    var V = '20261126-0933 (单机)';
     function paint() {
       var el = document.getElementById('ver-badge');
       if (!el) return;
@@ -6517,7 +6517,7 @@ if(SYNCCFG.enabled && !SYNCCFG.auto) setSync("联网·手动");
    资产 state.bsheet.assets=[{id,cls:'house'|'car'|'other',name,buy,fair}]；折损率=1-fair/buy（负=升值）。
    负债 state.bsheet.debts=[{id,cls:'bank'|'other',name,total,rate(年%),years,method:'equal'|'principal',start:'YYYY-MM'}]。
    还款逐期摊销，第 k 期=(目标年-起始年)*12+(目标月-起始月)+1；k<=0 未开始，k>n 已还清。
-   月度=所选月单月还款+截至该月累计+该月底剩余；年度(全年合计)=全年12月还款合计+截至12月底累计+12月底剩余。
+   月度=所选月单月还款+截至该月累计+该月底剩余；年度=只算到今天所在月（历史年12个月），累计/剩余=截至该截止月底。
    顶部资产总额=Σ公允价值；负债总额=Σ各笔今天剩余本金。 */
 (function(){
   var $=function(id){ return document.getElementById(id); };
@@ -6571,19 +6571,29 @@ if(SYNCCFG.enabled && !SYNCCFG.auto) setSync("联网·手动");
     if(!a) return -1;
     return (y-+a[1])*12+(m-(+a[2]-1))+1;
   }
+  /* 年度统计截止月（2026-11-26 用户口径）：不简单统计全年 12 个月——
+     当前年只算到「今天所在月」（如 2026-11-26 查看 2026 年 → 只算到 11 月，12 月下个月才计入）；
+     历史年=完整 12 个月；未来年（一般选不到）返回 -1 = 整年未开始。 */
+  function yearEndM(y){
+    var n=new Date();
+    if(y>n.getFullYear()) return -1;
+    return (y===n.getFullYear())?n.getMonth():11;
+  }
   /* 汇总：mode=month → 终点(y,m)、pay=该月单月；mode=year → 终点(y,11)、pay=全年12月合计。
      ★ 未开始的贷款整笔不纳入统计（pay/利息/本金/剩余本金全为 0），避免把未来贷款总额算进历史期间剩余本金。 */
   function totals(y,m,mode){
     var arr=st().debts, o={pay:0,curPrin:0,curInt:0,interest:0,principal:0,remain:0,base:0};
+    var endM=(mode==='year')?yearEndM(y):m;
+    if(mode==='year' && endM<0) return o;       // 未来年度尚未开始 → 全部为 0
     arr.forEach(function(d){
-      var endK=(mode==='year')?kth(d,y,11):kth(d,y,m);
+      var endK=(mode==='year')?kth(d,y,endM):kth(d,y,m);
       if(endK<=0) return;                       // 统计期末仍未开始 → 整笔跳过
       o.base+=num(d.total);                     // 纳入统计的贷款总额（饼图分母）
       var s,k;
       if(mode==='year'){
         var payY=0,prinY=0,intY=0;
-        for(var mm=0;mm<12;mm++){ k=kth(d,y,mm); var a=amort(d,k); payY+=a.pay; prinY+=a.curPrin; intY+=a.curInt; }
-        s=amort(d,kth(d,y,11)); s.pay=payY; s.curPrin=prinY; s.curInt=intY;
+        for(var mm=0;mm<=endM;mm++){ k=kth(d,y,mm); var a=amort(d,k); payY+=a.pay; prinY+=a.curPrin; intY+=a.curInt; }
+        s=amort(d,endK); s.pay=payY; s.curPrin=prinY; s.curInt=intY;
       }else{
         s=amort(d,kth(d,y,m));
       }
@@ -6709,11 +6719,14 @@ if(SYNCCFG.enabled && !SYNCCFG.auto) setSync("联网·手动");
     put('cnt-bsheet',o.assets.length+o.debts.length);
     /* 还款测算 */
     var u=ui(), t=totals(u.y,u.m,u.mode);
-    put('bs-pay-l',u.mode==='year'?'全年还款合计':'当月还款额');
-    put('bs-stat-label',u.label+(u.mode==='year'?' · 全年合计':''));
+    /* 年度口径（2026-11-26）：只算到今天所在月，标签明确标注截止月 */
+    var cutM=(u.mode==='year')?yearEndM(u.y):-1;
+    var cutTxt=(u.mode==='year'&&cutM>=0)?(' · 截至'+(cutM+1)+'月'):'';
+    put('bs-pay-l',u.mode==='year'?('年度还款合计'+cutTxt):'当月还款额');
+    put('bs-stat-label',u.label+cutTxt);
     put('bs-pay',fmt(t.pay)); put('bs-int',fmt(t.interest)); put('bs-prin',fmt(t.principal)); put('bs-remain',fmt(t.remain));
-    put('bs-d-mp-l',u.mode==='year'?'全年归还本金':'当月归还本金');  // 第5卡标签跟随期间
-    put('bs-d-mi-l',u.mode==='year'?'全年归还利息':'当月归还利息');  // 第6卡标签跟随期间
+    put('bs-d-mp-l',u.mode==='year'?('年度归还本金'+cutTxt):'当月归还本金');  // 第5卡标签跟随期间
+    put('bs-d-mi-l',u.mode==='year'?('年度归还利息'+cutTxt):'当月归还利息');  // 第6卡标签跟随期间
     put('bs-d-mprincipal',fmt(t.curPrin));                 // 当月/全年归还本金（跟随期间）
     put('bs-d-minterest',fmt(t.curInt));                   // 当月/全年归还利息（跟随期间）
     var pieNote=$('bs-pie-note'); if(pieNote) pieNote.textContent=u.label+' · 已还/贷款总额';
@@ -6850,7 +6863,7 @@ if(SYNCCFG.enabled && !SYNCCFG.auto) setSync("联网·手动");
   bindFold('bs-a-fold','a'); bindFold('bs-d-fold','d');
   /* 暴露摊销函数供验证/调试 */
   if(typeof window!=='undefined'){
-    window.__bsTest={amort:amort,kth:kth,totals:totals,render:render,applyFold:applyFold,fold:fold};
+    window.__bsTest={amort:amort,kth:kth,totals:totals,yearEndM:yearEndM,render:render,applyFold:applyFold,fold:fold};
     window.__soloRefresh=window.__soloRefresh||[]; window.__soloRefresh.push(function(){ render(); });
   }
   fillYears(); applyFold(); render();
